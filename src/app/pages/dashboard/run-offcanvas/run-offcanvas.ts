@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 
+import { RunParams } from '../../../core/api.service';
 import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
@@ -7,11 +8,12 @@ import { MediaResult } from '../result-views/media-result/media-result';
 import { StatResult } from '../result-views/stat-result/stat-result';
 import { TextResult } from '../result-views/text-result/text-result';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
+import { RunControls, controlsKindFor } from '../run-controls/run-controls';
 
 @Component({
   selector: 'app-run-offcanvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AudioResult, GalleryResult, MediaResult, StatResult, TextResult],
+  imports: [AudioResult, GalleryResult, MediaResult, RunControls, StatResult, TextResult],
   templateUrl: './run-offcanvas.html',
   styleUrl: './run-offcanvas.scss',
 })
@@ -19,6 +21,16 @@ export class RunOffcanvas {
   readonly api = input<ApiInfo | null>(null);
   readonly result = input<RunResult | null>(null);
   readonly loading = input<boolean>(false);
+  readonly search = output<RunParams>();
+
+  protected readonly hasControls = computed(() => {
+    const api = this.api();
+    return api ? controlsKindFor(api.id) !== 'none' : false;
+  });
+
+  protected onSearch(params: RunParams): void {
+    this.search.emit(params);
+  }
 
   protected readonly prettyJson = computed(() => {
     const data = this.result()?.data;

@@ -11,7 +11,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 
-import { ApiService } from '../../core/api.service';
+import { ApiService, RunParams } from '../../core/api.service';
 import { ApiHealth, ApiInfo, RunResult } from '../../core/models';
 import {
   CategoryFilter,
@@ -139,12 +139,22 @@ export class Dashboard {
 
   protected onRun(api: ApiInfo): void {
     this.selectedApi.set(api);
+    this.openOffcanvas();
+    this.fetch(api);
+  }
+
+  protected onSearch(params: RunParams): void {
+    const api = this.selectedApi();
+    if (!api) return;
+    this.fetch(api, params);
+  }
+
+  private fetch(api: ApiInfo, params?: RunParams): void {
     this.runResult.set(null);
     this.running.set(true);
-    this.openOffcanvas();
 
     this.api
-      .runApi(api)
+      .runApi(api, params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {

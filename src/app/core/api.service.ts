@@ -1,9 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, defer, map, of } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { ApiError, ApiInfo, HealthReport, RunResult } from './models';
+
+export interface RunParams {
+  path?: Record<string, string>;
+  query?: Record<string, string | number | boolean | null | undefined>;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -22,12 +27,15 @@ export class ApiService {
    * Invokes a given API's local endpoint and normalises both success and
    * backend error envelopes into a single RunResult shape so the UI can
    * render either without special-casing.
+   *
+   * When `params` is provided it overrides the built-in sample defaults so
+   * the interactive controls panel can re-run with user-supplied values.
    */
-  runApi(api: ApiInfo): Observable<RunResult> {
-    const url = this.buildRunUrl(api);
+  runApi(api: ApiInfo, params?: RunParams): Observable<RunResult> {
+    const { url, queryParams } = this.buildRunUrl(api, params);
     return defer(() => {
       const started = performance.now();
-      return this.http.get(url, { observe: 'response' }).pipe(
+      return this.http.get(url, { observe: 'response', params: queryParams }).pipe(
         map((res) => ({
           ok: true,
           httpStatus: res.status,
@@ -48,12 +56,32 @@ export class ApiService {
     });
   }
 
-  private buildRunUrl(api: ApiInfo): string {
-    const sample = SAMPLE_INPUTS[api.id] ?? {};
+  private buildRunUrl(
+    api: ApiInfo,
+    params?: RunParams,
+  ): { url: string; queryParams: HttpParams } {
+    const fallback = params ? undefined : SAMPLE_INPUTS[api.id];
     let path = api.localEndpoint.replace(/^\/api\/v1/, '');
-    path = path.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(sample.path?.[key] ?? key));
+    path = path.replace(/\{(\w+)\}/g, (_, key) => {
+      const fromParams = params?.path?.[key];
+      const fromFallback = fallback?.path?.[key];
+      return encodeURIComponent(fromParams ?? fromFallback ?? key);
+    });
     const url = `${this.base}${path}`;
-    return sample.query ? `${url}?${sample.query}` : url;
+
+    let queryParams = new HttpParams();
+    if (params?.query) {
+      for (const [key, value] of Object.entries(params.query)) {
+        if (value === null || value === undefined || value === '') continue;
+        queryParams = queryParams.set(key, String(value));
+      }
+    } else if (fallback?.query) {
+      for (const part of fallback.query.split('&')) {
+        const [k, v] = part.split('=');
+        if (k && v !== undefined) queryParams = queryParams.set(k, decodeURIComponent(v));
+      }
+    }
+    return { url, queryParams };
   }
 
   private toApiError(err: HttpErrorResponse, path: string): ApiError {
