@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  input,
+  viewChildren,
+} from '@angular/core';
 
 import { IMAGE_PLACEHOLDER, swapImageOnError } from '../image-fallback';
 
@@ -21,6 +28,7 @@ export class AudioResult {
   readonly data = input.required<unknown>();
 
   protected readonly placeholder = IMAGE_PLACEHOLDER.square;
+  protected readonly players = viewChildren<ElementRef<HTMLAudioElement>>('player');
 
   protected readonly tracks = computed<Track[]>(() => {
     const raw = this.data() as { tracks?: unknown } | null;
@@ -39,6 +47,15 @@ export class AudioResult {
 
   protected onImgError(event: Event): void {
     swapImageOnError(event, this.placeholder);
+  }
+
+  protected onPlay(event: Event): void {
+    const current = event.target as HTMLAudioElement | null;
+    if (!current) return;
+    for (const ref of this.players()) {
+      const el = ref.nativeElement;
+      if (el !== current && !el.paused) el.pause();
+    }
   }
 }
 
