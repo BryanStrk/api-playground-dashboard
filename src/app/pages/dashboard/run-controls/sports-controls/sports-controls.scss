@@ -1,8 +1,10 @@
-.sports-controls__tabs {
+.sports-controls__tabs,
+.sports-controls__subtabs {
   flex-wrap: wrap;
   align-self: flex-start;
 }
 
-.sports-controls__tabs .btn {
+.sports-controls__tabs .btn,
+.sports-controls__subtabs .btn {
   font-weight: 500;
 }

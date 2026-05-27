@@ -35,4 +35,31 @@
       </button>
     }
   </div>
+
+  @if (tab() === 'matches') {
+    <div
+      class="btn-group btn-group-sm sports-controls__subtabs"
+      role="group"
+      aria-label="Tipo de partidos"
+    >
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [class.active]="matchesType() === 'upcoming'"
+        [attr.aria-pressed]="matchesType() === 'upcoming'"
+        (click)="selectMatchesType('upcoming')"
+      >
+        Próximos
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [class.active]="matchesType() === 'recent'"
+        [attr.aria-pressed]="matchesType() === 'recent'"
+        (click)="selectMatchesType('recent')"
+      >
+        Resultados recientes
+      </button>
+    </div>
+  }
 </form>

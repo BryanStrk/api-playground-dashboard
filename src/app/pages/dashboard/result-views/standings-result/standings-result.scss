@@ -20,6 +20,25 @@
   color: var(--ink-soft, #6b7280);
 }
 
+.standings-result__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  & + & {
+    margin-top: 0.85rem;
+  }
+}
+
+.standings-result__group-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
 .standings-result__table {
   font-size: 0.85rem;
   min-width: 360px;

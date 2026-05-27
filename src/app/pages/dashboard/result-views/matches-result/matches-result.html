@@ -10,7 +10,14 @@
     </header>
 
     @if (v.matches.length === 0) {
-      <p class="text-secondary mb-0">No hay partidos que mostrar.</p>
+      @if (v.mode === 'UPCOMING') {
+        <p class="text-secondary mb-0">
+          No hay próximos partidos programados (puede ser temporada baja).
+          Pulsa «Resultados recientes» para ver los últimos jugados.
+        </p>
+      } @else {
+        <p class="text-secondary mb-0">No hay partidos que mostrar.</p>
+      }
     } @else {
       <ul class="matches-result__list list-unstyled mb-0">
         @for (m of v.matches; track m.id) {

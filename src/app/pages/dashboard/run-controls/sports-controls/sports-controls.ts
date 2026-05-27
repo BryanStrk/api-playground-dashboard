@@ -34,6 +34,7 @@ const FALLBACK_COMPETITIONS: CompetitionInfo[] = [
 ];
 
 type Tab = 'standings' | 'matches' | 'teams';
+type MatchesType = 'upcoming' | 'recent';
 
 const ENDPOINTS: Record<Tab, string> = {
   standings: '/api/v1/sports/standings',
@@ -64,6 +65,7 @@ export class SportsControls {
   protected readonly competitions = signal<CompetitionInfo[]>(FALLBACK_COMPETITIONS);
   protected readonly code = signal<string>('PD');
   protected readonly tab = signal<Tab>('standings');
+  protected readonly matchesType = signal<MatchesType>('upcoming');
 
   constructor() {
     this.loadCompetitions();
@@ -72,9 +74,13 @@ export class SportsControls {
   protected submit(): void {
     const competition = this.code();
     if (!competition) return;
+    const query: Record<string, string> = { competition };
+    if (this.tab() === 'matches') {
+      query['type'] = this.matchesType();
+    }
     this.search.emit({
       endpoint: ENDPOINTS[this.tab()],
-      query: { competition },
+      query,
     });
   }
 
@@ -86,6 +92,13 @@ export class SportsControls {
   protected selectTab(tab: Tab): void {
     if (tab === this.tab()) return;
     this.tab.set(tab);
+    if (tab === 'matches') this.matchesType.set('upcoming');
+    this.submit();
+  }
+
+  protected selectMatchesType(type: MatchesType): void {
+    if (type === this.matchesType()) return;
+    this.matchesType.set(type);
     this.submit();
   }
 

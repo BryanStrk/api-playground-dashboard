@@ -13,9 +13,20 @@ interface StandingRow {
   points: number;
 }
 
+interface GroupTable {
+  name: string;
+  rows: StandingRow[];
+}
+
 interface StandingsView {
   competition: string;
   season: string | null;
+  rows: StandingRow[];
+  groups: GroupTable[];
+}
+
+interface StandingsSection {
+  title: string | null;
   rows: StandingRow[];
 }
 
@@ -36,14 +47,47 @@ export class StandingsResult {
     return mapStandings(data as Record<string, unknown>);
   });
 
+  protected readonly sections = computed<StandingsSection[]>(() => {
+    const v = this.view();
+    if (!v) return [];
+    if (v.groups.length > 0) {
+      return v.groups.map((g) => ({ title: g.name, rows: g.rows }));
+    }
+    if (v.rows.length > 0) {
+      return [{ title: null, rows: v.rows }];
+    }
+    return [];
+  });
+
   protected onImgError(event: Event): void {
     swapImageOnError(event, this.placeholder);
   }
 }
 
 function mapStandings(d: Record<string, unknown>): StandingsView {
-  const table = Array.isArray(d['table']) ? d['table'] : [];
-  const rows: StandingRow[] = table
+  const competition = str(d['competition']) ?? 'Clasificación';
+  const season = str(d['season']);
+
+  const rawGroups = Array.isArray(d['groups']) ? d['groups'] : [];
+  const groups: GroupTable[] = rawGroups
+    .filter((g): g is Record<string, unknown> => !!g && typeof g === 'object')
+    .map((g, i) => ({
+      name: str(g['groupName']) ?? `Grupo ${i + 1}`,
+      rows: mapRows(g['table']),
+    }))
+    .filter((g) => g.rows.length > 0);
+
+  return {
+    competition,
+    season,
+    rows: mapRows(d['table']),
+    groups,
+  };
+}
+
+function mapRows(value: unknown): StandingRow[] {
+  if (!Array.isArray(value)) return [];
+  return value
     .filter((r): r is Record<string, unknown> => !!r && typeof r === 'object')
     .map((r) => ({
       position: num(r['position']) ?? 0,
@@ -55,11 +99,6 @@ function mapStandings(d: Record<string, unknown>): StandingsView {
       lost: num(r['lost']) ?? 0,
       points: num(r['points']) ?? 0,
     }));
-  return {
-    competition: str(d['competition']) ?? 'Clasificación',
-    season: str(d['season']),
-    rows,
-  };
 }
 
 function str(value: unknown): string | null {
