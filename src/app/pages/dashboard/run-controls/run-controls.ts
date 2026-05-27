@@ -6,6 +6,7 @@ import { CatsControls } from './cats-controls/cats-controls';
 import { CharactersControls } from './characters-controls/characters-controls';
 import { CryptoControls } from './crypto-controls/crypto-controls';
 import { DictionaryControls } from './dictionary-controls/dictionary-controls';
+import { ExchangeControls } from './exchange-controls/exchange-controls';
 import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { NewsControls } from './news-controls/news-controls';
@@ -74,6 +75,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
     CharactersControls,
     CryptoControls,
     DictionaryControls,
+    ExchangeControls,
     MoviesControls,
     MusicControls,
     NewsControls,

@@ -1,0 +1,50 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field">
+      <label class="form-label" for="exchange-from">Origen</label>
+      <select
+        id="exchange-from"
+        class="form-select"
+        [ngModel]="from()"
+        (ngModelChange)="onFromChange($event)"
+        name="from"
+      >
+        @for (c of currencies(); track c.code) {
+          <option [value]="c.code">{{ c.code }} — {{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="exchange-add">Añadir destino</label>
+      <select
+        id="exchange-add"
+        class="form-select"
+        [ngModel]="adder()"
+        (ngModelChange)="onAdderChange($event)"
+        name="adder"
+      >
+        <option value="">— Selecciona una divisa —</option>
+        @for (c of available(); track c.code) {
+          <option [value]="c.code">{{ c.code }} — {{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+
+  <div class="exchange-controls__chips" role="group" aria-label="Divisas destino seleccionadas">
+    @for (code of to(); track code) {
+      <span class="exchange-controls__chip">
+        <span>{{ code }}</span>
+        @if (canRemove()) {
+          <button
+            type="button"
+            class="exchange-controls__chip-remove"
+            [attr.aria-label]="'Quitar ' + code"
+            (click)="remove(code)"
+          >×</button>
+        }
+      </span>
+    }
+  </div>
+</form>

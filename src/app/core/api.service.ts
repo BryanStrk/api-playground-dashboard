@@ -125,6 +125,7 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
   sports: { query: 'competition=PD' },
   news: { query: 'q=mundo&language=es' },
   photos: { query: 'query=mountains' },
+  exchange: { query: 'from=EUR&to=USD,GBP,JPY' },
   dictionary: { path: { word: 'hello' } },
   github: { path: { username: 'torvalds' } },
   books: { query: 'title=clean+code' },
