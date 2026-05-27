@@ -5,9 +5,23 @@
       <span>Playground Dashboard</span>
     </a>
     <div class="ms-auto d-flex align-items-center gap-3">
-      <span class="text-secondary small d-none d-md-inline" aria-live="polite">
+      <span class="text-secondary small d-none d-md-inline">
         {{ summary().up }} / {{ summary().total }} operativas
       </span>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
+        [disabled]="checking() || catalog().length === 0"
+        (click)="runHealthCheck()"
+      >
+        @if (checking()) {
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span>Comprobando…</span>
+        } @else {
+          <span aria-hidden="true">●</span>
+          <span>Test Connection</span>
+        }
+      </button>
     </div>
   </div>
 </nav>
@@ -40,6 +54,9 @@
 <main class="container-fluid py-3">
   @if (loadError()) {
     <div class="alert alert-danger" role="alert">{{ loadError() }}</div>
+  }
+  @if (checkError()) {
+    <div class="alert alert-warning" role="alert">{{ checkError() }}</div>
   }
 
   <div class="row g-3">

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ApiService } from '../../core/api.service';
@@ -19,11 +26,14 @@ import { ApiCard } from './api-card/api-card';
 })
 export class Dashboard {
   private readonly api = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly catalog = signal<ApiInfo[]>([]);
   protected readonly health = signal<Map<string, ApiHealth>>(new Map());
   protected readonly checking = signal(false);
   protected readonly loadError = signal<string | null>(null);
+  protected readonly checkError = signal<string | null>(null);
+  protected readonly lastCheckedAt = signal<Date | null>(null);
 
   protected readonly query = signal<string>('');
   protected readonly category = signal<CategoryFilter>('all');
@@ -71,6 +81,31 @@ export class Dashboard {
           this.loadError.set(
             'No se pudo cargar el catálogo. Comprueba que el backend está corriendo en http://localhost:8080.',
           ),
+      });
+  }
+
+  protected runHealthCheck(): void {
+    if (this.checking()) return;
+    this.checking.set(true);
+    this.checkError.set(null);
+
+    this.api
+      .getHealth()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (report) => {
+          const map = new Map<string, ApiHealth>();
+          for (const r of report.results) map.set(r.id, r);
+          this.health.set(map);
+          this.lastCheckedAt.set(new Date(report.checkedAt));
+          this.checking.set(false);
+        },
+        error: () => {
+          this.checking.set(false);
+          this.checkError.set(
+            'No se pudo completar la comprobación. Reintenta en unos segundos.',
+          );
+        },
       });
   }
 
