@@ -1,0 +1,64 @@
+.standings-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.standings-result__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.standings-result__title {
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.standings-result__season {
+  font-size: 0.8rem;
+  color: var(--ink-soft, #6b7280);
+}
+
+.standings-result__table {
+  font-size: 0.85rem;
+  min-width: 360px;
+
+  th {
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.7rem;
+    color: var(--ink-soft, #475569);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    white-space: nowrap;
+  }
+}
+
+.standings-result__col-pos {
+  width: 2.5rem;
+  text-align: center;
+  color: var(--ink-soft, #475569);
+}
+
+.standings-result__col-crest {
+  width: 2.25rem;
+  padding-right: 0;
+}
+
+.standings-result__crest {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  background: var(--surface-tinted, #f8fafc);
+  border-radius: 4px;
+}
+
+.standings-result__team {
+  font-weight: 500;
+  white-space: normal;
+  min-width: 8rem;
+}

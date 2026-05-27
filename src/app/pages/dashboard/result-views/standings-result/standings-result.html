@@ -1,0 +1,58 @@
+@if (view(); as v) {
+  <section class="standings-result" aria-label="Clasificación">
+    <header class="standings-result__header">
+      <h3 class="standings-result__title h6 mb-0">{{ v.competition }}</h3>
+      @if (v.season) {
+        <p class="standings-result__season mb-0">Temporada {{ v.season }}</p>
+      }
+    </header>
+
+    @if (v.rows.length === 0) {
+      <p class="text-secondary mb-0">No hay clasificación disponible.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-sm align-middle standings-result__table mb-0">
+          <caption class="visually-hidden">
+            Clasificación de {{ v.competition }}{{ v.season ? ', temporada ' + v.season : '' }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col" class="standings-result__col-pos">#</th>
+              <th scope="col" class="standings-result__col-crest">
+                <span class="visually-hidden">Escudo</span>
+              </th>
+              <th scope="col">Equipo</th>
+              <th scope="col" class="text-end" title="Partidos jugados">PJ</th>
+              <th scope="col" class="text-end" title="Ganados">G</th>
+              <th scope="col" class="text-end" title="Empatados">E</th>
+              <th scope="col" class="text-end" title="Perdidos">P</th>
+              <th scope="col" class="text-end" title="Puntos">Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of v.rows; track row.position) {
+              <tr>
+                <td class="standings-result__col-pos">{{ row.position }}</td>
+                <td class="standings-result__col-crest">
+                  <img
+                    class="standings-result__crest"
+                    [src]="row.crestUrl ?? placeholder"
+                    [alt]="'Escudo de ' + row.teamName"
+                    loading="lazy"
+                    (error)="onImgError($event)"
+                  />
+                </td>
+                <td class="standings-result__team">{{ row.teamName }}</td>
+                <td class="text-end">{{ row.played }}</td>
+                <td class="text-end">{{ row.won }}</td>
+                <td class="text-end">{{ row.draw }}</td>
+                <td class="text-end">{{ row.lost }}</td>
+                <td class="text-end fw-bold">{{ row.points }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+}
