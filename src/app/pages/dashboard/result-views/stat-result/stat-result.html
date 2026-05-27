@@ -3,6 +3,9 @@
     <p class="text-secondary mb-0">No hay datos numéricos que mostrar.</p>
   } @else {
     <div class="stat-result">
+      @if (v.title) {
+        <h3 class="stat-result__title h6 mb-0">{{ v.title }}</h3>
+      }
       <div class="stat-result__grid">
         @for (s of v.stats; track s.id) {
           <article class="stat-result__card">

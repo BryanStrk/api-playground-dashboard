@@ -10,6 +10,7 @@ interface Stat {
 }
 
 interface StatView {
+  title: string | null;
   stats: Stat[];
   caption: string | null;
 }
@@ -26,7 +27,7 @@ export class StatResult {
 
   protected readonly view = computed<StatView>(() => {
     const data = this.data();
-    if (!data || typeof data !== 'object') return { stats: [], caption: null };
+    if (!data || typeof data !== 'object') return { title: null, stats: [], caption: null };
     return mapStats(this.api().id, data as Record<string, unknown>);
   });
 }
@@ -35,7 +36,7 @@ function mapStats(id: string, d: Record<string, unknown>): StatView {
   switch (id) {
     case 'crypto': {
       const prices = d['prices'];
-      if (!prices || typeof prices !== 'object') return { stats: [], caption: null };
+      if (!prices || typeof prices !== 'object') return { title: null, stats: [], caption: null };
       const entries = Object.entries(prices as Record<string, unknown>);
       const stats: Stat[] = [];
       for (const [coin, value] of entries) {
@@ -50,7 +51,7 @@ function mapStats(id: string, d: Record<string, unknown>): StatView {
           });
         }
       }
-      return { stats, caption: null };
+      return { title: null, stats, caption: null };
     }
 
     case 'exchange': {
@@ -70,7 +71,7 @@ function mapStats(id: string, d: Record<string, unknown>): StatView {
           });
         }
       }
-      return { stats, caption: date ? `Tipos del ${date}` : null };
+      return { title: null, stats, caption: date ? `Tipos del ${date}` : null };
     }
 
     case 'weather': {
@@ -80,6 +81,7 @@ function mapStats(id: string, d: Record<string, unknown>): StatView {
       const windUnit = str(d['windSpeedUnit']) ?? 'km/h';
       const code = num(d['weatherCode']);
       const condition = code !== null ? weatherLabel(code) : null;
+      const locationName = str(d['locationName']);
       const lat = num(d['latitude']);
       const lon = num(d['longitude']);
       const stats: Stat[] = [];
@@ -99,15 +101,15 @@ function mapStats(id: string, d: Record<string, unknown>): StatView {
           hint: null,
         });
       }
-      const caption =
+      const coords =
         lat !== null && lon !== null
           ? `Lat ${formatNumber(lat, 2)}, Lon ${formatNumber(lon, 2)}`
           : null;
-      return { stats, caption };
+      return { title: locationName, stats, caption: locationName ? coords : null };
     }
 
     default:
-      return { stats: [], caption: null };
+      return { title: null, stats: [], caption: null };
   }
 }
 

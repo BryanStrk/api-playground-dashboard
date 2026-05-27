@@ -113,7 +113,7 @@ interface SampleInput {
 }
 
 const SAMPLE_INPUTS: Record<string, SampleInput> = {
-  weather: { query: 'lat=40.4168&lon=-3.7038' },
+  weather: { query: 'city=Madrid' },
   music: { query: 'term=daft+punk&limit=5' },
   crypto: { query: 'ids=bitcoin,ethereum&vs=usd' },
   pokemon: { path: { name: 'pikachu' } },

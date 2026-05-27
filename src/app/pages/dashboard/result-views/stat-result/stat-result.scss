@@ -4,6 +4,12 @@
   gap: 0.75rem;
 }
 
+.stat-result__title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink, #0f172a);
+}
+
 .stat-result__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

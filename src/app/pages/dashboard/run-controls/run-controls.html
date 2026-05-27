@@ -1,3 +1,6 @@
 @switch (kind()) {
+  @case ('weather') {
+    <app-weather-controls (search)="emit($event)" />
+  }
   @default {}
 }

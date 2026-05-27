@@ -1,0 +1,42 @@
+.run-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 0.5rem;
+}
+
+.run-controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.run-controls__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 140px;
+
+  .form-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft, #475569);
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.run-controls__submit {
+  align-self: flex-end;
+}
+
+.run-controls__hint {
+  font-size: 0.75rem;
+  color: var(--ink-soft, #6b7280);
+  margin: 0;
+}
