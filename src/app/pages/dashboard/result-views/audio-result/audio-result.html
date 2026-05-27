@@ -1,0 +1,35 @@
+@if (tracks().length === 0) {
+  <p class="text-secondary mb-0">No hay canciones que mostrar.</p>
+} @else {
+  <ul class="audio-result list-unstyled mb-0">
+    @for (t of tracks(); track t.trackId) {
+      <li class="audio-result__item">
+        <img
+          class="audio-result__art rounded"
+          [src]="t.artworkUrl ?? placeholder"
+          [alt]="'Carátula de ' + t.trackName"
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+        <div class="audio-result__meta">
+          <p class="audio-result__title mb-0">{{ t.trackName }}</p>
+          <p class="audio-result__artist mb-0">{{ t.artistName }}</p>
+          @if (t.collectionName) {
+            <p class="audio-result__album mb-0">{{ t.collectionName }}</p>
+          }
+        </div>
+        @if (t.previewUrl) {
+          <audio
+            class="audio-result__player"
+            controls
+            preload="none"
+            [src]="t.previewUrl"
+            [attr.aria-label]="'Reproducir vista previa de ' + t.trackName + ' por ' + t.artistName"
+          ></audio>
+        } @else {
+          <span class="audio-result__no-preview text-secondary small">sin preview</span>
+        }
+      </li>
+    }
+  </ul>
+}
