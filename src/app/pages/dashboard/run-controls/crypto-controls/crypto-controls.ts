@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
+  HostListener,
   computed,
   inject,
   output,
@@ -9,8 +11,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import { RunParams } from '../../../../core/api.service';
@@ -20,6 +22,11 @@ interface CoinSummary {
   name: string;
   symbol: string;
   thumb: string | null;
+}
+
+interface SearchOutcome {
+  list: CoinSummary[];
+  error: string | null;
 }
 
 const DEFAULT_COINS: CoinSummary[] = [
@@ -39,6 +46,7 @@ const VS_OPTIONS = ['eur', 'usd', 'gbp', 'jpy'];
 export class CryptoControls {
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject(ElementRef<HTMLElement>);
   private readonly query$ = new Subject<string>();
 
   readonly search = output<RunParams>();
@@ -49,57 +57,100 @@ export class CryptoControls {
   protected readonly chosen = signal<CoinSummary[]>(DEFAULT_COINS);
   protected readonly vs = signal('eur');
   protected readonly searching = signal(false);
+  protected readonly searchError = signal<string | null>(null);
+  protected readonly suggestionsOpen = signal(false);
 
   protected readonly canRemove = computed(() => this.chosen().length > 1);
 
   constructor() {
     this.query$
       .pipe(
-        debounceTime(250),
+        debounceTime(300),
         distinctUntilChanged(),
         switchMap((q) => {
           const term = q.trim();
           if (term.length < 2) {
-            this.suggestions.set([]);
             this.searching.set(false);
-            return [];
+            return of<SearchOutcome>({ list: [], error: null });
           }
           this.searching.set(true);
-          return this.http.get<CoinSummary[]>(
-            `${environment.apiBaseUrl}/crypto/search`,
-            { params: { q: term } },
-          );
+          this.searchError.set(null);
+          return this.http
+            .get<CoinSummary[]>(`${environment.apiBaseUrl}/crypto/search`, {
+              params: { q: term },
+            })
+            .pipe(
+              switchMap((list) => of<SearchOutcome>({ list: list ?? [], error: null })),
+              catchError((err: HttpErrorResponse) =>
+                of<SearchOutcome>({
+                  list: [],
+                  error:
+                    err.status === 429
+                      ? 'Límite de CoinGecko alcanzado, espera unos segundos.'
+                      : 'No se pudo buscar ahora; reintenta.',
+                }),
+              ),
+            );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe({
-        next: (list) => {
-          const chosenIds = new Set(this.chosen().map((c) => c.id));
-          this.suggestions.set(
-            (list ?? [])
-              .filter((c) => !!c?.id && !chosenIds.has(c.id))
-              .slice(0, 8),
-          );
-          this.searching.set(false);
-        },
-        error: () => {
-          this.suggestions.set([]);
-          this.searching.set(false);
-        },
+      .subscribe((outcome) => {
+        const chosenIds = new Set(this.chosen().map((c) => c.id));
+        const filtered = outcome.list
+          .filter((c) => !!c?.id && !chosenIds.has(c.id))
+          .slice(0, 8);
+        this.suggestions.set(filtered);
+        this.searchError.set(outcome.error);
+        this.searching.set(false);
+        this.suggestionsOpen.set(
+          filtered.length > 0 || (!!outcome.error && this.query().trim().length >= 2),
+        );
       });
   }
 
   protected onQuery(value: string): void {
     this.query.set(value);
+    if (!value.trim()) {
+      this.closeSuggestions();
+      this.query$.next('');
+      return;
+    }
+    this.suggestionsOpen.set(true);
     this.query$.next(value);
+  }
+
+  protected onFocus(): void {
+    if (this.suggestions().length > 0 || this.searchError()) {
+      this.suggestionsOpen.set(true);
+    }
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeSuggestions();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  protected onDocumentClick(event: MouseEvent): void {
+    const target = event.target as Node | null;
+    if (!target) return;
+    if (this.host.nativeElement.contains(target)) return;
+    this.closeSuggestions();
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onDocumentEscape(): void {
+    this.closeSuggestions();
   }
 
   protected add(coin: CoinSummary): void {
     const current = this.chosen();
     if (current.some((c) => c.id === coin.id)) return;
     this.chosen.set([...current, coin]);
-    this.suggestions.set(this.suggestions().filter((c) => c.id !== coin.id));
     this.query.set('');
+    this.closeSuggestions();
     this.emit();
   }
 
@@ -115,7 +166,14 @@ export class CryptoControls {
   }
 
   protected submit(): void {
+    this.closeSuggestions();
     this.emit();
+  }
+
+  private closeSuggestions(): void {
+    this.suggestionsOpen.set(false);
+    this.suggestions.set([]);
+    this.searchError.set(null);
   }
 
   private emit(): void {

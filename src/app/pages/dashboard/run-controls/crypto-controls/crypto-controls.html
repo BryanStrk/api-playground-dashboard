@@ -10,37 +10,44 @@
         placeholder="cardano, solana, polkadot…"
         [ngModel]="query()"
         (ngModelChange)="onQuery($event)"
+        (focus)="onFocus()"
+        (keydown)="onKeydown($event)"
         name="query"
         role="combobox"
-        [attr.aria-expanded]="suggestions().length > 0"
+        [attr.aria-expanded]="suggestionsOpen()"
         aria-controls="crypto-suggestions"
         aria-autocomplete="list"
       />
-      @if (suggestions().length > 0) {
-        <ul
-          id="crypto-suggestions"
-          class="crypto-controls__suggestions list-unstyled mb-0"
-          role="listbox"
-        >
-          @for (s of suggestions(); track s.id) {
-            <li>
-              <button
-                type="button"
-                class="crypto-controls__suggestion"
-                (click)="add(s)"
-                role="option"
-                [attr.aria-label]="'Añadir ' + s.name"
-              >
-                @if (s.thumb) {
-                  <img [src]="s.thumb" alt="" loading="lazy" />
-                }
-                <span class="crypto-controls__name">{{ s.name }}</span>
-                <span class="crypto-controls__symbol text-secondary">{{ s.symbol }}</span>
-              </button>
-            </li>
-          }
-        </ul>
-      } @else if (searching()) {
+      @if (suggestionsOpen()) {
+        @if (suggestions().length > 0) {
+          <ul
+            id="crypto-suggestions"
+            class="crypto-controls__suggestions list-unstyled mb-0"
+            role="listbox"
+          >
+            @for (s of suggestions(); track s.id) {
+              <li>
+                <button
+                  type="button"
+                  class="crypto-controls__suggestion"
+                  (click)="add(s)"
+                  role="option"
+                  [attr.aria-label]="'Añadir ' + s.name"
+                >
+                  @if (s.thumb) {
+                    <img [src]="s.thumb" alt="" loading="lazy" />
+                  }
+                  <span class="crypto-controls__name">{{ s.name }}</span>
+                  <span class="crypto-controls__symbol text-secondary">{{ s.symbol }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        } @else if (searchError(); as err) {
+          <p class="crypto-controls__search-error mb-0" role="status">{{ err }}</p>
+        }
+      }
+      @if (searching()) {
         <p class="run-controls__hint mb-0">Buscando…</p>
       }
     </div>

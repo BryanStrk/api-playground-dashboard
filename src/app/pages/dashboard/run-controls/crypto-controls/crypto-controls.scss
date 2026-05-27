@@ -51,6 +51,21 @@
   text-transform: uppercase;
 }
 
+.crypto-controls__search-error {
+  position: absolute;
+  top: calc(100% + 0.2rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft, #475569);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
 .crypto-controls__chips {
   display: flex;
   flex-wrap: wrap;
