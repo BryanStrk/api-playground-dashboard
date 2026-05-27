@@ -1,5 +1,29 @@
+.skip-link {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  z-index: 2000;
+  background: var(--accent);
+  color: white;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0 0 0.4rem 0;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:focus,
+  &:focus-visible {
+    left: 0;
+    outline: 2px solid white;
+    outline-offset: -4px;
+  }
+}
+
 .navbar {
   z-index: 1030;
+}
+
+main:focus {
+  outline: none;
 }
 
 .brand-mark {

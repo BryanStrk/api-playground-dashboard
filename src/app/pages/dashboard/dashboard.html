@@ -1,9 +1,11 @@
-<nav class="navbar navbar-expand sticky-top bg-white border-bottom shadow-sm">
+<a class="skip-link" href="#catalog">Saltar al catálogo</a>
+
+<nav class="navbar navbar-expand sticky-top bg-white border-bottom shadow-sm" aria-label="Principal">
   <div class="container-fluid gap-2">
-    <a class="navbar-brand fw-semibold mb-0 d-flex align-items-center gap-2" href="#">
+    <span class="navbar-brand fw-semibold mb-0 d-flex align-items-center gap-2">
       <span class="brand-mark" aria-hidden="true">API</span>
       <span>Playground Dashboard</span>
-    </a>
+    </span>
     <div class="ms-auto d-flex align-items-center gap-3">
       <span class="text-secondary small d-none d-md-inline">
         {{ summary().up }} / {{ summary().total }} operativas
@@ -59,7 +61,8 @@
   [totalCount]="catalog().length"
 />
 
-<main class="container-fluid py-3">
+<main id="catalog" class="container-fluid py-3" aria-labelledby="catalog-heading" tabindex="-1">
+  <h1 id="catalog-heading" class="visually-hidden">Catálogo de APIs</h1>
   @if (loadError()) {
     <div class="alert alert-danger" role="alert">{{ loadError() }}</div>
   }
