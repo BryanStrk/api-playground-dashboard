@@ -1,0 +1,33 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="holidays-country">País</label>
+      <select
+        id="holidays-country"
+        class="form-select"
+        [ngModel]="country()"
+        (ngModelChange)="country.set($event)"
+        name="country"
+      >
+        @for (c of countries(); track c.code) {
+          <option [value]="c.code">{{ c.name }} ({{ c.code }})</option>
+        }
+      </select>
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="holidays-year">Año</label>
+      <select
+        id="holidays-year"
+        class="form-select"
+        [ngModel]="year()"
+        (ngModelChange)="year.set(+$event)"
+        name="year"
+      >
+        @for (y of years; track y) {
+          <option [value]="y">{{ y }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+</form>

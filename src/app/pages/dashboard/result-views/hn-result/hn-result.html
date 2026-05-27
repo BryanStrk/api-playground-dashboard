@@ -1,0 +1,38 @@
+@if (stories().length === 0) {
+  <p class="text-secondary mb-0">No hay historias que mostrar.</p>
+} @else {
+  <ul class="hn-result list-unstyled mb-0">
+    @for (s of stories(); track s.id) {
+      <li class="hn-result__row">
+        <a
+          class="hn-result__title"
+          [href]="s.url"
+          target="_blank"
+          rel="noopener"
+        >
+          {{ s.title }}
+          @if (s.host) {
+            <span class="hn-result__host">({{ s.host }})</span>
+          }
+        </a>
+        <p class="hn-result__meta mb-0">
+          @if (s.by) { <span>by &#64;{{ s.by }}</span> }
+          <span aria-hidden="true"> · </span>
+          <span>↑{{ s.score }}</span>
+          <span aria-hidden="true"> · </span>
+          <a
+            class="hn-result__comments"
+            [href]="'https://news.ycombinator.com/item?id=' + s.id"
+            target="_blank"
+            rel="noopener"
+            [attr.aria-label]="s.descendants + ' comentarios'"
+          >💬 {{ s.descendants }}</a>
+          @if (s.relativeTime) {
+            <span aria-hidden="true"> · </span>
+            <span>{{ s.relativeTime }}</span>
+          }
+        </p>
+      </li>
+    }
+  </ul>
+}

@@ -1,0 +1,32 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="qr-data">Texto o URL</label>
+      <input
+        id="qr-data"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        placeholder="https://… o cualquier texto"
+        [ngModel]="data()"
+        (ngModelChange)="data.set($event)"
+        name="data"
+      />
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="qr-size">Tamaño</label>
+      <select
+        id="qr-size"
+        class="form-select"
+        [ngModel]="size()"
+        (ngModelChange)="size.set($event)"
+        name="size"
+      >
+        @for (s of sizes; track s) {
+          <option [value]="s">{{ s }} px</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Generar</button>
+  </div>
+</form>

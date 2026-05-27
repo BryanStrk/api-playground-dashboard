@@ -126,6 +126,7 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
   news: { query: 'q=mundo&language=es' },
   photos: { query: 'query=mountains' },
   exchange: { query: 'from=EUR&to=USD,GBP,JPY' },
+  qrcode: { query: 'data=https%3A%2F%2Fgithub.com&size=300x300' },
   dictionary: { path: { word: 'hello' } },
   github: { path: { username: 'torvalds' } },
   books: { query: 'title=clean+code' },

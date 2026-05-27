@@ -1,0 +1,23 @@
+@if (view(); as v) {
+  <article class="qr-result">
+    <img
+      class="qr-result__image rounded"
+      [src]="v.qrUrl"
+      alt="Código QR generado"
+      loading="lazy"
+      (error)="onImgError($event)"
+    />
+    <p class="qr-result__data mb-0" [title]="v.data">
+      <span class="qr-result__label">Contenido:</span> {{ v.data }}
+    </p>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary align-self-center"
+      (click)="download(v)"
+    >
+      Descargar PNG
+    </button>
+  </article>
+} @else {
+  <p class="text-secondary mb-0">No hay QR que mostrar.</p>
+}

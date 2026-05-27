@@ -119,6 +119,9 @@
               @case ('BOOKS') {
                 <app-books-result [data]="r.data" />
               }
+              @case ('QR') {
+                <app-qr-result [data]="r.data" />
+              }
               @case ('TEXT') {
                 <app-text-result [api]="a" [data]="r.data" />
               }

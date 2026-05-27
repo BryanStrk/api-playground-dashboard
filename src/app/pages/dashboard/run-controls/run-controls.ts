@@ -12,6 +12,7 @@ import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { NewsControls } from './news-controls/news-controls';
 import { PhotosControls } from './photos-controls/photos-controls';
+import { QrControls } from './qr-controls/qr-controls';
 import { SpaceControls } from './space-controls/space-controls';
 import { UsersControls } from './users-controls/users-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
@@ -39,6 +40,7 @@ export type ControlsKind =
   | 'photos'
   | 'space'
   | 'meals'
+  | 'qrcode'
   | 'posts'
   | 'none';
 
@@ -62,6 +64,7 @@ const KIND_BY_ID: Record<string, ControlsKind> = {
   photos: 'photos',
   space: 'space',
   meals: 'meals',
+  qrcode: 'qrcode',
   posts: 'posts',
 };
 
@@ -85,6 +88,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
     NewsControls,
     PhotosControls,
     PokemonControls,
+    QrControls,
     SimpleSearchControls,
     SpaceControls,
     SportsControls,

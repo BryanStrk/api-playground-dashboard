@@ -10,6 +10,7 @@ import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { MealsResult } from '../result-views/meals-result/meals-result';
 import { MediaResult } from '../result-views/media-result/media-result';
 import { MoviesResult } from '../result-views/movies-result/movies-result';
+import { QrResult } from '../result-views/qr-result/qr-result';
 import { SpaceResult } from '../result-views/space-result/space-result';
 import { SportsResult } from '../result-views/sports-result/sports-result';
 import { StatResult } from '../result-views/stat-result/stat-result';
@@ -29,6 +30,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     MealsResult,
     MediaResult,
     MoviesResult,
+    QrResult,
     RunControls,
     SpaceResult,
     SportsResult,

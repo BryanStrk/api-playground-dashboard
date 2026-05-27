@@ -1,0 +1,28 @@
+@if (holidays().length === 0) {
+  <p class="text-secondary mb-0">No hay festivos para esta combinación.</p>
+} @else {
+  <ul class="holidays-result list-unstyled mb-0">
+    @for (h of holidays(); track h.id) {
+      <li class="holidays-result__row">
+        <div class="holidays-result__date">
+          <p class="holidays-result__date-full mb-0">
+            {{ h.formattedDate ?? h.date }}
+          </p>
+        </div>
+        <div class="holidays-result__info">
+          <p class="holidays-result__local mb-0">{{ h.localName }}</p>
+          @if (h.internationalName) {
+            <p class="holidays-result__intl mb-0">{{ h.internationalName }}</p>
+          }
+          @if (h.types.length > 0) {
+            <p class="holidays-result__types mb-0">
+              @for (t of h.types; track $index) {
+                <span class="badge text-bg-secondary-subtle text-secondary-emphasis me-1">{{ t }}</span>
+              }
+            </p>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+}
