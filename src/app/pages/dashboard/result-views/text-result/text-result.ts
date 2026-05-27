@@ -2,12 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { ApiInfo } from '../../../../core/models';
 
-interface AiView {
-  kind: 'ai';
-  text: string;
-  meta: string | null;
-}
-
 interface DictionaryMeaning {
   partOfSpeech: string;
   definitions: { definition: string; example: string | null }[];
@@ -30,7 +24,7 @@ interface EmptyView {
   kind: 'empty';
 }
 
-type TextView = AiView | DictionaryView | PostView | EmptyView;
+type TextView = DictionaryView | PostView | EmptyView;
 
 @Component({
   selector: 'app-text-result',
@@ -51,16 +45,6 @@ export class TextResult {
 
 function mapText(id: string, d: Record<string, unknown>): TextView {
   switch (id) {
-    case 'ai': {
-      const text = str(d['text']) ?? '';
-      const model = str(d['model']);
-      const total = num(d['totalTokens']);
-      const meta = [model, total !== null ? `${total} tokens` : null]
-        .filter(Boolean)
-        .join(' · ') || null;
-      return { kind: 'ai', text, meta };
-    }
-
     case 'dictionary': {
       const word = str(d['word']) ?? '';
       const phonetic = str(d['phonetic']);

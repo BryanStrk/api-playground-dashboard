@@ -6,6 +6,7 @@ export type ResultViewType =
   | 'TEXT'
   | 'STAT'
   | 'STANDINGS'
+  | 'CHAT'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -22,7 +23,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   movies: 'MOVIES',
   news: 'GALLERY',
   books: 'GALLERY',
-  ai: 'TEXT',
+  ai: 'CHAT',
   dictionary: 'TEXT',
   posts: 'TEXT',
   crypto: 'STAT',

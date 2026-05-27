@@ -13,6 +13,7 @@ import { DatePipe } from '@angular/common';
 
 import { ApiService, RunParams } from '../../core/api.service';
 import { ApiHealth, ApiInfo, RunResult } from '../../core/models';
+import { viewTypeFor } from './result-views/view-type';
 import {
   CategoryFilter,
   DifficultyFilter,
@@ -140,6 +141,11 @@ export class Dashboard {
   protected onRun(api: ApiInfo): void {
     this.selectedApi.set(api);
     this.openOffcanvas();
+    if (viewTypeFor(api.id) === 'CHAT') {
+      this.runResult.set(null);
+      this.running.set(false);
+      return;
+    }
     this.fetch(api);
   }
 

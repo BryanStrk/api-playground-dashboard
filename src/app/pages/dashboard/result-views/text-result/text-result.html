@@ -1,16 +1,4 @@
 @switch (view().kind) {
-  @case ('ai') {
-    @if (view(); as v) {
-      @if (v.kind === 'ai') {
-        <article class="text-result text-result--ai">
-          <p class="text-result__body mb-0">{{ v.text }}</p>
-          @if (v.meta) {
-            <p class="text-result__meta mb-0">{{ v.meta }}</p>
-          }
-        </article>
-      }
-    }
-  }
   @case ('dictionary') {
     @if (view(); as v) {
       @if (v.kind === 'dictionary') {

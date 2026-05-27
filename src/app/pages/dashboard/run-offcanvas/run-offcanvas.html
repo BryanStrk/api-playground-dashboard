@@ -26,13 +26,16 @@
   </div>
 
   <div class="offcanvas-body d-flex flex-column gap-3">
-    @if (api(); as a) {
-      @if (hasControls()) {
-        <app-run-controls [api]="a" (search)="onSearch($event)" />
+    @if (isChat()) {
+      <app-chat-result />
+    } @else {
+      @if (api(); as a) {
+        @if (hasControls()) {
+          <app-run-controls [api]="a" (search)="onSearch($event)" />
+        }
       }
-    }
 
-    @if (loading()) {
+      @if (loading()) {
       <div class="d-flex align-items-center gap-2 text-secondary" role="status">
         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
         <span>Llamando al endpoint…</span>
@@ -138,8 +141,9 @@
           <pre class="run-json mb-0" tabindex="0">{{ json }}</pre>
         </section>
       }
-    } @else {
-      <p class="text-secondary mb-0">Selecciona "Ejecutar" en una card para ver su respuesta aquí.</p>
+      } @else {
+        <p class="text-secondary mb-0">Selecciona "Ejecutar" en una card para ver su respuesta aquí.</p>
+      }
     }
   </div>
 </aside>

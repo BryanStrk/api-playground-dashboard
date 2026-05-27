@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, output, si
 import { RunParams } from '../../../core/api.service';
 import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
+import { ChatResult } from '../result-views/chat-result/chat-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { MediaResult } from '../result-views/media-result/media-result';
 import { MoviesResult } from '../result-views/movies-result/movies-result';
@@ -17,6 +18,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AudioResult,
+    ChatResult,
     GalleryResult,
     MediaResult,
     MoviesResult,
@@ -36,8 +38,12 @@ export class RunOffcanvas {
 
   protected readonly hasControls = computed(() => {
     const api = this.api();
-    return api ? controlsKindFor(api.id) !== 'none' : false;
+    if (!api) return false;
+    if (this.isChat()) return false;
+    return controlsKindFor(api.id) !== 'none';
   });
+
+  protected readonly isChat = computed(() => this.viewType() === 'CHAT');
 
   protected onSearch(params: RunParams): void {
     this.search.emit(params);
