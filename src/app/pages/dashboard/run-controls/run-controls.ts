@@ -4,6 +4,7 @@ import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
 import { CatsControls } from './cats-controls/cats-controls';
 import { MoviesControls } from './movies-controls/movies-controls';
+import { MusicControls } from './music-controls/music-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
 import { SportsControls } from './sports-controls/sports-controls';
@@ -60,6 +61,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
   imports: [
     CatsControls,
     MoviesControls,
+    MusicControls,
     PokemonControls,
     SimpleSearchControls,
     SportsControls,

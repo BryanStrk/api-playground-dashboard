@@ -1,0 +1,35 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="music-term">Término</label>
+      <input
+        id="music-term"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        placeholder="Queen, Bohemian Rhapsody, Pink Floyd…"
+        [ngModel]="term()"
+        (ngModelChange)="term.set($event)"
+        name="term"
+      />
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="music-entity">Tipo</label>
+      <select
+        id="music-entity"
+        class="form-select"
+        [ngModel]="entity()"
+        (ngModelChange)="entity.set($event)"
+        name="entity"
+      >
+        @for (e of entities; track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+  <p class="run-controls__hint mb-0">
+    Solo las canciones traen preview de 30 segundos.
+  </p>
+</form>
