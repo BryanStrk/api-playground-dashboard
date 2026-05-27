@@ -108,6 +108,9 @@
               @case ('STAT') {
                 <app-stat-result [api]="a" [data]="r.data" />
               }
+              @case ('STANDINGS') {
+                <app-standings-result [data]="r.data" />
+              }
             }
           } @else {
             <header class="d-flex justify-content-between align-items-center mb-1">

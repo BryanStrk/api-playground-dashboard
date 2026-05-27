@@ -138,20 +138,6 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
         link: linkOrNull(d['mapUrl'], 'Abrir en el mapa'),
       });
 
-    case 'sports':
-      return view({
-        imageUrl: str(d['badgeUrl']) ?? str(d['logoUrl']),
-        alt: `Escudo de ${str(d['name']) ?? 'equipo'}`,
-        caption: str(d['name']),
-        description: str(d['description']),
-        fields: [
-          field('Deporte', str(d['sport'])),
-          field('Liga', str(d['league'])),
-          field('País', str(d['country'])),
-          field('Estadio', str(d['stadium'])),
-        ],
-      });
-
     case 'characters':
       return view({
         imageUrl: str(d['image']),
