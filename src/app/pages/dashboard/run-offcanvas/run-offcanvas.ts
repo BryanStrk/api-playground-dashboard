@@ -5,6 +5,7 @@ import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { ChatResult } from '../result-views/chat-result/chat-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
+import { MealsResult } from '../result-views/meals-result/meals-result';
 import { MediaResult } from '../result-views/media-result/media-result';
 import { MoviesResult } from '../result-views/movies-result/movies-result';
 import { StandingsResult } from '../result-views/standings-result/standings-result';
@@ -20,6 +21,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     AudioResult,
     ChatResult,
     GalleryResult,
+    MealsResult,
     MediaResult,
     MoviesResult,
     RunControls,

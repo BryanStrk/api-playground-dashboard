@@ -7,6 +7,7 @@ export type ResultViewType =
   | 'STAT'
   | 'STANDINGS'
   | 'CHAT'
+  | 'MEALS'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -27,6 +28,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   dictionary: 'TEXT',
   posts: 'TEXT',
   crypto: 'STAT',
+  meals: 'MEALS',
   exchange: 'STAT',
   weather: 'STAT',
 };

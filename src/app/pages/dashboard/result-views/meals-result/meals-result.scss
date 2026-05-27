@@ -1,0 +1,84 @@
+.meals-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.meals-result__lang {
+  font-style: italic;
+}
+
+.meals-result__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 0.5rem;
+}
+
+.meals-result__thumb {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  background: var(--surface-tinted, #f3f4f6);
+}
+
+.meals-result__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meals-result__name {
+  font-weight: 700;
+}
+
+.meals-result__meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft, #475569);
+}
+
+.meals-result__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.meals-result__section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft, #475569);
+  font-weight: 600;
+  margin: 0;
+}
+
+.meals-result__ingredients {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.2rem 0.5rem;
+  font-size: 0.88rem;
+
+  li {
+    padding: 0.15rem 0;
+  }
+}
+
+.meals-result__ing-name {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.meals-result__ing-measure {
+  font-size: 0.82rem;
+}
+
+.meals-result__instructions {
+  white-space: pre-wrap;
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
