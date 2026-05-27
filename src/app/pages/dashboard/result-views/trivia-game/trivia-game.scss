@@ -255,6 +255,21 @@
   }
 }
 
+.trivia-game__record {
+  font-weight: 700;
+  color: #b45309;
+  font-size: 0.95rem;
+}
+
+[data-bs-theme='dark'] .trivia-game__record {
+  color: #fbbf24;
+}
+
+.trivia-game__record-prev {
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+}
+
 .trivia-game__actions {
   display: flex;
   gap: 0.5rem;

@@ -96,6 +96,9 @@ export class TriviaGame {
   protected readonly fiftyAvailable = signal(true);
   protected readonly hiddenAnswers = signal<Set<string>>(new Set());
 
+  protected readonly previousHigh = signal<number | null>(null);
+  protected readonly isNewRecord = signal(false);
+
   private gameStartedAt = 0;
   private elapsedMs = 0;
 
@@ -316,7 +319,40 @@ export class TriviaGame {
   private finishGame(): void {
     this.stopTimer();
     this.elapsedMs = Date.now() - this.gameStartedAt;
+    this.persistHighScore();
     this.mode.set('final');
+  }
+
+  private highScoreKey(): string {
+    const s = this.settings();
+    const cat = s.categoryId === null ? 'any' : String(s.categoryId);
+    const diff = s.difficulty || 'any';
+    return `trivia.highscore.${cat}.${diff}.${s.amount}`;
+  }
+
+  private persistHighScore(): void {
+    const key = this.highScoreKey();
+    const score = this.correctCount();
+    let previous: number | null = null;
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw !== null) {
+        const parsed = Number(raw);
+        if (Number.isFinite(parsed)) previous = parsed;
+      }
+    } catch {
+      // ignore
+    }
+    this.previousHigh.set(previous);
+    const beats = previous === null ? score > 0 : score > previous;
+    this.isNewRecord.set(beats);
+    if (beats) {
+      try {
+        localStorage.setItem(key, String(score));
+      } catch {
+        // ignore
+      }
+    }
   }
 
   private resetGameState(): void {
@@ -330,6 +366,8 @@ export class TriviaGame {
     this.feedbackMessage.set('');
     this.fiftyAvailable.set(true);
     this.hiddenAnswers.set(new Set());
+    this.previousHigh.set(null);
+    this.isNewRecord.set(false);
     this.elapsedMs = 0;
   }
 

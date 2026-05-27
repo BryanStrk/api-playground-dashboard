@@ -191,6 +191,14 @@
         <p class="trivia-game__score mb-0">{{ correctCount() }} / {{ questions().length }}</p>
         <p class="trivia-game__subtitle mb-2">aciertos en {{ categoryLabel() }} · {{ difficultyChip() }}</p>
 
+        @if (isNewRecord()) {
+          <p class="trivia-game__record mb-0" role="status">🏆 ¡NUEVO RÉCORD!</p>
+        } @else if (previousHigh() !== null) {
+          <p class="trivia-game__record-prev mb-0">
+            Récord anterior: {{ previousHigh() }} / {{ questions().length }}
+          </p>
+        }
+
         <dl class="trivia-game__breakdown">
           @if (breakdown().easy.total > 0) {
             <div>
