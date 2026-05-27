@@ -102,6 +102,9 @@
               @case ('GALLERY') {
                 <app-gallery-result [api]="a" [data]="r.data" />
               }
+              @case ('MOVIES') {
+                <app-movies-result [data]="r.data" />
+              }
               @case ('TEXT') {
                 <app-text-result [api]="a" [data]="r.data" />
               }

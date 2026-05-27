@@ -1,0 +1,115 @@
+@if (selectedId() === null) {
+  @if (movies().length === 0) {
+    <p class="text-secondary mb-0">No hay películas que mostrar.</p>
+  } @else {
+    <div class="row row-cols-2 row-cols-md-3 g-3 movies-result__grid">
+      @for (m of movies(); track m.id) {
+        <div class="col">
+          <button
+            type="button"
+            class="movies-result__card"
+            (click)="select(m.id)"
+            [attr.aria-label]="'Ver detalle de ' + m.title"
+          >
+            <img
+              class="movies-result__poster rounded"
+              [src]="m.posterUrl ?? placeholder"
+              [alt]="'Póster de ' + m.title"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <div class="movies-result__body">
+              <p class="movies-result__title mb-0">{{ m.title }}</p>
+              <p class="movies-result__meta mb-0">
+                @if (m.rating !== null) {
+                  ★ {{ m.rating.toFixed(1) }}
+                }
+                @if (m.rating !== null && m.year) { · }
+                @if (m.year) { {{ m.year }} }
+              </p>
+            </div>
+          </button>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <article class="movies-result__detail">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary align-self-start"
+      (click)="back()"
+    >
+      ← Volver
+    </button>
+
+    @if (loadingDetail()) {
+      <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span>Cargando detalle…</span>
+      </div>
+    } @else if (detailError(); as err) {
+      <div class="alert alert-danger mb-0" role="alert">{{ err }}</div>
+    } @else if (details(); as d) {
+      <div class="movies-result__head">
+        <img
+          class="movies-result__poster-lg rounded"
+          [src]="d.posterUrl ?? placeholder"
+          [alt]="'Póster de ' + d.title"
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+        <div class="movies-result__info">
+          <h3 class="movies-result__detail-title mb-1">{{ d.title }}</h3>
+          @if (d.tagline) {
+            <p class="movies-result__tagline mb-1">{{ d.tagline }}</p>
+          }
+          <p class="movies-result__detail-meta mb-2">
+            @if (d.voteAverage !== null) {
+              <span>★ {{ d.voteAverage.toFixed(1) }}</span>
+            }
+            @if (d.releaseDate) {
+              <span> · {{ d.releaseDate }}</span>
+            }
+            @if (d.runtime) {
+              <span> · {{ d.runtime }} min</span>
+            }
+          </p>
+          @if (d.genres.length > 0) {
+            <p class="movies-result__genres mb-0">
+              @for (g of d.genres; track g.id) {
+                <span class="badge text-bg-secondary-subtle text-secondary-emphasis me-1">{{ g.name }}</span>
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      @if (d.overview) {
+        <p class="movies-result__overview mb-0">{{ d.overview }}</p>
+      }
+
+      @if (trailerEmbedUrl(); as src) {
+        <section class="movies-result__trailer" aria-label="Tráiler">
+          <p class="movies-result__trailer-hint mb-1">
+            Tráiler oficial (no es la película completa).
+          </p>
+          <div class="ratio ratio-16x9">
+            <iframe
+              [src]="src"
+              [title]="'Tráiler de ' + d.title"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </section>
+      } @else {
+        <p class="movies-result__trailer-missing text-secondary mb-0">
+          No hay tráiler disponible en YouTube para esta película.
+        </p>
+      }
+    }
+  </article>
+}

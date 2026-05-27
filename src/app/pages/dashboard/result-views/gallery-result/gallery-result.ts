@@ -38,27 +38,6 @@ export class GalleryResult {
 
 function mapItems(id: string, d: Record<string, unknown>): GalleryItem[] {
   switch (id) {
-    case 'movies': {
-      const list = arr(d['movies']);
-      return list.map((m, i) => {
-        const title = str(m['title']) ?? str(m['originalTitle']) ?? 'Sin título';
-        const rating = numberValue(m['voteAverage']);
-        const year = yearFromDate(str(m['releaseDate']));
-        const meta = [
-          rating !== null ? `★ ${rating.toFixed(1)}` : null,
-          year,
-        ].filter(Boolean).join(' · ') || null;
-        return {
-          id: idFor(m['id'], i),
-          imageUrl: str(m['posterUrl']) ?? str(m['backdropUrl']),
-          alt: `Póster de ${title}`,
-          title,
-          meta,
-          href: null,
-        };
-      });
-    }
-
     case 'news': {
       const list = arr(d['articles']);
       return list.map((a, i) => {
@@ -121,12 +100,6 @@ function joinList(value: unknown): string | null {
   if (!Array.isArray(value) || value.length === 0) return null;
   const parts = value.map((v) => str(v)).filter((v): v is string => v !== null);
   return parts.length ? parts.join(', ') : null;
-}
-
-function yearFromDate(date: string | null): string | null {
-  if (!date || date.length < 4) return null;
-  const year = date.slice(0, 4);
-  return /^\d{4}$/.test(year) ? year : null;
 }
 
 function isoDate(value: string | null): string | null {

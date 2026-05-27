@@ -1,4 +1,12 @@
-export type ResultViewType = 'MEDIA' | 'AUDIO' | 'GALLERY' | 'TEXT' | 'STAT' | 'STANDINGS' | 'RAW';
+export type ResultViewType =
+  | 'MEDIA'
+  | 'AUDIO'
+  | 'GALLERY'
+  | 'MOVIES'
+  | 'TEXT'
+  | 'STAT'
+  | 'STANDINGS'
+  | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   pokemon: 'MEDIA',
@@ -11,7 +19,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   sports: 'STANDINGS',
   characters: 'MEDIA',
   music: 'AUDIO',
-  movies: 'GALLERY',
+  movies: 'MOVIES',
   news: 'GALLERY',
   books: 'GALLERY',
   ai: 'TEXT',
