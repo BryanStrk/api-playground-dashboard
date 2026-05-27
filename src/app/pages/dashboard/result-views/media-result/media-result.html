@@ -1,0 +1,58 @@
+@if (view(); as v) {
+  <article class="media-result">
+    @if (v.isVideo && v.videoHref) {
+      <a
+        class="media-result__video btn btn-outline-primary"
+        [href]="v.videoHref"
+        target="_blank"
+        rel="noopener"
+      >
+        Ver vídeo
+      </a>
+    } @else if (v.imageUrl) {
+      <img
+        class="media-result__image img-fluid rounded"
+        [src]="v.imageUrl"
+        [alt]="v.alt"
+        loading="lazy"
+        (error)="onImgError($event)"
+      />
+    } @else {
+      <img
+        class="media-result__image img-fluid rounded"
+        [src]="placeholder"
+        alt="sin imagen"
+      />
+    }
+
+    @if (v.caption) {
+      <h3 class="media-result__caption h6 mb-0">{{ v.caption }}</h3>
+    }
+
+    @if (v.fields.length > 0) {
+      <dl class="media-result__fields mb-0">
+        @for (f of v.fields; track f.label) {
+          <div>
+            <dt>{{ f.label }}</dt>
+            <dd>{{ f.value }}</dd>
+          </div>
+        }
+      </dl>
+    }
+
+    @if (v.description) {
+      <p class="media-result__description mb-0">{{ v.description }}</p>
+    }
+
+    @if (v.link) {
+      <a
+        class="media-result__link"
+        [href]="v.link.href"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ v.link.label }}
+      </a>
+    }
+  </article>
+}

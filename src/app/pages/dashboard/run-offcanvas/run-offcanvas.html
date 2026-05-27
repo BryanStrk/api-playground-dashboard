@@ -59,6 +59,9 @@
       @if (r.ok && api(); as a) {
         <section aria-label="Respuesta">
           @switch (viewType()) {
+            @case ('MEDIA') {
+              <app-media-result [api]="a" [data]="r.data" />
+            }
             @default {
               <header class="d-flex justify-content-between align-items-center mb-1">
                 <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>

@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { ApiInfo, RunResult } from '../../../core/models';
+import { MediaResult } from '../result-views/media-result/media-result';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
 
 @Component({
   selector: 'app-run-offcanvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MediaResult],
   templateUrl: './run-offcanvas.html',
   styleUrl: './run-offcanvas.scss',
 })
