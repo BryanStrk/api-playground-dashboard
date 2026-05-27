@@ -1,0 +1,22 @@
+@if (view(); as v) {
+  @if (v.stats.length === 0) {
+    <p class="text-secondary mb-0">No hay datos numéricos que mostrar.</p>
+  } @else {
+    <div class="stat-result">
+      <div class="stat-result__grid">
+        @for (s of v.stats; track s.id) {
+          <article class="stat-result__card">
+            <p class="stat-result__value mb-0">{{ s.value }}</p>
+            <p class="stat-result__label mb-0">{{ s.label }}</p>
+            @if (s.hint) {
+              <p class="stat-result__hint mb-0">{{ s.hint }}</p>
+            }
+          </article>
+        }
+      </div>
+      @if (v.caption) {
+        <p class="stat-result__caption mb-0">{{ v.caption }}</p>
+      }
+    </div>
+  }
+}
