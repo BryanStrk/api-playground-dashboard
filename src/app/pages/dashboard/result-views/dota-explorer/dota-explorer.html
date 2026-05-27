@@ -138,8 +138,63 @@
         </div>
       } @else if (matchesError(); as err) {
         <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+      } @else if (matches().length === 0) {
+        <p class="text-secondary mb-0">No hay partidas recientes que mostrar.</p>
       } @else {
-        <p class="text-secondary small mb-0">{{ matches().length }} partidas cargadas.</p>
+        <div class="dota__match-controls">
+          <label class="form-label small mb-0" for="dota-league">Filtrar liga</label>
+          <select
+            id="dota-league"
+            class="form-select form-select-sm dota__league"
+            [ngModel]="leagueFilter()"
+            (ngModelChange)="setLeague($event)"
+          >
+            <option value="">Todas las ligas</option>
+            @for (l of leagues(); track l) {
+              <option [value]="l">{{ l }}</option>
+            }
+          </select>
+        </div>
+
+        @if (filteredMatches().length === 0) {
+          <p class="text-secondary mb-0">No hay partidas de esa liga.</p>
+        } @else {
+          <ul class="dota__matches list-unstyled mb-0">
+            @for (m of filteredMatches(); track m.matchId) {
+              <li class="dota__match">
+                @if (m.leagueName) {
+                  <span class="badge text-bg-secondary-subtle text-secondary-emphasis dota__match-league">
+                    {{ m.leagueName }}
+                  </span>
+                }
+                <div class="dota__match-teams">
+                  <span
+                    class="dota__team"
+                    [class.is-winner]="m.radiantWin"
+                  >
+                    @if (m.radiantWin) { <span aria-hidden="true">🏆</span> }
+                    {{ teamLabel(m.radiantName) }}
+                    <span class="visually-hidden">{{ m.radiantWin ? '— Victoria' : '' }}</span>
+                  </span>
+                  <span class="dota__match-vs" aria-hidden="true">vs</span>
+                  <span
+                    class="dota__team dota__team--away"
+                    [class.is-winner]="!m.radiantWin"
+                  >
+                    {{ teamLabel(m.direName) }}
+                    @if (!m.radiantWin) { <span aria-hidden="true">🏆</span> }
+                    <span class="visually-hidden">{{ !m.radiantWin ? '— Victoria' : '' }}</span>
+                  </span>
+                </div>
+                <p class="dota__match-meta mb-0">
+                  <span>⏱ {{ formatDuration(m.duration) }}</span>
+                  <span aria-hidden="true"> · </span>
+                  <span>{{ relativeTime(m.startTime) }}</span>
+                </p>
+              </li>
+            }
+          </ul>
+        }
       }
     }
   }

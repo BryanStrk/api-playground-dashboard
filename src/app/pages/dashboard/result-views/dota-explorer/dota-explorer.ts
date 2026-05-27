@@ -120,6 +120,21 @@ export class DotaExplorer {
   protected readonly matches = signal<ProMatch[]>([]);
   protected readonly loadingMatches = signal(false);
   protected readonly matchesError = signal<string | null>(null);
+  protected readonly leagueFilter = signal<string>('');
+
+  protected readonly leagues = computed<string[]>(() => {
+    const set = new Set<string>();
+    for (const m of this.matches()) {
+      if (m.leagueName) set.add(m.leagueName);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  });
+
+  protected readonly filteredMatches = computed<ProMatch[]>(() => {
+    const league = this.leagueFilter();
+    if (!league) return this.matches();
+    return this.matches().filter((m) => m.leagueName === league);
+  });
 
   constructor() {
     this.loadHeroes();
@@ -228,6 +243,26 @@ export class DotaExplorer {
     return ATTACKS.find((a) => a.id === attack)?.label ?? attack;
   }
 
+  protected setLeague(value: string): void {
+    this.leagueFilter.set(value);
+  }
+
+  protected teamLabel(name: string | null): string {
+    return name && name.trim() !== '' ? name : 'TBD';
+  }
+
+  protected formatDuration(seconds: number): string {
+    if (!Number.isFinite(seconds) || seconds <= 0) return '—';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  protected relativeTime(epochSeconds: number): string {
+    if (!Number.isFinite(epochSeconds) || epochSeconds <= 0) return '';
+    return relativeFromEpoch(epochSeconds);
+  }
+
   protected onTabKeydown(event: KeyboardEvent, index: number): void {
     const total = this.tabs.length;
     if (event.key === 'ArrowRight') {
@@ -287,4 +322,17 @@ function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
   if (next.has(value)) next.delete(value);
   else next.add(value);
   return next;
+}
+
+const RTF = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+
+function relativeFromEpoch(epochSeconds: number): string {
+  const diff = Math.round(epochSeconds - Date.now() / 1000);
+  const abs = Math.abs(diff);
+  if (abs < 60) return RTF.format(diff, 'second');
+  if (abs < 3600) return RTF.format(Math.round(diff / 60), 'minute');
+  if (abs < 86400) return RTF.format(Math.round(diff / 3600), 'hour');
+  if (abs < 86400 * 30) return RTF.format(Math.round(diff / 86400), 'day');
+  if (abs < 86400 * 365) return RTF.format(Math.round(diff / (86400 * 30)), 'month');
+  return RTF.format(Math.round(diff / (86400 * 365)), 'year');
 }
