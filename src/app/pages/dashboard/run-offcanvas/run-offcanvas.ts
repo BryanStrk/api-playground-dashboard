@@ -17,6 +17,7 @@ import { SpaceResult } from '../result-views/space-result/space-result';
 import { SportsResult } from '../result-views/sports-result/sports-result';
 import { StatResult } from '../result-views/stat-result/stat-result';
 import { TextResult } from '../result-views/text-result/text-result';
+import { TriviaGame } from '../result-views/trivia-game/trivia-game';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
 import { RunControls, controlsKindFor } from '../run-controls/run-controls';
 
@@ -40,6 +41,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     SportsResult,
     StatResult,
     TextResult,
+    TriviaGame,
   ],
   templateUrl: './run-offcanvas.html',
   styleUrl: './run-offcanvas.scss',
@@ -53,11 +55,12 @@ export class RunOffcanvas {
   protected readonly hasControls = computed(() => {
     const api = this.api();
     if (!api) return false;
-    if (this.isChat()) return false;
+    if (this.isChat() || this.isTrivia()) return false;
     return controlsKindFor(api.id) !== 'none';
   });
 
   protected readonly isChat = computed(() => this.viewType() === 'CHAT');
+  protected readonly isTrivia = computed(() => this.viewType() === 'TRIVIA');
 
   protected onSearch(params: RunParams): void {
     this.search.emit(params);

@@ -1,0 +1,220 @@
+<section class="trivia-game" aria-label="Mini-juego de trivia">
+  @switch (mode()) {
+    @case ('setup') {
+      <form class="trivia-game__setup" (ngSubmit)="start()">
+        <h3 class="h6 mb-0">Configura la partida</h3>
+
+        <div class="trivia-game__row">
+          <div class="trivia-game__field flex-grow-1">
+            <label class="form-label" for="trivia-cat">Categoría</label>
+            <select
+              id="trivia-cat"
+              class="form-select"
+              [ngModel]="settings().categoryId ?? ''"
+              (ngModelChange)="setCategory($event)"
+              name="categoryId"
+            >
+              <option value="">Cualquiera</option>
+              @for (c of categories(); track c.id) {
+                <option [value]="c.id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="trivia-game__field">
+            <label class="form-label" for="trivia-diff">Dificultad</label>
+            <select
+              id="trivia-diff"
+              class="form-select"
+              [ngModel]="settings().difficulty"
+              (ngModelChange)="setDifficulty($event)"
+              name="difficulty"
+            >
+              <option value="">Cualquiera</option>
+              <option value="easy">Fácil</option>
+              <option value="medium">Media</option>
+              <option value="hard">Difícil</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="trivia-game__row">
+          <div class="trivia-game__field">
+            <label class="form-label" for="trivia-type">Tipo</label>
+            <select
+              id="trivia-type"
+              class="form-select"
+              [ngModel]="settings().type"
+              (ngModelChange)="setType($event)"
+              name="type"
+            >
+              <option value="">Cualquiera</option>
+              <option value="multiple">Múltiple</option>
+              <option value="boolean">Verdadero / Falso</option>
+            </select>
+          </div>
+          <div class="trivia-game__field">
+            <label class="form-label" for="trivia-amount">Preguntas</label>
+            <select
+              id="trivia-amount"
+              class="form-select"
+              [ngModel]="settings().amount"
+              (ngModelChange)="setAmount($event)"
+              name="amount"
+            >
+              @for (a of amounts; track a) {
+                <option [value]="a">{{ a }}</option>
+              }
+            </select>
+          </div>
+          <div class="trivia-game__field">
+            <label class="form-label" for="trivia-timer">Temporizador</label>
+            <select
+              id="trivia-timer"
+              class="form-select"
+              [ngModel]="settings().timerSeconds"
+              (ngModelChange)="setTimer($event)"
+              name="timer"
+            >
+              <option [value]="0">Sin tiempo</option>
+              <option [value]="15">15 s</option>
+              <option [value]="30">30 s</option>
+              <option [value]="60">60 s</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary align-self-start">
+          Empezar partida
+        </button>
+      </form>
+    }
+
+    @case ('loading') {
+      <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span>Cargando preguntas…</span>
+      </div>
+    }
+
+    @case ('error') {
+      <div class="alert alert-warning py-2 mb-0 small" role="alert">
+        {{ loadError() }}
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary align-self-start" (click)="back()">
+        ← Cambiar ajustes
+      </button>
+    }
+
+    @case ('playing') {
+      @if (current(); as q) {
+        <header class="trivia-game__chips">
+          <span class="badge text-bg-secondary-subtle text-secondary-emphasis">{{ decode(q.category) }}</span>
+          <span class="badge text-bg-secondary-subtle text-secondary-emphasis">{{ difficultyLabel(q.difficulty) }}</span>
+          <span class="badge text-bg-secondary-subtle text-secondary-emphasis">{{ progressLabel() }}</span>
+          @if (streak() >= 3) {
+            <span class="badge trivia-game__streak" aria-label="Racha actual">🔥 {{ streak() }}</span>
+          }
+        </header>
+
+        @if (timerTotal() > 0) {
+          <div
+            class="trivia-game__timer"
+            [attr.aria-label]="'Quedan ' + timerLabel() + ' segundos'"
+          >
+            <div class="trivia-game__timer-bar" [style.width.%]="timerProgress()"></div>
+          </div>
+        }
+
+        <h3 class="trivia-game__question" id="trivia-q">{{ decode(q.question) }}</h3>
+
+        <div
+          class="trivia-game__answers"
+          role="radiogroup"
+          aria-labelledby="trivia-q"
+        >
+          @for (opt of q.shuffled; track opt; let i = $index) {
+            <button
+              #answerBtn
+              type="button"
+              class="trivia-game__answer"
+              [class.is-correct]="isCorrectOption(opt)"
+              [class.is-wrong]="isWrongPick(opt)"
+              [class.is-revealed]="revealed()"
+              role="radio"
+              [attr.aria-checked]="selectedAnswer() === opt"
+              [disabled]="revealed()"
+              [attr.tabindex]="revealed() ? -1 : (i === 0 ? 0 : -1)"
+              (keydown)="onAnswerKeydown($event, i)"
+              (click)="answer(opt)"
+            >
+              <span class="trivia-game__answer-mark" aria-hidden="true">
+                @if (isCorrectOption(opt)) { ✓ }
+                @else if (isWrongPick(opt)) { ✗ }
+              </span>
+              <span class="trivia-game__answer-text">{{ decode(opt) }}</span>
+            </button>
+          }
+        </div>
+
+        <p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ feedbackMessage() }}</p>
+
+        @if (revealed()) {
+          <div class="trivia-game__feedback" [class.is-success]="feedbackMessage() === 'Correcto'">
+            <span aria-hidden="true">
+              {{ feedbackMessage() === 'Correcto' ? '✓' : '✗' }}
+            </span>
+            <span>{{ feedbackMessage() }}</span>
+          </div>
+          <button type="button" class="btn btn-primary align-self-end" (click)="next()">
+            {{ currentIndex() + 1 >= questions().length ? 'Ver resultado' : 'Siguiente' }}
+          </button>
+        }
+      }
+    }
+
+    @case ('final') {
+      <article class="trivia-game__final">
+        <p class="trivia-game__score mb-0">{{ correctCount() }} / {{ questions().length }}</p>
+        <p class="trivia-game__subtitle mb-2">aciertos en {{ categoryLabel() }} · {{ difficultyChip() }}</p>
+
+        <dl class="trivia-game__breakdown">
+          @if (breakdown().easy.total > 0) {
+            <div>
+              <dt>Fáciles</dt>
+              <dd>{{ breakdown().easy.correct }} / {{ breakdown().easy.total }}</dd>
+            </div>
+          }
+          @if (breakdown().medium.total > 0) {
+            <div>
+              <dt>Medias</dt>
+              <dd>{{ breakdown().medium.correct }} / {{ breakdown().medium.total }}</dd>
+            </div>
+          }
+          @if (breakdown().hard.total > 0) {
+            <div>
+              <dt>Difíciles</dt>
+              <dd>{{ breakdown().hard.correct }} / {{ breakdown().hard.total }}</dd>
+            </div>
+          }
+          <div>
+            <dt>Racha máxima</dt>
+            <dd>🔥 {{ maxStreak() }}</dd>
+          </div>
+          <div>
+            <dt>Tiempo total</dt>
+            <dd>{{ totalTimeLabel() }}</dd>
+          </div>
+        </dl>
+
+        <div class="trivia-game__actions">
+          <button type="button" class="btn btn-primary" (click)="playAgain()">
+            Otra ronda
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="back()">
+            Cambiar ajustes
+          </button>
+        </div>
+      </article>
+    }
+  }
+</section>

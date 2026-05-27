@@ -148,7 +148,8 @@ export class Dashboard {
   protected onRun(api: ApiInfo): void {
     this.selectedApi.set(api);
     this.openOffcanvas();
-    if (viewTypeFor(api.id) === 'CHAT') {
+    const view = viewTypeFor(api.id);
+    if (view === 'CHAT' || view === 'TRIVIA') {
       this.runResult.set(null);
       this.running.set(false);
       return;

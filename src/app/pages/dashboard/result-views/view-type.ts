@@ -14,6 +14,7 @@ export type ResultViewType =
   | 'QR'
   | 'HOLIDAYS'
   | 'HACKERNEWS'
+  | 'TRIVIA'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -40,6 +41,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   qrcode: 'QR',
   holidays: 'HOLIDAYS',
   hn: 'HACKERNEWS',
+  trivia: 'TRIVIA',
 };
 
 export function viewTypeFor(apiId: string | null | undefined): ResultViewType {

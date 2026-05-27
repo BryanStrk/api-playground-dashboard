@@ -28,6 +28,8 @@
   <div class="offcanvas-body d-flex flex-column gap-3">
     @if (isChat()) {
       <app-chat-result />
+    } @else if (isTrivia()) {
+      <app-trivia-game />
     } @else {
       @if (api(); as a) {
         @if (hasControls()) {
