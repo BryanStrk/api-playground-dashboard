@@ -40,8 +40,8 @@
 }
 
 .a11y-fab__icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  display: block;
+  pointer-events: none;
 }
 
 .a11y-panel {

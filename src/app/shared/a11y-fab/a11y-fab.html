@@ -12,7 +12,25 @@
   (pointercancel)="onPointerCancel()"
   (keydown)="onButtonKeydown($event)"
 >
-  <span class="a11y-fab__icon" aria-hidden="true">♿</span>
+  <svg
+    class="a11y-fab__icon"
+    viewBox="0 0 24 24"
+    width="26"
+    height="26"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="12" cy="12" r="10"></circle>
+    <circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"></circle>
+    <path d="M6.5 10.5h11"></path>
+    <path d="M10 10.5l-.6 8"></path>
+    <path d="M14 10.5l.6 8"></path>
+  </svg>
 </button>
 
 @if (open()) {
