@@ -1,59 +1,93 @@
-# ApiPlaygroundDashboard
+# API Playground Dashboard
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+Dashboard en Angular 21 que muestra las 20 APIs del backend **api-playground**, comprueba su estado en vivo y deja ejecutar cada endpoint para ver su JSON.
 
-## Development server
+Está pensado para alumnos que están aprendiendo a integrar un frontend con una API real, así que prioriza claridad, accesibilidad y "qué pasa cuando algo falla".
 
-To start a local development server, run:
+## Capturas mentales
 
-```bash
-ng serve
-```
+- 20 cards alineadas en una rejilla `col-12 → col-sm-6 → col-lg-4 → col-xxl-3`.
+- Botón **Test Connection** en la navbar → spinner por card → badge verde/rojo/gris con el tiempo de respuesta.
+- Filtros por categoría, dificultad y búsqueda de texto, todos reactivos.
+- Botón **Ejecutar** en cada card → offcanvas a la derecha con HTTP status, ms y el JSON pretty-printeado.
+- Accesible: skip-link, landmarks, headings ordenados, `aria-live` con resumen tras la comprobación.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Requisitos
 
-## Code scaffolding
+- Node 20 o superior
+- npm 10 o superior
+- El backend [api-playground-backend](../api-playground-backend) corriendo en `http://localhost:8080`
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Arranque rápido
 
 ```bash
-ng generate --help
+# 1) Backend
+cd api-playground-backend
+# Copia el .env.example a .env (las APIs sin key funcionan sin tocar nada).
+mvn spring-boot:run                  # → http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
+
+# 2) Dashboard
+cd ../api-playground-dashboard
+npm install
+npm start                            # → http://localhost:4200
 ```
 
-## Building
+Abre [http://localhost:4200](http://localhost:4200) y pulsa **Test Connection**: los 20 badges se actualizan en menos de cinco segundos.
 
-To build the project run:
+## Estructura del código
 
-```bash
-ng build
+```
+src/app/
+├── app.config.ts             # provideHttpClient + provideZonelessChangeDetection
+├── app.routes.ts             # ruta única → Dashboard
+├── core/
+│   ├── models.ts             # ApiInfo, ApiHealth, HealthReport, RunResult, ApiError
+│   └── api.service.ts        # inject(HttpClient): getCatalog, getHealth, runApi
+├── shared/
+│   ├── status-badge/         # UP/DOWN/SKIPPED + variantes difficulty/key
+│   └── filter-bar/           # búsqueda + selects con model() (two-way)
+└── pages/
+    └── dashboard/
+        ├── dashboard.ts/.html
+        ├── api-card/         # input signals + output run
+        └── run-offcanvas/    # JSON pretty-printeado + status + ms
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Estado reactivo (signals)
 
-## Running unit tests
+Todo el estado del dashboard vive en signals:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```ts
+catalog       = signal<ApiInfo[]>([])
+health        = signal<Map<string, ApiHealth>>(new Map())
+checking      = signal(false)
+query         = signal('')
+category      = signal<'all' | string>('all')
+difficulty    = signal<'all' | Difficulty>('all')
+filtered      = computed(() => /* busca + filtra sobre catalog() */)
+summary       = computed(() => /* cuenta UP / DOWN / SKIPPED */)
 ```
 
-## Running end-to-end tests
+La aplicación es **zoneless**: no usa Zone.js, así que basta con escribir en un signal y el template re-renderiza solo, sin `ChangeDetectorRef` ni `setTimeout`.
 
-For end-to-end (e2e) testing, run:
+## Scripts útiles
 
-```bash
-ng e2e
-```
+| Comando         | Para qué                                                 |
+|-----------------|----------------------------------------------------------|
+| `npm start`     | Servidor de desarrollo en `http://localhost:4200`        |
+| `npm run build` | Build de producción en `dist/`                           |
+| `npm test`      | Tests unitarios con Vitest                               |
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Accesibilidad
 
-## Additional Resources
+- Skip-link al inicio para saltar al catálogo con el tabulador.
+- Estructura semántica con `<nav>`, `<main>`, `<header>`, `<article>` y heading `h1 → h2`.
+- Cada control de filtro tiene un `<label>` (visualmente oculto) y cada botón de icono lleva `aria-label`.
+- Los badges nunca comunican estado solo con color: incluyen texto (UP / DOWN / SKIPPED) y `aria-label` descriptivo.
+- Una región `aria-live="polite"` oculta anuncia el resumen tras pulsar **Test Connection**.
+- Las animaciones respetan `prefers-reduced-motion`.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Variables de entorno
+
+`src/environments/environment.ts` apunta al backend en `http://localhost:8080/api/v1`. Para producción se usa `environment.prod.ts` con una URL relativa (`/api/v1`), pensada para servir el dashboard detrás del mismo dominio que el backend.
