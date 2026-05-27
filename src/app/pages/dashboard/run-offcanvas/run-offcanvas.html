@@ -56,10 +56,16 @@
       </dl>
 
       @if (!r.ok && r.error) {
-        <div class="alert alert-danger mb-0" role="alert">
-          <strong class="d-block mb-1">{{ r.error.message }}</strong>
-          <span class="small text-secondary">{{ r.error.path }}</span>
-        </div>
+        @if (isRateLimited()) {
+          <div class="alert alert-warning py-2 mb-0 small" role="status">
+            {{ rateLimitMessage() }}
+          </div>
+        } @else {
+          <div class="alert alert-danger mb-0" role="alert">
+            <strong class="d-block mb-1">{{ r.error.message }}</strong>
+            <span class="small text-secondary">{{ r.error.path }}</span>
+          </div>
+        }
       }
 
       @if (r.ok && api(); as a) {

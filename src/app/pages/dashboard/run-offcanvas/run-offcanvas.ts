@@ -56,9 +56,21 @@ export class RunOffcanvas {
   protected readonly statusTone = computed(() => {
     const r = this.result();
     if (!r) return 'text-bg-secondary';
+    if (r.httpStatus === 429) return 'text-bg-warning';
     if (!r.ok) return 'text-bg-danger';
     if (r.httpStatus >= 200 && r.httpStatus < 300) return 'text-bg-success';
     return 'text-bg-warning';
+  });
+
+  protected readonly isRateLimited = computed(() => this.result()?.httpStatus === 429);
+
+  protected readonly rateLimitMessage = computed(() => {
+    const id = this.api()?.id;
+    if (id === 'crypto') {
+      return 'Límite de CoinGecko alcanzado, espera unos segundos antes de reintentar.';
+    }
+    const name = this.api()?.name ?? 'la API';
+    return `Límite de ${name} alcanzado, espera unos segundos antes de reintentar.`;
   });
 
   protected readonly viewType = computed<ResultViewType>(() => viewTypeFor(this.api()?.id));
