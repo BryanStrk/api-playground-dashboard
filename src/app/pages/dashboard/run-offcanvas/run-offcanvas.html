@@ -56,7 +56,19 @@
         </div>
       }
 
-      @if (prettyJson(); as json) {
+      @if (r.ok && api(); as a) {
+        <section aria-label="Respuesta">
+          @switch (viewType()) {
+            @default {
+              <header class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>
+                <span class="text-secondary small">application/json</span>
+              </header>
+              <pre class="run-json mb-0" tabindex="0">{{ prettyJson() }}</pre>
+            }
+          }
+        </section>
+      } @else if (prettyJson(); as json) {
         <section aria-label="Respuesta JSON">
           <header class="d-flex justify-content-between align-items-center mb-1">
             <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>

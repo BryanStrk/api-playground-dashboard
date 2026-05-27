@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { ApiInfo, RunResult } from '../../../core/models';
+import { ResultViewType, viewTypeFor } from '../result-views/view-type';
 
 @Component({
   selector: 'app-run-offcanvas',
@@ -30,4 +31,6 @@ export class RunOffcanvas {
     if (r.httpStatus >= 200 && r.httpStatus < 300) return 'text-bg-success';
     return 'text-bg-warning';
   });
+
+  protected readonly viewType = computed<ResultViewType>(() => viewTypeFor(this.api()?.id));
 }
