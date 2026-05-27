@@ -121,7 +121,7 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
   pokemon: { path: { name: 'pikachu' } },
   countries: { path: { name: 'spain' } },
   posts: { path: { id: '1' } },
-  meals: { query: 'name=arrabiata' },
+  meals: {},
   sports: { query: 'competition=PD' },
   news: { query: 'q=mundo&language=es' },
   photos: { query: 'query=mountains' },

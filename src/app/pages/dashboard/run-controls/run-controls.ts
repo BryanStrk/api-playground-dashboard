@@ -7,6 +7,7 @@ import { CharactersControls } from './characters-controls/characters-controls';
 import { CryptoControls } from './crypto-controls/crypto-controls';
 import { DictionaryControls } from './dictionary-controls/dictionary-controls';
 import { ExchangeControls } from './exchange-controls/exchange-controls';
+import { MealsControls } from './meals-controls/meals-controls';
 import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { NewsControls } from './news-controls/news-controls';
@@ -37,6 +38,7 @@ export type ControlsKind =
   | 'characters'
   | 'photos'
   | 'space'
+  | 'meals'
   | 'posts'
   | 'none';
 
@@ -59,6 +61,7 @@ const KIND_BY_ID: Record<string, ControlsKind> = {
   characters: 'characters',
   photos: 'photos',
   space: 'space',
+  meals: 'meals',
   posts: 'posts',
 };
 
@@ -76,6 +79,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
     CryptoControls,
     DictionaryControls,
     ExchangeControls,
+    MealsControls,
     MoviesControls,
     MusicControls,
     NewsControls,

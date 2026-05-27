@@ -1,5 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgTemplateOutlet } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
+import { environment } from '../../../../../environments/environment';
 import { IMAGE_PLACEHOLDER, swapImageOnError } from '../image-fallback';
 
 interface Ingredient {
@@ -7,7 +20,7 @@ interface Ingredient {
   measure: string | null;
 }
 
-interface MealView {
+interface Meal {
   id: string;
   name: string;
   category: string | null;
@@ -18,33 +31,111 @@ interface MealView {
   youtubeUrl: string | null;
 }
 
+interface MealSummary {
+  id: string;
+  name: string;
+  thumbUrl: string | null;
+}
+
 @Component({
   selector: 'app-meals-result',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet],
   templateUrl: './meals-result.html',
   styleUrl: './meals-result.scss',
 })
 export class MealsResult {
+  private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly data = input.required<unknown>();
 
   protected readonly placeholder = IMAGE_PLACEHOLDER.wide;
 
-  protected readonly meals = computed<MealView[]>(() => {
+  protected readonly selectedDetail = signal<Meal | null>(null);
+  protected readonly loadingDetail = signal(false);
+  protected readonly detailError = signal<string | null>(null);
+
+  protected readonly mode = computed<'meals' | 'gallery' | 'empty'>(() => {
+    const data = this.data();
+    if (Array.isArray(data) && data.length > 0 && isLightSummary(data[0])) return 'gallery';
+    if (data && typeof data === 'object' && Array.isArray((data as { meals?: unknown }).meals)) {
+      return 'meals';
+    }
+    return 'empty';
+  });
+
+  protected readonly meals = computed<Meal[]>(() => {
     const data = this.data();
     if (!data || typeof data !== 'object') return [];
     const list = (data as { meals?: unknown }).meals;
     if (!Array.isArray(list)) return [];
     return list
       .filter((m): m is Record<string, unknown> => !!m && typeof m === 'object')
-      .map((m, index) => mapMeal(m, index));
+      .map((m, i) => mapMeal(m, i));
   });
+
+  protected readonly gallery = computed<MealSummary[]>(() => {
+    const data = this.data();
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter((m): m is Record<string, unknown> => !!m && typeof m === 'object')
+      .map((m, i) => ({
+        id: idFor(m['id'], i),
+        name: str(m['name']) ?? 'Sin nombre',
+        thumbUrl: str(m['thumbUrl']),
+      }));
+  });
+
+  constructor() {
+    effect(() => {
+      this.data();
+      this.selectedDetail.set(null);
+      this.detailError.set(null);
+    });
+  }
+
+  protected select(name: string): void {
+    this.loadingDetail.set(true);
+    this.selectedDetail.set(null);
+    this.detailError.set(null);
+
+    this.http
+      .get<{ meals?: unknown }>(`${environment.apiBaseUrl}/meals/search`, {
+        params: { q: name },
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          const list = Array.isArray(res?.meals) ? res.meals : [];
+          const first = list.find(
+            (m): m is Record<string, unknown> => !!m && typeof m === 'object',
+          );
+          if (first) {
+            this.selectedDetail.set(mapMeal(first, 0));
+          } else {
+            this.detailError.set('No se encontró el detalle de esta receta.');
+          }
+          this.loadingDetail.set(false);
+        },
+        error: () => {
+          this.loadingDetail.set(false);
+          this.detailError.set('No se pudo cargar la receta.');
+        },
+      });
+  }
+
+  protected back(): void {
+    this.selectedDetail.set(null);
+    this.detailError.set(null);
+  }
 
   protected onImgError(event: Event): void {
     swapImageOnError(event, this.placeholder);
   }
 }
 
-function mapMeal(m: Record<string, unknown>, index: number): MealView {
+function mapMeal(m: Record<string, unknown>, index: number): Meal {
   return {
     id: idFor(m['id'], index),
     name: str(m['name']) ?? 'Sin nombre',
@@ -68,15 +159,13 @@ function extractIngredients(m: Record<string, unknown>): Ingredient[] {
       }))
       .filter((i) => i.name.length > 0);
   }
-  // Fallback to TheMealDB's numbered fields (strIngredient1..20, strMeasure1..20)
-  // in case the backend ever returns the raw shape unwrapped.
-  const result: Ingredient[] = [];
-  for (let n = 1; n <= 20; n++) {
-    const name = str(m[`strIngredient${n}`]);
-    if (!name) continue;
-    result.push({ name, measure: str(m[`strMeasure${n}`]) });
-  }
-  return result;
+  return [];
+}
+
+function isLightSummary(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as Record<string, unknown>;
+  return 'name' in v && 'thumbUrl' in v && !('instructions' in v);
 }
 
 function str(value: unknown): string | null {

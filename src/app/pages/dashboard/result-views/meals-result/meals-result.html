@@ -1,66 +1,121 @@
-@if (meals().length === 0) {
-  <p class="text-secondary mb-0">No hay recetas que mostrar.</p>
-} @else {
-  <div class="meals-result">
-    <p class="meals-result__lang text-secondary small mb-0">
-      Las recetas están en inglés (TheMealDB).
-    </p>
-
-    @for (m of meals(); track m.id) {
-      <article class="meals-result__card">
-        @if (m.thumbUrl) {
-          <img
-            class="meals-result__thumb rounded"
-            [src]="m.thumbUrl"
-            [alt]="'Foto de ' + m.name"
-            loading="lazy"
-            (error)="onImgError($event)"
-          />
-        }
-
-        <header class="meals-result__head">
-          <h3 class="meals-result__name h6 mb-0">{{ m.name }}</h3>
-          <p class="meals-result__meta mb-0">
-            @if (m.category) { <span>{{ m.category }}</span> }
-            @if (m.category && m.area) { <span aria-hidden="true"> · </span> }
-            @if (m.area) { <span>{{ m.area }}</span> }
-          </p>
-        </header>
-
-        @if (m.ingredients.length > 0) {
-          <section aria-label="Ingredientes" class="meals-result__section">
-            <h4 class="meals-result__section-title">Ingredientes</h4>
-            <ul class="meals-result__ingredients mb-0">
-              @for (ing of m.ingredients; track $index) {
-                <li>
-                  <span class="meals-result__ing-name">{{ ing.name }}</span>
-                  @if (ing.measure) {
-                    <span class="meals-result__ing-measure text-secondary"> — {{ ing.measure }}</span>
-                  }
-                </li>
-              }
-            </ul>
-          </section>
-        }
-
-        @if (m.instructions) {
-          <section aria-label="Instrucciones" class="meals-result__section">
-            <h4 class="meals-result__section-title">Instrucciones</h4>
-            <p class="meals-result__instructions mb-0">{{ m.instructions }}</p>
-          </section>
-        }
-
-        @if (m.youtubeUrl) {
-          <a
-            class="btn btn-sm btn-outline-primary align-self-start"
-            [href]="m.youtubeUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            Ver vídeo en YouTube
-          </a>
-        }
-      </article>
-    }
+@if (selectedDetail(); as m) {
+  <article class="meals-result__detail">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary align-self-start"
+      (click)="back()"
+    >
+      ← Volver
+    </button>
+    <ng-container *ngTemplateOutlet="recipeTpl; context: { $implicit: m }" />
+  </article>
+} @else if (loadingDetail()) {
+  <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    <span>Cargando receta…</span>
   </div>
+} @else if (detailError(); as err) {
+  <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+} @else if (mode() === 'gallery') {
+  @if (gallery().length === 0) {
+    <p class="text-secondary mb-0">No hay recetas en esta categoría.</p>
+  } @else {
+    <p class="meals-result__lang text-secondary small mb-2">
+      Pulsa una receta para ver instrucciones e ingredientes. Las recetas están en inglés
+      (tip: la área «Spanish» trae cocina española).
+    </p>
+    <div class="row row-cols-2 row-cols-md-3 g-3 meals-result__grid">
+      @for (m of gallery(); track m.id) {
+        <div class="col">
+          <button
+            type="button"
+            class="meals-result__card-btn"
+            (click)="select(m.name)"
+            [attr.aria-label]="'Ver receta de ' + m.name"
+          >
+            <img
+              class="meals-result__card-thumb rounded"
+              [src]="m.thumbUrl ?? placeholder"
+              [alt]="'Foto de ' + m.name"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <p class="meals-result__card-name mb-0">{{ m.name }}</p>
+          </button>
+        </div>
+      }
+    </div>
+  }
+} @else if (mode() === 'meals') {
+  @if (meals().length === 0) {
+    <p class="text-secondary mb-0">No se encontraron recetas con ese nombre.</p>
+  } @else {
+    <div class="meals-result">
+      <p class="meals-result__lang text-secondary small mb-0">
+        Recetas en inglés (tip: el área «Spanish» trae cocina española).
+      </p>
+      @for (m of meals(); track m.id) {
+        <ng-container *ngTemplateOutlet="recipeTpl; context: { $implicit: m }" />
+      }
+    </div>
+  }
+} @else {
+  <p class="text-secondary mb-0">No hay recetas que mostrar.</p>
 }
+
+<ng-template #recipeTpl let-m>
+  <article class="meals-result__card">
+    @if (m.thumbUrl) {
+      <img
+        class="meals-result__thumb rounded"
+        [src]="m.thumbUrl"
+        [alt]="'Foto de ' + m.name"
+        loading="lazy"
+        (error)="onImgError($event)"
+      />
+    }
+
+    <header class="meals-result__head">
+      <h3 class="meals-result__name h6 mb-0">{{ m.name }}</h3>
+      <p class="meals-result__meta mb-0">
+        @if (m.category) { <span>{{ m.category }}</span> }
+        @if (m.category && m.area) { <span aria-hidden="true"> · </span> }
+        @if (m.area) { <span>{{ m.area }}</span> }
+      </p>
+    </header>
+
+    @if (m.ingredients.length > 0) {
+      <section aria-label="Ingredientes" class="meals-result__section">
+        <h4 class="meals-result__section-title">Ingredientes</h4>
+        <ul class="meals-result__ingredients mb-0">
+          @for (ing of m.ingredients; track $index) {
+            <li>
+              <span class="meals-result__ing-name">{{ ing.name }}</span>
+              @if (ing.measure) {
+                <span class="meals-result__ing-measure text-secondary"> — {{ ing.measure }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (m.instructions) {
+      <section aria-label="Instrucciones" class="meals-result__section">
+        <h4 class="meals-result__section-title">Instrucciones</h4>
+        <p class="meals-result__instructions mb-0">{{ m.instructions }}</p>
+      </section>
+    }
+
+    @if (m.youtubeUrl) {
+      <a
+        class="btn btn-sm btn-outline-primary align-self-start"
+        [href]="m.youtubeUrl"
+        target="_blank"
+        rel="noopener"
+      >
+        Ver vídeo en YouTube
+      </a>
+    }
+  </article>
+</ng-template>

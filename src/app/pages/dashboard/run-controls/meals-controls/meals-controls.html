@@ -1,0 +1,36 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="meals-name">Nombre (inglés)</label>
+      <input
+        id="meals-name"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        placeholder="arrabiata, paella, chicken…"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+      />
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="meals-category">Categoría</label>
+      <select
+        id="meals-category"
+        class="form-select"
+        [ngModel]="category()"
+        (ngModelChange)="category.set($event)"
+        name="category"
+      >
+        <option value="">— Cualquiera —</option>
+        @for (c of categories(); track c.id) {
+          <option [value]="c.name">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+  <p class="run-controls__hint mb-0">
+    Recetas en inglés. Sin texto ni categoría, trae una receta aleatoria.
+  </p>
+</form>

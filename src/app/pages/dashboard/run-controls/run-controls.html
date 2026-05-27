@@ -63,6 +63,9 @@
   @case ('exchange') {
     <app-exchange-controls (search)="emit($event)" />
   }
+  @case ('meals') {
+    <app-meals-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"
