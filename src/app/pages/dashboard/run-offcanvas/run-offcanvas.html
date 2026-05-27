@@ -116,6 +116,9 @@
               @case ('MOVIES') {
                 <app-movies-result [data]="r.data" />
               }
+              @case ('BOOKS') {
+                <app-books-result [data]="r.data" />
+              }
               @case ('TEXT') {
                 <app-text-result [api]="a" [data]="r.data" />
               }

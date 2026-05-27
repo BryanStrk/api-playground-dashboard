@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, output, si
 import { RunParams } from '../../../core/api.service';
 import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
+import { BooksResult } from '../result-views/books-result/books-result';
 import { CharactersResult } from '../result-views/characters-result/characters-result';
 import { ChatResult } from '../result-views/chat-result/chat-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
@@ -21,6 +22,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AudioResult,
+    BooksResult,
     CharactersResult,
     ChatResult,
     GalleryResult,

@@ -1,0 +1,121 @@
+@if (selected(); as b) {
+  <article class="books-result__detail">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary align-self-start"
+      (click)="back()"
+    >
+      ← Volver
+    </button>
+
+    <div class="books-result__head">
+      <img
+        class="books-result__cover-lg rounded"
+        [src]="b.coverUrl ?? placeholder"
+        [alt]="'Portada de ' + b.title"
+        loading="lazy"
+        (error)="onImgError($event)"
+      />
+      <div class="books-result__info">
+        <h3 class="books-result__title mb-1">{{ b.title }}</h3>
+        @if (b.author) {
+          <p class="books-result__author mb-1">{{ b.author }}</p>
+        }
+        @if (b.year !== null) {
+          <p class="books-result__year mb-0">{{ b.year }}</p>
+        }
+      </div>
+    </div>
+
+    @switch (b.ebookAccess) {
+      @case ('public') {
+        @if (readerUrl(); as src) {
+          <section aria-label="Lector de Internet Archive" class="books-result__reader">
+            <div class="ratio ratio-16x9">
+              <iframe
+                [src]="src"
+                [title]="'Lector de ' + b.title"
+                allow="fullscreen"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+                loading="lazy"
+              ></iframe>
+            </div>
+            @if (archiveDetailsUrl(b.iaId); as detailsHref) {
+              <a
+                class="btn btn-sm btn-outline-primary align-self-start"
+                [href]="detailsHref"
+                target="_blank"
+                rel="noopener"
+              >
+                Abrir en Internet Archive
+              </a>
+            }
+          </section>
+        }
+      }
+      @case ('borrowable') {
+        @if (openLibraryUrl(b.workKey); as href) {
+          <a
+            class="btn btn-primary align-self-start"
+            [href]="href"
+            target="_blank"
+            rel="noopener"
+          >
+            Pedir prestado en Open Library
+          </a>
+        }
+      }
+      @default {
+        @if (openLibraryUrl(b.workKey); as href) {
+          <a
+            class="btn btn-outline-primary align-self-start"
+            [href]="href"
+            target="_blank"
+            rel="noopener"
+          >
+            Ver en Open Library
+          </a>
+        }
+      }
+    }
+
+    <p class="books-result__hint mb-0">
+      Solo los libros de dominio público se pueden leer en línea. Los demás solo
+      muestran ficha o préstamo en Open Library.
+    </p>
+  </article>
+} @else {
+  @if (books().length === 0) {
+    <p class="text-secondary mb-0">No se encontraron libros con ese título.</p>
+  } @else {
+    <div class="row row-cols-2 row-cols-md-3 g-3 books-result__grid">
+      @for (b of books(); track b.id) {
+        <div class="col">
+          <button
+            type="button"
+            class="books-result__card"
+            (click)="select(b)"
+            [attr.aria-label]="'Ver ficha de ' + b.title"
+          >
+            <img
+              class="books-result__cover rounded"
+              [src]="b.coverUrl ?? placeholder"
+              [alt]="'Portada de ' + b.title"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <div class="books-result__body">
+              <p class="books-result__card-title mb-0">{{ b.title }}</p>
+              <p class="books-result__card-meta mb-0">
+                @if (b.author) { {{ b.author }} }
+                @if (b.author && b.year !== null) { · }
+                @if (b.year !== null) { {{ b.year }} }
+              </p>
+            </div>
+          </button>
+        </div>
+      }
+    </div>
+  }
+}

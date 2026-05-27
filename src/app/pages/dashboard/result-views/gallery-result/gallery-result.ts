@@ -56,26 +56,6 @@ function mapItems(id: string, d: Record<string, unknown>): GalleryItem[] {
       });
     }
 
-    case 'books': {
-      const list = arr(d['books']);
-      return list.map((b, i) => {
-        const title = str(b['title']) ?? 'Sin título';
-        const authors = joinList(b['authors']);
-        const year = numberValue(b['firstPublishYear']);
-        const meta = [authors, year !== null ? String(year) : null]
-          .filter(Boolean)
-          .join(' · ') || null;
-        return {
-          id: idFor(b['key'], i),
-          imageUrl: str(b['coverUrl']),
-          alt: `Portada de ${title}`,
-          title,
-          meta,
-          href: null,
-        };
-      });
-    }
-
     default:
       return [];
   }
@@ -90,16 +70,6 @@ function str(value: unknown): string | null {
   if (typeof value === 'string') return value.trim() === '' ? null : value;
   if (typeof value === 'number') return String(value);
   return null;
-}
-
-function numberValue(value: unknown): number | null {
-  return typeof value === 'number' && !Number.isNaN(value) ? value : null;
-}
-
-function joinList(value: unknown): string | null {
-  if (!Array.isArray(value) || value.length === 0) return null;
-  const parts = value.map((v) => str(v)).filter((v): v is string => v !== null);
-  return parts.length ? parts.join(', ') : null;
 }
 
 function isoDate(value: string | null): string | null {
