@@ -28,6 +28,15 @@
   </div>
 </header>
 
+<app-filter-bar
+  [(query)]="query"
+  [(category)]="category"
+  [(difficulty)]="difficulty"
+  [categories]="categories()"
+  [resultCount]="filtered().length"
+  [totalCount]="catalog().length"
+/>
+
 <main class="container-fluid py-3">
   @if (loadError()) {
     <div class="alert alert-danger" role="alert">{{ loadError() }}</div>

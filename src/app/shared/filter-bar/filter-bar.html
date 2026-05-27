@@ -1,0 +1,67 @@
+<section class="filter-bar bg-white border-bottom" aria-label="Filtros del catálogo">
+  <div class="container-fluid py-2">
+    <div class="row g-2 align-items-center">
+      <div class="col-12 col-md-5">
+        <label class="visually-hidden" for="filter-search">Buscar API</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="7" cy="7" r="5"></circle>
+              <line x1="11" y1="11" x2="14" y2="14"></line>
+            </svg>
+          </span>
+          <input
+            id="filter-search"
+            type="search"
+            class="form-control"
+            placeholder="Buscar por nombre o descripción…"
+            [(ngModel)]="query"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <label class="visually-hidden" for="filter-category">Filtrar por categoría</label>
+        <select
+          id="filter-category"
+          class="form-select form-select-sm"
+          [(ngModel)]="category"
+        >
+          <option value="all">Todas las categorías</option>
+          @for (c of categories(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <label class="visually-hidden" for="filter-difficulty">Filtrar por dificultad</label>
+        <select
+          id="filter-difficulty"
+          class="form-select form-select-sm"
+          [(ngModel)]="difficulty"
+        >
+          <option value="all">Cualquier dificultad</option>
+          <option value="EASY">Fácil</option>
+          <option value="MEDIUM">Media</option>
+          <option value="HARD">Difícil</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-2 d-flex align-items-center justify-content-md-end gap-2">
+        <span class="text-secondary small" aria-live="polite">
+          {{ resultCount() }} / {{ totalCount() }}
+        </span>
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-decoration-none p-0"
+          (click)="clear()"
+          [disabled]="query() === '' && category() === 'all' && difficulty() === 'all'"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
