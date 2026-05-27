@@ -1,0 +1,48 @@
+@if (items().length === 0) {
+  <p class="text-secondary mb-0">No hay resultados que mostrar.</p>
+} @else {
+  <div class="row row-cols-2 row-cols-md-3 g-3 gallery-result">
+    @for (item of items(); track item.id) {
+      <div class="col">
+        @if (item.href) {
+          <a
+            class="gallery-result__card gallery-result__card--link"
+            [href]="item.href"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              class="gallery-result__image rounded"
+              [src]="item.imageUrl ?? placeholder"
+              [alt]="item.alt"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <div class="gallery-result__body">
+              <p class="gallery-result__title mb-0">{{ item.title }}</p>
+              @if (item.meta) {
+                <p class="gallery-result__meta mb-0">{{ item.meta }}</p>
+              }
+            </div>
+          </a>
+        } @else {
+          <article class="gallery-result__card">
+            <img
+              class="gallery-result__image rounded"
+              [src]="item.imageUrl ?? placeholder"
+              [alt]="item.alt"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <div class="gallery-result__body">
+              <p class="gallery-result__title mb-0">{{ item.title }}</p>
+              @if (item.meta) {
+                <p class="gallery-result__meta mb-0">{{ item.meta }}</p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+}
