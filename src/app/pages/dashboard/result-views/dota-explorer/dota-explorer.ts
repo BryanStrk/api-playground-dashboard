@@ -2,10 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../../../environments/environment';
@@ -33,15 +35,36 @@ export interface ProMatch {
 }
 
 type Tab = 'heroes' | 'matches';
+export type PrimaryAttr = 'agi' | 'str' | 'int' | 'all';
+export type AttackType = 'Melee' | 'Ranged';
+
+interface AttrInfo {
+  id: PrimaryAttr;
+  label: string;
+  short: string;
+}
 
 const TAB_LABELS: { id: Tab; label: string; icon: string }[] = [
   { id: 'heroes', label: 'Héroes', icon: '🦸' },
   { id: 'matches', label: 'Partidas Pro', icon: '🏆' },
 ];
 
+const ATTRS: AttrInfo[] = [
+  { id: 'agi', label: 'Agilidad', short: 'AGI' },
+  { id: 'str', label: 'Fuerza', short: 'STR' },
+  { id: 'int', label: 'Inteligencia', short: 'INT' },
+  { id: 'all', label: 'Universal', short: 'ALL' },
+];
+
+const ATTACKS: { id: AttackType; label: string }[] = [
+  { id: 'Melee', label: 'Cuerpo a cuerpo' },
+  { id: 'Ranged', label: 'A distancia' },
+];
+
 @Component({
   selector: 'app-dota-explorer',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule],
   templateUrl: './dota-explorer.html',
   styleUrl: './dota-explorer.scss',
 })
@@ -50,6 +73,8 @@ export class DotaExplorer {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly tabs = TAB_LABELS;
+  protected readonly attrs = ATTRS;
+  protected readonly attacks = ATTACKS;
   protected readonly tab = signal<Tab>('heroes');
 
   protected readonly placeholder = IMAGE_PLACEHOLDER.square;
@@ -57,6 +82,23 @@ export class DotaExplorer {
   protected readonly heroes = signal<DotaHero[]>([]);
   protected readonly loadingHeroes = signal(false);
   protected readonly heroesError = signal<string | null>(null);
+
+  protected readonly activeAttrs = signal<Set<PrimaryAttr>>(new Set());
+  protected readonly activeAttacks = signal<Set<AttackType>>(new Set());
+
+  protected readonly filteredHeroes = computed<DotaHero[]>(() => {
+    const attrs = this.activeAttrs();
+    const attacks = this.activeAttacks();
+    return this.heroes().filter((h) => {
+      if (attrs.size > 0 && !attrs.has(h.primaryAttr as PrimaryAttr)) return false;
+      if (attacks.size > 0 && !attacks.has(h.attackType as AttackType)) return false;
+      return true;
+    });
+  });
+
+  protected readonly hasFilters = computed(
+    () => this.activeAttrs().size > 0 || this.activeAttacks().size > 0,
+  );
 
   protected readonly matches = signal<ProMatch[]>([]);
   protected readonly loadingMatches = signal(false);
@@ -70,6 +112,35 @@ export class DotaExplorer {
   protected selectTab(tab: Tab): void {
     if (tab === this.tab()) return;
     this.tab.set(tab);
+  }
+
+  protected toggleAttr(attr: PrimaryAttr): void {
+    this.activeAttrs.update((set) => toggleInSet(set, attr));
+  }
+
+  protected toggleAttack(attack: AttackType): void {
+    this.activeAttacks.update((set) => toggleInSet(set, attack));
+  }
+
+  protected clearFilters(): void {
+    this.activeAttrs.set(new Set());
+    this.activeAttacks.set(new Set());
+  }
+
+  protected isAttrActive(attr: PrimaryAttr): boolean {
+    return this.activeAttrs().has(attr);
+  }
+
+  protected isAttackActive(attack: AttackType): boolean {
+    return this.activeAttacks().has(attack);
+  }
+
+  protected attrLabel(attr: string): string {
+    return ATTRS.find((a) => a.id === attr)?.label ?? attr;
+  }
+
+  protected attackLabel(attack: string): string {
+    return ATTACKS.find((a) => a.id === attack)?.label ?? attack;
   }
 
   protected onTabKeydown(event: KeyboardEvent, index: number): void {
@@ -124,4 +195,11 @@ export class DotaExplorer {
         },
       });
   }
+}
+
+function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
+  const next = new Set(set);
+  if (next.has(value)) next.delete(value);
+  else next.add(value);
+  return next;
 }

@@ -30,7 +30,79 @@
       } @else if (heroesError(); as err) {
         <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
       } @else {
-        <p class="text-secondary small mb-0">{{ heroes().length }} héroes cargados.</p>
+        <div class="dota__filters" role="group" aria-label="Filtros de héroes">
+          <div class="dota__chip-group" aria-label="Atributo principal">
+            @for (a of attrs; track a.id) {
+              <button
+                type="button"
+                class="dota__chip"
+                [class]="'dota__chip dota__chip--' + a.id"
+                [class.is-active]="isAttrActive(a.id)"
+                [attr.aria-pressed]="isAttrActive(a.id)"
+                (click)="toggleAttr(a.id)"
+              >
+                <span class="dota__chip-dot" aria-hidden="true"></span>
+                {{ a.label }}
+              </button>
+            }
+          </div>
+          <div class="dota__chip-group" aria-label="Tipo de ataque">
+            @for (a of attacks; track a.id) {
+              <button
+                type="button"
+                class="dota__chip dota__chip--attack"
+                [class.is-active]="isAttackActive(a.id)"
+                [attr.aria-pressed]="isAttackActive(a.id)"
+                (click)="toggleAttack(a.id)"
+              >
+                {{ a.label }}
+              </button>
+            }
+          </div>
+          @if (hasFilters()) {
+            <button
+              type="button"
+              class="btn btn-sm btn-link text-decoration-none p-0 dota__clear"
+              (click)="clearFilters()"
+            >
+              Limpiar filtros
+            </button>
+          }
+        </div>
+
+        <p class="dota__counter mb-0" aria-live="polite">
+          Mostrando {{ filteredHeroes().length }} de {{ heroes().length }} héroes
+        </p>
+
+        @if (filteredHeroes().length === 0) {
+          <p class="text-secondary mb-0">No se encontraron héroes con esos filtros.</p>
+        } @else {
+          <div class="dota__hero-grid">
+            @for (h of filteredHeroes(); track h.id) {
+              <article class="dota__hero-card">
+                <img
+                  class="dota__hero-img"
+                  [src]="h.imgUrl ?? placeholder"
+                  [alt]="h.localizedName"
+                  loading="lazy"
+                  (error)="onImgError($event)"
+                />
+                <div class="dota__hero-body">
+                  <p class="dota__hero-name mb-0">{{ h.localizedName }}</p>
+                  <div class="dota__hero-chips">
+                    <span
+                      class="dota__attr-badge"
+                      [class]="'dota__attr-badge dota__attr-badge--' + h.primaryAttr"
+                    >
+                      {{ attrLabel(h.primaryAttr) }}
+                    </span>
+                    <span class="dota__attack-badge">{{ attackLabel(h.attackType) }}</span>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+        }
       }
     }
     @case ('matches') {

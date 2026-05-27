@@ -8,7 +8,174 @@
   flex-wrap: wrap;
   align-self: flex-start;
 
-  .btn {
-    font-weight: 500;
+  .btn { font-weight: 500; }
+}
+
+.dota__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dota__chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.dota__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  border: 1.5px solid var(--bs-border-color);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &:hover { border-color: var(--bs-secondary-color); }
+  &:focus-visible {
+    outline: 2px solid var(--accent, #4f46e5);
+    outline-offset: 2px;
   }
+}
+
+.dota__chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.dota__chip--agi { color: #15803d; }
+.dota__chip--str { color: #b91c1c; }
+.dota__chip--int { color: #1d4ed8; }
+.dota__chip--all .dota__chip-dot {
+  background: conic-gradient(#15803d, #b91c1c, #1d4ed8, #7c3aed, #15803d);
+}
+.dota__chip--all { color: #7c3aed; }
+
+[data-bs-theme='dark'] {
+  .dota__chip--agi { color: #4ade80; }
+  .dota__chip--str { color: #f87171; }
+  .dota__chip--int { color: #60a5fa; }
+  .dota__chip--all { color: #c4b5fd; }
+}
+
+.dota__chip.is-active {
+  background: currentColor;
+
+  .dota__chip-dot { background: #fff; }
+}
+
+.dota__chip--all.is-active .dota__chip-dot {
+  background: conic-gradient(#4ade80, #f87171, #60a5fa, #c4b5fd, #4ade80);
+}
+
+.dota__chip.is-active {
+  color: #fff;
+}
+
+.dota__chip--attack {
+  color: var(--bs-body-color);
+
+  &.is-active {
+    background: var(--bs-body-color);
+    color: var(--bs-body-bg);
+  }
+}
+
+.dota__clear { align-self: flex-start; }
+
+.dota__counter {
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+}
+
+.dota__hero-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+
+  @media (min-width: 480px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (min-width: 720px) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (min-width: 980px) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+.dota__hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dota__hero-card { transition: none; }
+}
+
+.dota__hero-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--bs-tertiary-bg);
+  border-radius: 0.35rem;
+}
+
+.dota__hero-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dota__hero-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: var(--bs-body-color);
+}
+
+.dota__hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.dota__attr-badge,
+.dota__attack-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.dota__attr-badge--agi { background: rgba(34, 197, 94, 0.18); color: #166534; }
+.dota__attr-badge--str { background: rgba(248, 113, 113, 0.18); color: #991b1b; }
+.dota__attr-badge--int { background: rgba(96, 165, 250, 0.18); color: #1e40af; }
+.dota__attr-badge--all { background: rgba(167, 139, 250, 0.22); color: #5b21b6; }
+
+[data-bs-theme='dark'] {
+  .dota__attr-badge--agi { color: #bbf7d0; }
+  .dota__attr-badge--str { color: #fecaca; }
+  .dota__attr-badge--int { color: #bfdbfe; }
+  .dota__attr-badge--all { color: #ddd6fe; }
+}
+
+.dota__attack-badge {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+  border: 1px solid var(--bs-border-color);
 }
