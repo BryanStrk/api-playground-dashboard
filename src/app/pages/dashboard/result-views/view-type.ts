@@ -12,6 +12,7 @@ export type ResultViewType =
   | 'SPACE'
   | 'BOOKS'
   | 'QR'
+  | 'HOLIDAYS'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -36,6 +37,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   exchange: 'STAT',
   weather: 'STAT',
   qrcode: 'QR',
+  holidays: 'HOLIDAYS',
 };
 
 export function viewTypeFor(apiId: string | null | undefined): ResultViewType {

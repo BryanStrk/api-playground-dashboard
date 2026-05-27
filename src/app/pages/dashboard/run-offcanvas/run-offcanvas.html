@@ -122,6 +122,9 @@
               @case ('QR') {
                 <app-qr-result [data]="r.data" />
               }
+              @case ('HOLIDAYS') {
+                <app-holidays-result [data]="r.data" />
+              }
               @case ('TEXT') {
                 <app-text-result [api]="a" [data]="r.data" />
               }

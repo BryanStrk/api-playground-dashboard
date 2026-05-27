@@ -69,6 +69,9 @@
   @case ('qrcode') {
     <app-qr-controls (search)="emit($event)" />
   }
+  @case ('holidays') {
+    <app-holidays-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"

@@ -7,6 +7,7 @@ import { BooksResult } from '../result-views/books-result/books-result';
 import { CharactersResult } from '../result-views/characters-result/characters-result';
 import { ChatResult } from '../result-views/chat-result/chat-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
+import { HolidaysResult } from '../result-views/holidays-result/holidays-result';
 import { MealsResult } from '../result-views/meals-result/meals-result';
 import { MediaResult } from '../result-views/media-result/media-result';
 import { MoviesResult } from '../result-views/movies-result/movies-result';
@@ -27,6 +28,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     CharactersResult,
     ChatResult,
     GalleryResult,
+    HolidaysResult,
     MealsResult,
     MediaResult,
     MoviesResult,
