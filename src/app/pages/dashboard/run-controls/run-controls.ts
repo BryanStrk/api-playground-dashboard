@@ -10,6 +10,7 @@ import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { NewsControls } from './news-controls/news-controls';
 import { PhotosControls } from './photos-controls/photos-controls';
+import { SpaceControls } from './space-controls/space-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
 import { SportsControls } from './sports-controls/sports-controls';
@@ -78,6 +79,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
     PhotosControls,
     PokemonControls,
     SimpleSearchControls,
+    SpaceControls,
     SportsControls,
     WeatherControls,
   ],

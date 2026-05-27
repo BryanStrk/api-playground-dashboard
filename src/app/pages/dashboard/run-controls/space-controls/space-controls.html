@@ -1,0 +1,24 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="space-date">Fecha</label>
+      <input
+        id="space-date"
+        type="date"
+        class="form-control"
+        [max]="maxDate"
+        [ngModel]="date()"
+        (ngModelChange)="date.set($event)"
+        name="date"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary run-controls__submit"
+      (click)="random()"
+    >
+      Aleatoria
+    </button>
+  </div>
+</form>
