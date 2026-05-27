@@ -1,1 +1,67 @@
-/* You can add global styles to this file, and also import other style files */
+/* Clean Tech theme — sober base + indigo accent. */
+
+:root {
+  --accent: #4f46e5;          /* indigo-600 */
+  --accent-strong: #4338ca;   /* indigo-700 */
+  --accent-soft: #eef2ff;     /* indigo-50  */
+  --ink: #0f172a;             /* slate-900 */
+  --ink-soft: #475569;        /* slate-600 */
+  --line: #e2e8f0;            /* slate-200 */
+  --surface: #ffffff;
+  --surface-tinted: #f8fafc;  /* slate-50  */
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --status-up: #16a34a;       /* green-600 */
+  --status-up-bg: #dcfce7;
+  --status-down: #dc2626;     /* red-600 */
+  --status-down-bg: #fee2e2;
+  --status-skip: #64748b;     /* slate-500 */
+  --status-skip-bg: #f1f5f9;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--surface-tinted);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--mono);
+}
+
+/* Bootstrap primary -> indigo accent so default buttons/links match the brand. */
+.btn-primary {
+  --bs-btn-bg: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-bg: var(--accent-strong);
+  --bs-btn-hover-border-color: var(--accent-strong);
+  --bs-btn-active-bg: var(--accent-strong);
+  --bs-btn-active-border-color: var(--accent-strong);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-bg: var(--accent);
+  --bs-btn-hover-border-color: var(--accent);
+  --bs-btn-active-bg: var(--accent-strong);
+}
+
+a {
+  color: var(--accent);
+}
+a:hover {
+  color: var(--accent-strong);
+}
+
+/* Keyboard focus ring visible everywhere. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
