@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
 
 import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
@@ -39,4 +39,18 @@ export class RunOffcanvas {
   });
 
   protected readonly viewType = computed<ResultViewType>(() => viewTypeFor(this.api()?.id));
+
+  protected readonly tab = signal<'view' | 'json'>('view');
+  protected readonly hasRichView = computed(() => this.viewType() !== 'RAW');
+
+  constructor() {
+    effect(() => {
+      this.api();
+      this.tab.set('view');
+    });
+  }
+
+  protected selectTab(tab: 'view' | 'json'): void {
+    this.tab.set(tab);
+  }
 }

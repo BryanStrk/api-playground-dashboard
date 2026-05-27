@@ -58,29 +58,57 @@
 
       @if (r.ok && api(); as a) {
         <section aria-label="Respuesta">
-          @switch (viewType()) {
-            @case ('MEDIA') {
-              <app-media-result [api]="a" [data]="r.data" />
+          @if (hasRichView()) {
+            <div
+              class="btn-group btn-group-sm run-tabs mb-2"
+              role="group"
+              aria-label="Cambiar entre vista renderizada y JSON crudo"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                [class.active]="tab() === 'view'"
+                [attr.aria-pressed]="tab() === 'view'"
+                (click)="selectTab('view')"
+              >
+                Vista
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                [class.active]="tab() === 'json'"
+                [attr.aria-pressed]="tab() === 'json'"
+                (click)="selectTab('json')"
+              >
+                JSON
+              </button>
+            </div>
+          }
+
+          @if (hasRichView() && tab() === 'view') {
+            @switch (viewType()) {
+              @case ('MEDIA') {
+                <app-media-result [api]="a" [data]="r.data" />
+              }
+              @case ('AUDIO') {
+                <app-audio-result [data]="r.data" />
+              }
+              @case ('GALLERY') {
+                <app-gallery-result [api]="a" [data]="r.data" />
+              }
+              @case ('TEXT') {
+                <app-text-result [api]="a" [data]="r.data" />
+              }
+              @case ('STAT') {
+                <app-stat-result [api]="a" [data]="r.data" />
+              }
             }
-            @case ('AUDIO') {
-              <app-audio-result [data]="r.data" />
-            }
-            @case ('GALLERY') {
-              <app-gallery-result [api]="a" [data]="r.data" />
-            }
-            @case ('TEXT') {
-              <app-text-result [api]="a" [data]="r.data" />
-            }
-            @case ('STAT') {
-              <app-stat-result [api]="a" [data]="r.data" />
-            }
-            @default {
-              <header class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>
-                <span class="text-secondary small">application/json</span>
-              </header>
-              <pre class="run-json mb-0" tabindex="0">{{ prettyJson() }}</pre>
-            }
+          } @else {
+            <header class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>
+              <span class="text-secondary small">application/json</span>
+            </header>
+            <pre class="run-json mb-0" tabindex="0">{{ prettyJson() }}</pre>
           }
         </section>
       } @else if (prettyJson(); as json) {
