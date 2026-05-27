@@ -33,6 +33,17 @@
 
 .run-controls__submit {
   align-self: flex-end;
+  min-width: 96px;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .run-controls__row > .run-controls__field {
+    flex: 1 1 100%;
+  }
+  .run-controls__submit {
+    width: 100%;
+  }
 }
 
 .run-controls__hint {
