@@ -58,7 +58,7 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
 
     case 'cats':
       return view({
-        imageUrl: str(d['url']),
+        imageUrl: str(d['imageUrl']) ?? str(d['url']),
         alt: 'Gato aleatorio',
         fields: [field('Dimensiones', dimensions(d['width'], d['height']))],
       });
@@ -140,7 +140,7 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
 
     case 'characters':
       return view({
-        imageUrl: str(d['image']),
+        imageUrl: str(d['imageUrl']) ?? str(d['image']),
         alt: `Imagen de ${str(d['name']) ?? 'personaje'}`,
         caption: str(d['name']),
         fields: [
