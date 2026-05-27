@@ -98,6 +98,7 @@ export class TriviaGame {
 
   protected readonly previousHigh = signal<number | null>(null);
   protected readonly isNewRecord = signal(false);
+  protected readonly shareStatus = signal<'idle' | 'copied' | 'failed'>('idle');
 
   private gameStartedAt = 0;
   private elapsedMs = 0;
@@ -272,6 +273,50 @@ export class TriviaGame {
     this.start();
   }
 
+  protected shareResult(): void {
+    const text = this.buildShareText();
+    const finalize = (ok: boolean) => {
+      this.shareStatus.set(ok ? 'copied' : 'failed');
+      setTimeout(() => this.shareStatus.set('idle'), 2500);
+    };
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => finalize(true))
+        .catch(() => finalize(this.fallbackCopy(text)));
+    } else {
+      finalize(this.fallbackCopy(text));
+    }
+  }
+
+  private buildShareText(): string {
+    const total = this.questions().length;
+    const parts = [
+      `🎯 He sacado ${this.correctCount()}/${total} en Trivia`,
+      `(${this.categoryLabel()} · ${this.difficultyChip()})`,
+      `— Racha máx: ${this.maxStreak()} 🔥`,
+    ];
+    return parts.join(' ');
+  }
+
+  private fallbackCopy(text: string): boolean {
+    if (typeof document === 'undefined') return false;
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+
   protected isCorrectOption(option: string): boolean {
     const q = this.current();
     return !!q && q.correctAnswer === option && this.revealed();
@@ -368,6 +413,7 @@ export class TriviaGame {
     this.hiddenAnswers.set(new Set());
     this.previousHigh.set(null);
     this.isNewRecord.set(false);
+    this.shareStatus.set('idle');
     this.elapsedMs = 0;
   }
 

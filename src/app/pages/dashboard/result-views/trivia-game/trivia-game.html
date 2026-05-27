@@ -235,6 +235,13 @@
           <button type="button" class="btn btn-outline-secondary" (click)="back()">
             Cambiar ajustes
           </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="shareResult()">
+            @switch (shareStatus()) {
+              @case ('copied') { ✓ Copiado }
+              @case ('failed') { No se pudo copiar }
+              @default { Compartir resultado }
+            }
+          </button>
         </div>
       </article>
     }
