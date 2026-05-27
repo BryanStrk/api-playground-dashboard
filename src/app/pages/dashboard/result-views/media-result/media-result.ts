@@ -75,23 +75,6 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
         ],
       });
 
-    case 'space': {
-      const isVideo = str(d['mediaType']) === 'video';
-      const url = str(d['hdUrl']) ?? str(d['url']);
-      return view({
-        imageUrl: isVideo ? null : url,
-        alt: str(d['title']) ?? 'Imagen astronómica del día',
-        isVideo,
-        videoHref: isVideo ? url : null,
-        caption: str(d['title']),
-        description: str(d['explanation']),
-        fields: [
-          field('Fecha', str(d['date'])),
-          field('Copyright', str(d['copyright'])),
-        ],
-      });
-    }
-
     case 'users':
       return view({
         imageUrl: str(d['pictureUrl']),

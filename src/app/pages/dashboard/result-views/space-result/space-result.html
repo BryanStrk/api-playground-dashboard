@@ -1,0 +1,105 @@
+@if (selected(); as img) {
+  <article class="space-result__detail">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary align-self-start"
+      (click)="back()"
+    >
+      ← Volver
+    </button>
+    <img
+      class="space-result__image rounded"
+      [src]="img.thumbUrl ?? placeholder"
+      [alt]="img.title"
+      loading="lazy"
+      (error)="onImgError($event)"
+    />
+    <h3 class="space-result__title h6 mb-0">{{ img.title }}</h3>
+    @if (img.description) {
+      <p class="space-result__description mb-0">{{ img.description }}</p>
+    }
+  </article>
+} @else if (mode() === 'apod') {
+  @if (apod(); as a) {
+    <article class="space-result__apod">
+      @if (a.isVideo && videoEmbedUrl(); as src) {
+        <div class="ratio ratio-16x9">
+          <iframe
+            [src]="src"
+            [title]="'Vídeo: ' + a.title"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            loading="lazy"
+          ></iframe>
+        </div>
+      } @else if (a.imageUrl) {
+        <img
+          class="space-result__image rounded"
+          [src]="a.imageUrl"
+          [alt]="a.title"
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+      } @else {
+        <img
+          class="space-result__image rounded"
+          [src]="placeholder"
+          alt="sin imagen"
+        />
+      }
+
+      <header class="space-result__head">
+        <h3 class="space-result__title h6 mb-0">{{ a.title }}</h3>
+        <p class="space-result__meta mb-0">
+          @if (a.date) { <span>{{ a.date }}</span> }
+          @if (a.date && a.copyright) { <span aria-hidden="true"> · </span> }
+          @if (a.copyright) { <span>© {{ a.copyright }}</span> }
+        </p>
+      </header>
+
+      @if (a.hdUrl) {
+        <a
+          class="btn btn-sm btn-outline-primary align-self-start"
+          [href]="a.hdUrl"
+          target="_blank"
+          rel="noopener"
+        >
+          Ver en HD
+        </a>
+      }
+
+      @if (a.explanation) {
+        <p class="space-result__description mb-0">{{ a.explanation }}</p>
+      }
+    </article>
+  }
+} @else if (mode() === 'gallery') {
+  @if (gallery().length === 0) {
+    <p class="text-secondary mb-0">No se encontraron imágenes para ese término.</p>
+  } @else {
+    <div class="row row-cols-2 row-cols-md-3 g-3 space-result__grid">
+      @for (img of gallery(); track img.nasaId) {
+        <div class="col">
+          <button
+            type="button"
+            class="space-result__card"
+            (click)="select(img)"
+            [attr.aria-label]="'Ver detalle de ' + img.title"
+          >
+            <img
+              class="space-result__thumb rounded"
+              [src]="img.thumbUrl ?? placeholder"
+              [alt]="img.title"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <p class="space-result__card-title mb-0">{{ img.title }}</p>
+          </button>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <p class="text-secondary mb-0">No hay datos que mostrar.</p>
+}

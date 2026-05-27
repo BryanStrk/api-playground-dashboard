@@ -9,13 +9,14 @@ export type ResultViewType =
   | 'CHAT'
   | 'MEALS'
   | 'CHARACTERS'
+  | 'SPACE'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   pokemon: 'MEDIA',
   cats: 'MEDIA',
   photos: 'MEDIA',
-  space: 'MEDIA',
+  space: 'SPACE',
   users: 'MEDIA',
   github: 'MEDIA',
   countries: 'MEDIA',

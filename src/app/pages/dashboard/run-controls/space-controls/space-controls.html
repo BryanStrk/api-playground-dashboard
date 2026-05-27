@@ -1,24 +1,70 @@
-<form class="run-controls" (ngSubmit)="submit()">
-  <div class="run-controls__row">
-    <div class="run-controls__field flex-grow-1">
-      <label class="form-label" for="space-date">Fecha</label>
-      <input
-        id="space-date"
-        type="date"
-        class="form-control"
-        [max]="maxDate"
-        [ngModel]="date()"
-        (ngModelChange)="date.set($event)"
-        name="date"
-      />
-    </div>
-    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
-    <button
-      type="button"
-      class="btn btn-outline-secondary run-controls__submit"
-      (click)="random()"
-    >
-      Aleatoria
-    </button>
+<div class="run-controls">
+  <div
+    class="btn-group btn-group-sm space-controls__tabs"
+    role="tablist"
+    aria-label="Modo de NASA"
+  >
+    @for (t of tabs; track t.id) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        role="tab"
+        [class.active]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        (click)="selectTab(t.id)"
+      >
+        {{ t.label }}
+      </button>
+    }
   </div>
-</form>
+
+  @if (tab() === 'apod') {
+    <form class="space-controls__form" (ngSubmit)="submitApod()">
+      <div class="run-controls__row">
+        <div class="run-controls__field flex-grow-1">
+          <label class="form-label" for="space-date">Fecha</label>
+          <input
+            id="space-date"
+            type="date"
+            class="form-control"
+            [max]="maxDate"
+            [ngModel]="date()"
+            (ngModelChange)="date.set($event)"
+            name="date"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary run-controls__submit"
+          (click)="random()"
+        >
+          Aleatoria
+        </button>
+      </div>
+    </form>
+  } @else {
+    <form class="space-controls__form" (ngSubmit)="submitSearch()">
+      <div class="run-controls__row">
+        <div class="run-controls__field flex-grow-1">
+          <label class="form-label" for="space-query">Término</label>
+          <input
+            id="space-query"
+            type="text"
+            class="form-control"
+            autocomplete="off"
+            placeholder="mars, saturn, apollo…"
+            [ngModel]="query()"
+            (ngModelChange)="query.set($event)"
+            name="query"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+      </div>
+      <p class="run-controls__hint mb-0">
+        Busca en la NASA Image and Video Library. No usa la API key, así que sigue
+        funcionando aunque la cuota de la imagen del día se agote.
+      </p>
+    </form>
+  }
+</div>
