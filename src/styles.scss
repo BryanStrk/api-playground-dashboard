@@ -84,3 +84,44 @@ a:hover {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Accessibility FAB overrides — toggled on <body> from a11y-fab. */
+.a11y-high-contrast {
+  --bs-border-color: var(--bs-body-color);
+
+  .card,
+  .alert,
+  .form-control,
+  .form-select,
+  .btn,
+  .table,
+  .table > :not(caption) > * > * {
+    border-width: 2px !important;
+    border-color: var(--bs-body-color) !important;
+  }
+
+  .text-secondary,
+  .text-secondary-emphasis,
+  .form-text {
+    color: var(--bs-body-color) !important;
+  }
+}
+
+.a11y-underline-links a:not(.btn):not(.nav-link):not(.dropdown-item) {
+  text-decoration: underline !important;
+}
+
+.a11y-wide-spacing {
+  line-height: 1.8 !important;
+  letter-spacing: 0.03em !important;
+}
+
+.a11y-wide-spacing p,
+.a11y-wide-spacing li,
+.a11y-wide-spacing dd,
+.a11y-wide-spacing dt,
+.a11y-wide-spacing td,
+.a11y-wide-spacing th {
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+}

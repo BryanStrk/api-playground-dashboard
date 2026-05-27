@@ -1,0 +1,105 @@
+<button
+  #fab
+  type="button"
+  class="a11y-fab"
+  [style]="fabStyle()"
+  aria-label="Opciones de accesibilidad"
+  [attr.aria-expanded]="open()"
+  aria-haspopup="dialog"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp($event)"
+  (pointercancel)="onPointerCancel()"
+  (keydown)="onButtonKeydown($event)"
+>
+  <span class="a11y-fab__icon" aria-hidden="true">♿</span>
+</button>
+
+@if (open()) {
+  <div
+    #panel
+    class="a11y-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-label="Opciones de accesibilidad"
+    [style]="fabStyle()"
+    (keydown)="onPanelKeydown($event)"
+  >
+    <header class="a11y-panel__header">
+      <h2 class="a11y-panel__title h6 mb-0">Accesibilidad</h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar opciones de accesibilidad"
+        (click)="close()"
+      ></button>
+    </header>
+
+    <section class="a11y-panel__section" aria-label="Tamaño de texto">
+      <p class="a11y-panel__label mb-1">Tamaño de texto</p>
+      <div class="btn-group btn-group-sm w-100" role="group" aria-label="Ajustar tamaño de texto">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          [disabled]="fontSize() === 14"
+          aria-label="Reducir tamaño de texto"
+          (click)="stepFont(-1)"
+        >A−</button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="resetFont()"
+        >Reset</button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          [disabled]="fontSize() === 20"
+          aria-label="Aumentar tamaño de texto"
+          (click)="stepFont(1)"
+        >A+</button>
+      </div>
+      <p class="a11y-panel__hint mb-0">Actual: {{ fontSize() }}px</p>
+    </section>
+
+    <section class="a11y-panel__section">
+      <button
+        type="button"
+        class="a11y-panel__toggle"
+        role="switch"
+        [attr.aria-checked]="highContrast()"
+        (click)="toggleHighContrast()"
+      >
+        <span>Alto contraste</span>
+        <span class="a11y-panel__switch" [class.is-on]="highContrast()" aria-hidden="true"></span>
+      </button>
+      <button
+        type="button"
+        class="a11y-panel__toggle"
+        role="switch"
+        [attr.aria-checked]="underlineLinks()"
+        (click)="toggleUnderlineLinks()"
+      >
+        <span>Subrayar enlaces</span>
+        <span class="a11y-panel__switch" [class.is-on]="underlineLinks()" aria-hidden="true"></span>
+      </button>
+      <button
+        type="button"
+        class="a11y-panel__toggle"
+        role="switch"
+        [attr.aria-checked]="wideSpacing()"
+        (click)="toggleWideSpacing()"
+      >
+        <span>Espaciado amplio</span>
+        <span class="a11y-panel__switch" [class.is-on]="wideSpacing()" aria-hidden="true"></span>
+      </button>
+    </section>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="resetAll()"
+    >
+      Restablecer
+    </button>
+  </div>
+}
