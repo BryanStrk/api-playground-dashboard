@@ -53,6 +53,9 @@
   @case ('crypto') {
     <app-crypto-controls (search)="emit($event)" />
   }
+  @case ('news') {
+    <app-news-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"
