@@ -48,6 +48,9 @@
   @case ('news') {
     <app-news-controls (search)="emit($event)" />
   }
+  @case ('characters') {
+    <app-characters-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"

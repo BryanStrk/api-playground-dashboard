@@ -1,0 +1,90 @@
+@if (current(); as c) {
+  <article class="characters-result__detail">
+    @if (mode() === 'gallery') {
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary align-self-start"
+        (click)="back()"
+      >
+        ← Volver
+      </button>
+    }
+
+    @if (loadingDetail()) {
+      <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span>Cargando ficha…</span>
+      </div>
+    } @else if (detailError(); as err) {
+      <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+    } @else {
+      <div class="characters-result__head">
+        <img
+          class="characters-result__poster rounded"
+          [src]="c.imageUrl ?? placeholder"
+          [alt]="'Imagen de ' + c.name"
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+        <div class="characters-result__info">
+          <h3 class="characters-result__name mb-1">{{ c.name }}</h3>
+          <dl class="characters-result__fields mb-0">
+            @if (c.status) {
+              <div><dt>Estado</dt><dd>{{ c.status }}</dd></div>
+            }
+            @if (c.species) {
+              <div><dt>Especie</dt><dd>{{ c.species }}</dd></div>
+            }
+            @if (c.gender) {
+              <div><dt>Género</dt><dd>{{ c.gender }}</dd></div>
+            }
+            @if (c.origin) {
+              <div><dt>Origen</dt><dd>{{ c.origin }}</dd></div>
+            }
+            @if (c.location) {
+              <div><dt>Ubicación</dt><dd>{{ c.location }}</dd></div>
+            }
+            @if (c.episodeCount !== null) {
+              <div><dt>Episodios</dt><dd>{{ c.episodeCount }}</dd></div>
+            }
+          </dl>
+        </div>
+      </div>
+    }
+  </article>
+} @else if (mode() === 'gallery') {
+  @if (gallery().length === 0) {
+    <p class="text-secondary mb-0">No se encontraron personajes con ese nombre.</p>
+  } @else {
+    <div class="row row-cols-2 row-cols-md-3 g-3 characters-result__grid">
+      @for (c of gallery(); track c.id) {
+        <div class="col">
+          <button
+            type="button"
+            class="characters-result__card"
+            (click)="select(c.id)"
+            [attr.aria-label]="'Ver ficha de ' + c.name"
+          >
+            <img
+              class="characters-result__poster rounded"
+              [src]="c.imageUrl ?? placeholder"
+              [alt]="'Imagen de ' + c.name"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <div class="characters-result__card-body">
+              <p class="characters-result__card-name mb-0">{{ c.name }}</p>
+              <p class="characters-result__card-meta mb-0">
+                @if (c.status) { {{ c.status }} }
+                @if (c.status && c.species) { · }
+                @if (c.species) { {{ c.species }} }
+              </p>
+            </div>
+          </button>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <p class="text-secondary mb-0">No hay personajes que mostrar.</p>
+}

@@ -8,6 +8,7 @@ export type ResultViewType =
   | 'STANDINGS'
   | 'CHAT'
   | 'MEALS'
+  | 'CHARACTERS'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -19,7 +20,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   github: 'MEDIA',
   countries: 'MEDIA',
   sports: 'STANDINGS',
-  characters: 'MEDIA',
+  characters: 'CHARACTERS',
   music: 'AUDIO',
   movies: 'MOVIES',
   news: 'GALLERY',

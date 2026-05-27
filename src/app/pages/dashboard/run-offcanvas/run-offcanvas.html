@@ -128,6 +128,9 @@
               @case ('MEALS') {
                 <app-meals-result [data]="r.data" />
               }
+              @case ('CHARACTERS') {
+                <app-characters-result [data]="r.data" />
+              }
             }
           } @else {
             <header class="d-flex justify-content-between align-items-center mb-1">

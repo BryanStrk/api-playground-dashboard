@@ -138,21 +138,6 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
         link: linkOrNull(d['mapUrl'], 'Abrir en el mapa'),
       });
 
-    case 'characters':
-      return view({
-        imageUrl: str(d['imageUrl']) ?? str(d['image']),
-        alt: `Imagen de ${str(d['name']) ?? 'personaje'}`,
-        caption: str(d['name']),
-        fields: [
-          field('Estado', str(d['status'])),
-          field('Especie', str(d['species'])),
-          field('Género', str(d['gender'])),
-          field('Origen', str(d['origin'])),
-          field('Ubicación', str(d['location'])),
-          field('Episodios', numberStr(d['episodeCount'])),
-        ],
-      });
-
     default:
       return view({ alt: '' });
   }
