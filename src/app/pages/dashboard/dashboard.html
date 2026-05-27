@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand sticky-top bg-white border-bottom shadow-sm">
+  <div class="container-fluid gap-2">
+    <a class="navbar-brand fw-semibold mb-0 d-flex align-items-center gap-2" href="#">
+      <span class="brand-mark" aria-hidden="true">API</span>
+      <span>Playground Dashboard</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-secondary small d-none d-md-inline" aria-live="polite">
+        {{ summary().up }} / {{ summary().total }} operativas
+      </span>
+    </div>
+  </div>
+</nav>
+
+<header class="summary-strip border-bottom bg-white">
+  <div class="container-fluid d-flex flex-wrap align-items-center gap-2 py-2">
+    <span class="text-uppercase text-secondary fw-semibold small me-2">Estado</span>
+    <span class="badge text-bg-success-subtle text-success-emphasis border border-success-subtle">
+      UP · {{ summary().up }}
+    </span>
+    <span class="badge text-bg-danger-subtle text-danger-emphasis border border-danger-subtle">
+      DOWN · {{ summary().down }}
+    </span>
+    <span class="badge text-bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
+      SKIPPED · {{ summary().skipped }}
+    </span>
+    <span class="ms-auto text-secondary small">{{ summary().total }} APIs en catálogo</span>
+  </div>
+</header>
+
+<main class="container-fluid py-3">
+  @if (loadError()) {
+    <div class="alert alert-danger" role="alert">{{ loadError() }}</div>
+  }
+
+  <div class="row g-3">
+    @for (api of filtered(); track api.id) {
+      <div class="col-12 col-sm-6 col-lg-4 col-xxl-3 d-flex">
+        <app-api-card
+          [api]="api"
+          [health]="health().get(api.id) ?? null"
+          [loading]="checking()"
+          (run)="onRun($event)"
+        />
+      </div>
+    } @empty {
+      @if (!loadError()) {
+        <div class="col-12 text-center text-secondary py-5">
+          <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+          Cargando catálogo…
+        </div>
+      }
+    }
+  </div>
+</main>

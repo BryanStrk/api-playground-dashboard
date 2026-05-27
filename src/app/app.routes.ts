@@ -1,3 +1,8 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { Dashboard } from './pages/dashboard/dashboard';
+
+export const routes: Routes = [
+  { path: '', component: Dashboard, title: 'API Playground Dashboard' },
+  { path: '**', redirectTo: '' },
+];

@@ -1,0 +1,29 @@
+.navbar {
+  z-index: 1030;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+}
+
+.summary-strip {
+  position: sticky;
+  top: 56px;
+  z-index: 1020;
+  background-color: var(--surface);
+}
+
+.summary-strip .badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
