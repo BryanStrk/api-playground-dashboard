@@ -99,7 +99,12 @@
         } @else {
           <div class="dota__hero-grid">
             @for (h of filteredHeroes(); track h.id) {
-              <article class="dota__hero-card">
+              <button
+                type="button"
+                class="dota__hero-card"
+                (click)="selectHero(h)"
+                [attr.aria-label]="'Ver detalle de ' + h.localizedName"
+              >
                 <img
                   class="dota__hero-img"
                   [src]="h.imgUrl ?? placeholder"
@@ -119,7 +124,7 @@
                     <span class="dota__attack-badge">{{ attackLabel(h.attackType) }}</span>
                   </div>
                 </div>
-              </article>
+              </button>
             }
           </div>
         }
@@ -137,5 +142,61 @@
         <p class="text-secondary small mb-0">{{ matches().length }} partidas cargadas.</p>
       }
     }
+  }
+
+  @if (selectedHero(); as h) {
+    <div class="dota__modal-backdrop" (click)="closeModal()"></div>
+    <div
+      #modal
+      class="dota__modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dota-modal-title"
+      (keydown)="onModalKeydown($event)"
+    >
+      <header class="dota__modal-head">
+        <h3 id="dota-modal-title" class="dota__modal-title h6 mb-0">{{ h.localizedName }}</h3>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar detalle del héroe"
+          (click)="closeModal()"
+        ></button>
+      </header>
+      <img
+        class="dota__modal-img rounded"
+        [src]="h.imgUrl ?? placeholder"
+        [alt]="h.localizedName"
+        loading="lazy"
+        (error)="onImgError($event)"
+      />
+      <div class="dota__modal-chips">
+        <span
+          class="dota__attr-badge"
+          [class]="'dota__attr-badge dota__attr-badge--' + h.primaryAttr"
+        >
+          {{ attrLabel(h.primaryAttr) }}
+        </span>
+        <span class="dota__attack-badge">{{ attackLabel(h.attackType) }}</span>
+      </div>
+      @if (h.roles.length > 0) {
+        <div class="dota__modal-section">
+          <p class="dota__modal-label mb-1">Roles</p>
+          <div class="dota__roles">
+            @for (r of h.roles; track r) {
+              <span class="badge text-bg-secondary-subtle text-secondary-emphasis">{{ r }}</span>
+            }
+          </div>
+        </div>
+      }
+      <div class="dota__modal-actions">
+        <button type="button" class="btn btn-primary" (click)="nextRandomFromModal()">
+          🎲 Siguiente aleatorio
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
+          Cerrar
+        </button>
+      </div>
+    </div>
   }
 </section>

@@ -2,9 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
+  HostListener,
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -87,6 +90,10 @@ export class DotaExplorer {
   protected readonly activeAttrs = signal<Set<PrimaryAttr>>(new Set());
   protected readonly activeAttacks = signal<Set<AttackType>>(new Set());
 
+  protected readonly selectedHero = signal<DotaHero | null>(null);
+  private readonly modalRef = viewChild<ElementRef<HTMLElement>>('modal');
+  private previousFocus: HTMLElement | null = null;
+
   protected readonly searchInput = signal('');
   protected readonly searchTerm = signal('');
   private readonly searchInput$ = new Subject<string>();
@@ -134,8 +141,55 @@ export class DotaExplorer {
     this.selectHero(pick);
   }
 
-  protected selectHero(_hero: DotaHero): void {
-    // Wired by the modal commit.
+  protected selectHero(hero: DotaHero): void {
+    this.previousFocus = (document.activeElement as HTMLElement) ?? null;
+    this.selectedHero.set(hero);
+    queueMicrotask(() => {
+      const panel = this.modalRef()?.nativeElement;
+      const first = panel?.querySelector<HTMLElement>('button, [tabindex]:not([tabindex="-1"])');
+      first?.focus();
+    });
+  }
+
+  protected closeModal(): void {
+    this.selectedHero.set(null);
+    queueMicrotask(() => this.previousFocus?.focus());
+  }
+
+  protected nextRandomFromModal(): void {
+    const list = this.filteredHeroes();
+    if (list.length === 0) return;
+    const current = this.selectedHero();
+    const candidates = current ? list.filter((h) => h.id !== current.id) : list;
+    const pool = candidates.length > 0 ? candidates : list;
+    this.selectedHero.set(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    if (this.selectedHero()) this.closeModal();
+  }
+
+  protected onModalKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    const panel = this.modalRef()?.nativeElement;
+    if (!panel) return;
+    const focusables = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   protected selectTab(tab: Tab): void {
