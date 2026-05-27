@@ -4,12 +4,13 @@ import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { MediaResult } from '../result-views/media-result/media-result';
+import { TextResult } from '../result-views/text-result/text-result';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
 
 @Component({
   selector: 'app-run-offcanvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AudioResult, GalleryResult, MediaResult],
+  imports: [AudioResult, GalleryResult, MediaResult, TextResult],
   templateUrl: './run-offcanvas.html',
   styleUrl: './run-offcanvas.scss',
 })

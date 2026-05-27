@@ -68,6 +68,9 @@
             @case ('GALLERY') {
               <app-gallery-result [api]="a" [data]="r.data" />
             }
+            @case ('TEXT') {
+              <app-text-result [api]="a" [data]="r.data" />
+            }
             @default {
               <header class="d-flex justify-content-between align-items-center mb-1">
                 <span class="text-uppercase text-secondary small fw-semibold">Respuesta</span>
