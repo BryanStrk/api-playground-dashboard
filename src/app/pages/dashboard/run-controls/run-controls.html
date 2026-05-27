@@ -57,6 +57,9 @@
   @case ('space') {
     <app-space-controls (search)="emit($event)" />
   }
+  @case ('users') {
+    <app-users-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"
