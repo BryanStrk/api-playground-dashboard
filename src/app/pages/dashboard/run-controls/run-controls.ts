@@ -9,6 +9,7 @@ import { DictionaryControls } from './dictionary-controls/dictionary-controls';
 import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { NewsControls } from './news-controls/news-controls';
+import { PhotosControls } from './photos-controls/photos-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
 import { SportsControls } from './sports-controls/sports-controls';
@@ -31,6 +32,8 @@ export type ControlsKind =
   | 'users'
   | 'exchange'
   | 'characters'
+  | 'photos'
+  | 'space'
   | 'posts'
   | 'none';
 
@@ -51,6 +54,8 @@ const KIND_BY_ID: Record<string, ControlsKind> = {
   users: 'users',
   exchange: 'exchange',
   characters: 'characters',
+  photos: 'photos',
+  space: 'space',
   posts: 'posts',
 };
 
@@ -70,6 +75,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
     MoviesControls,
     MusicControls,
     NewsControls,
+    PhotosControls,
     PokemonControls,
     SimpleSearchControls,
     SportsControls,

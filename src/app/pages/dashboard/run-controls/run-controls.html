@@ -51,6 +51,9 @@
   @case ('characters') {
     <app-characters-controls (search)="emit($event)" />
   }
+  @case ('photos') {
+    <app-photos-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"
