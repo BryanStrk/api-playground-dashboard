@@ -2,32 +2,47 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 
 import { ApiService } from '../../core/api.service';
-import { ApiHealth, ApiInfo } from '../../core/models';
+import { ApiHealth, ApiInfo, RunResult } from '../../core/models';
 import {
   CategoryFilter,
   DifficultyFilter,
   FilterBar,
 } from '../../shared/filter-bar/filter-bar';
 import { ApiCard } from './api-card/api-card';
+import { RunOffcanvas } from './run-offcanvas/run-offcanvas';
+
+interface BootstrapOffcanvas {
+  show(): void;
+  hide(): void;
+}
+declare const bootstrap: {
+  Offcanvas: { getOrCreateInstance(el: HTMLElement): BootstrapOffcanvas };
+};
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ApiCard, FilterBar, DatePipe],
+  imports: [ApiCard, FilterBar, DatePipe, RunOffcanvas],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
   private readonly api = inject(ApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly offcanvasRef = viewChild<RunOffcanvas, ElementRef<HTMLElement>>(
+    RunOffcanvas,
+    { read: ElementRef },
+  );
 
   protected readonly catalog = signal<ApiInfo[]>([]);
   protected readonly health = signal<Map<string, ApiHealth>>(new Map());
@@ -39,6 +54,10 @@ export class Dashboard {
   protected readonly query = signal<string>('');
   protected readonly category = signal<CategoryFilter>('all');
   protected readonly difficulty = signal<DifficultyFilter>('all');
+
+  protected readonly selectedApi = signal<ApiInfo | null>(null);
+  protected readonly runResult = signal<RunResult | null>(null);
+  protected readonly running = signal(false);
 
   protected readonly categories = computed(() =>
     Array.from(new Set(this.catalog().map((x) => x.category))).sort((a, b) =>
@@ -119,7 +138,27 @@ export class Dashboard {
   }
 
   protected onRun(api: ApiInfo): void {
-    // Wired in Phase 4 — opens the JSON offcanvas.
-    console.debug('run', api.id);
+    this.selectedApi.set(api);
+    this.runResult.set(null);
+    this.running.set(true);
+    this.openOffcanvas();
+
+    this.api
+      .runApi(api)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.runResult.set(result);
+          this.running.set(false);
+        },
+        error: () => this.running.set(false),
+      });
+  }
+
+  private openOffcanvas(): void {
+    const host = this.offcanvasRef()?.nativeElement;
+    const el = host?.querySelector<HTMLElement>('.offcanvas');
+    if (!el || typeof bootstrap === 'undefined') return;
+    bootstrap.Offcanvas.getOrCreateInstance(el).show();
   }
 }
