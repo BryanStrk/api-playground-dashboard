@@ -3,7 +3,7 @@
 } @else {
   <ul class="audio-result list-unstyled mb-0">
     @for (t of tracks(); track t.trackId) {
-      <li class="audio-result__item">
+      <li class="audio-result__item" [class.is-playing]="isPlaying(t.trackId)">
         <img
           class="audio-result__art rounded"
           [src]="t.artworkUrl ?? placeholder"
@@ -19,15 +19,25 @@
           }
         </div>
         @if (t.previewUrl) {
-          <audio
-            #player
-            class="audio-result__player"
-            controls
-            preload="metadata"
-            [src]="t.previewUrl"
-            (play)="onPlay($event)"
-            [attr.aria-label]="'Reproducir vista previa de ' + t.trackName + ' por ' + t.artistName"
-          ></audio>
+          <button
+            type="button"
+            class="audio-result__play"
+            [class.is-playing]="isPlaying(t.trackId)"
+            [attr.aria-pressed]="isPlaying(t.trackId)"
+            [attr.aria-label]="(isPlaying(t.trackId) ? 'Pausar ' : 'Reproducir ') + t.trackName + ' de ' + t.artistName"
+            (click)="toggle(t)"
+          >
+            @if (isLoading(t.trackId)) {
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            } @else if (isPlaying(t.trackId)) {
+              <span class="audio-result__icon" aria-hidden="true">❚❚</span>
+            } @else {
+              <span class="audio-result__icon" aria-hidden="true">▶</span>
+            }
+            <span class="audio-result__play-label">
+              {{ isPlaying(t.trackId) ? 'Pausa' : 'Play' }}
+            </span>
+          </button>
         } @else {
           <span class="audio-result__no-preview text-secondary small">sin preview</span>
         }
