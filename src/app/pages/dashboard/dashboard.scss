@@ -47,4 +47,17 @@ main:focus {
 .summary-strip .badge {
   font-weight: 600;
   letter-spacing: 0.02em;
+  border-radius: 9999px;
+  padding: 0.35em 0.7em;
+}
+
+@media (max-width: 575.98px) {
+  .navbar .btn {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
+  .summary-strip .container-fluid {
+    gap: 0.35rem !important;
+  }
 }
