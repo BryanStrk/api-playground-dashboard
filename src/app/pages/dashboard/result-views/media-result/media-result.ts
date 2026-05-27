@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { ApiInfo } from '../../../../core/models';
+import { IMAGE_PLACEHOLDER, swapImageOnError } from '../image-fallback';
 
 interface MediaField {
   label: string;
@@ -28,14 +29,7 @@ export class MediaResult {
   readonly api = input.required<ApiInfo>();
   readonly data = input.required<unknown>();
 
-  protected readonly placeholder =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="sin imagen">' +
-        '<rect width="320" height="200" fill="#e5e7eb"/>' +
-        '<text x="160" y="106" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#6b7280">sin imagen</text>' +
-        '</svg>',
-    );
+  protected readonly placeholder = IMAGE_PLACEHOLDER.wide;
 
   protected readonly view = computed<MediaView | null>(() => {
     const data = this.data();
@@ -44,9 +38,7 @@ export class MediaResult {
   });
 
   protected onImgError(event: Event): void {
-    const img = event.target as HTMLImageElement | null;
-    if (!img) return;
-    if (img.src !== this.placeholder) img.src = this.placeholder;
+    swapImageOnError(event, this.placeholder);
   }
 }
 

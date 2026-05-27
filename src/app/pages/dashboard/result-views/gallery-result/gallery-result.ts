@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { ApiInfo } from '../../../../core/models';
+import { IMAGE_PLACEHOLDER, swapImageOnError } from '../image-fallback';
 
 interface GalleryItem {
   id: string;
@@ -21,14 +22,7 @@ export class GalleryResult {
   readonly api = input.required<ApiInfo>();
   readonly data = input.required<unknown>();
 
-  protected readonly placeholder =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" role="img" aria-label="sin imagen">' +
-        '<rect width="240" height="320" fill="#e5e7eb"/>' +
-        '<text x="120" y="166" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" fill="#6b7280">sin imagen</text>' +
-        '</svg>',
-    );
+  protected readonly placeholder = IMAGE_PLACEHOLDER.poster;
 
   protected readonly items = computed<GalleryItem[]>(() => {
     const data = this.data();
@@ -38,9 +32,7 @@ export class GalleryResult {
   });
 
   protected onImgError(event: Event): void {
-    const img = event.target as HTMLImageElement | null;
-    if (!img || img.src === this.placeholder) return;
-    img.src = this.placeholder;
+    swapImageOnError(event, this.placeholder);
   }
 }
 
