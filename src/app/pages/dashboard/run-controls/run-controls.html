@@ -46,6 +46,9 @@
       (search)="emit($event)"
     />
   }
+  @case ('pokemon') {
+    <app-pokemon-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"

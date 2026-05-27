@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 
 import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
+import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
 import { WeatherControls } from './weather-controls/weather-controls';
 
@@ -53,7 +54,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
 @Component({
   selector: 'app-run-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SimpleSearchControls, WeatherControls],
+  imports: [PokemonControls, SimpleSearchControls, WeatherControls],
   templateUrl: './run-controls.html',
 })
 export class RunControls {
