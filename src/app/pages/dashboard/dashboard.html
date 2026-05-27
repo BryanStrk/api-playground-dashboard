@@ -38,9 +38,17 @@
     <span class="badge text-bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
       SKIPPED · {{ summary().skipped }}
     </span>
-    <span class="ms-auto text-secondary small">{{ summary().total }} APIs en catálogo</span>
+    <span class="ms-auto text-secondary small">
+      @if (lastCheckedAt(); as ts) {
+        Comprobado a las {{ ts | date: 'HH:mm:ss' }}
+      } @else {
+        {{ summary().total }} APIs en catálogo
+      }
+    </span>
   </div>
 </header>
+
+<p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ announcement() }}</p>
 
 <app-filter-bar
   [(query)]="query"

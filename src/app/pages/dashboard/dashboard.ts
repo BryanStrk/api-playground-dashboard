@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe } from '@angular/common';
 
 import { ApiService } from '../../core/api.service';
 import { ApiHealth, ApiInfo } from '../../core/models';
@@ -20,7 +21,7 @@ import { ApiCard } from './api-card/api-card';
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ApiCard, FilterBar],
+  imports: [ApiCard, FilterBar, DatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -56,6 +57,14 @@ export class Dashboard {
       const haystack = `${api.name} ${api.description} ${api.category}`.toLowerCase();
       return haystack.includes(needle);
     });
+  });
+
+  protected readonly announcement = computed(() => {
+    if (this.checking()) return 'Comprobando estado de las APIs.';
+    if (this.checkError()) return this.checkError() ?? '';
+    if (this.lastCheckedAt() === null) return '';
+    const s = this.summary();
+    return `Comprobación completa: ${s.up} de ${s.total} operativas, ${s.down} caídas, ${s.skipped} omitidas.`;
   });
 
   protected readonly summary = computed(() => {
