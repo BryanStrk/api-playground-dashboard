@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { ApiError, ApiInfo, HealthReport, RunResult } from './models';
 
 export interface RunParams {
+  endpoint?: string;
   path?: Record<string, string>;
   query?: Record<string, string | number | boolean | null | undefined>;
 }
@@ -61,7 +62,8 @@ export class ApiService {
     params?: RunParams,
   ): { url: string; queryParams: HttpParams } {
     const fallback = params ? undefined : SAMPLE_INPUTS[api.id];
-    let path = api.localEndpoint.replace(/^\/api\/v1/, '');
+    const sourcePath = params?.endpoint ?? api.localEndpoint;
+    let path = sourcePath.replace(/^\/api\/v1/, '');
     path = path.replace(/\{(\w+)\}/g, (_, key) => {
       const fromParams = params?.path?.[key];
       const fromFallback = fallback?.path?.[key];

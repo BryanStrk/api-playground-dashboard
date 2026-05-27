@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
 import { CatsControls } from './cats-controls/cats-controls';
+import { MoviesControls } from './movies-controls/movies-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
 import { SportsControls } from './sports-controls/sports-controls';
@@ -56,7 +57,14 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
 @Component({
   selector: 'app-run-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CatsControls, PokemonControls, SimpleSearchControls, SportsControls, WeatherControls],
+  imports: [
+    CatsControls,
+    MoviesControls,
+    PokemonControls,
+    SimpleSearchControls,
+    SportsControls,
+    WeatherControls,
+  ],
   templateUrl: './run-controls.html',
 })
 export class RunControls {
