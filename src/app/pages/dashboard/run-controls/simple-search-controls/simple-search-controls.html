@@ -1,0 +1,21 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" [attr.for]="inputId()">{{ label() }}</label>
+      <input
+        [id]="inputId()"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        [placeholder]="placeholder()"
+        [ngModel]="value()"
+        (ngModelChange)="value.set($event)"
+        name="value"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+  @if (hint()) {
+    <p class="run-controls__hint">{{ hint() }}</p>
+  }
+</form>

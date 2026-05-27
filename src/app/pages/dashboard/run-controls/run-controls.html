@@ -2,5 +2,60 @@
   @case ('weather') {
     <app-weather-controls (search)="emit($event)" />
   }
+  @case ('countries') {
+    <app-simple-search-controls
+      inputId="countries-name"
+      label="País"
+      placeholder="Spain, Japan, Brazil…"
+      initial="spain"
+      paramKind="path"
+      paramName="name"
+      (search)="emit($event)"
+    />
+  }
+  @case ('sports') {
+    <app-simple-search-controls
+      inputId="sports-team"
+      label="Equipo"
+      placeholder="Arsenal, Real Madrid…"
+      initial="Arsenal"
+      paramKind="query"
+      paramName="name"
+      (search)="emit($event)"
+    />
+  }
+  @case ('dictionary') {
+    <app-simple-search-controls
+      inputId="dictionary-word"
+      label="Palabra (inglés)"
+      placeholder="hello, dictionary, code…"
+      initial="hello"
+      paramKind="path"
+      paramName="word"
+      (search)="emit($event)"
+    />
+  }
+  @case ('github') {
+    <app-simple-search-controls
+      inputId="github-user"
+      label="Usuario de GitHub"
+      placeholder="torvalds, gaearon…"
+      initial="torvalds"
+      paramKind="path"
+      paramName="username"
+      (search)="emit($event)"
+    />
+  }
+  @case ('books') {
+    <app-simple-search-controls
+      inputId="books-title"
+      label="Título"
+      placeholder="Clean Code, Refactoring…"
+      initial="clean code"
+      paramKind="query"
+      paramName="title"
+      (search)="emit($event)"
+    />
+  }
   @default {}
 }
