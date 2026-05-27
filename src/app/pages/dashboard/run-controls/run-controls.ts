@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
 import { CatsControls } from './cats-controls/cats-controls';
+import { CryptoControls } from './crypto-controls/crypto-controls';
 import { MoviesControls } from './movies-controls/movies-controls';
 import { MusicControls } from './music-controls/music-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
@@ -60,6 +61,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CatsControls,
+    CryptoControls,
     MoviesControls,
     MusicControls,
     PokemonControls,

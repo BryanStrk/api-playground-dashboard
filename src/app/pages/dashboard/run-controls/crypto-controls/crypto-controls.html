@@ -1,0 +1,79 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1 position-relative">
+      <label class="form-label" for="crypto-query">Añadir moneda</label>
+      <input
+        id="crypto-query"
+        type="search"
+        class="form-control"
+        autocomplete="off"
+        placeholder="cardano, solana, polkadot…"
+        [ngModel]="query()"
+        (ngModelChange)="onQuery($event)"
+        name="query"
+        role="combobox"
+        [attr.aria-expanded]="suggestions().length > 0"
+        aria-controls="crypto-suggestions"
+        aria-autocomplete="list"
+      />
+      @if (suggestions().length > 0) {
+        <ul
+          id="crypto-suggestions"
+          class="crypto-controls__suggestions list-unstyled mb-0"
+          role="listbox"
+        >
+          @for (s of suggestions(); track s.id) {
+            <li>
+              <button
+                type="button"
+                class="crypto-controls__suggestion"
+                (click)="add(s)"
+                role="option"
+                [attr.aria-label]="'Añadir ' + s.name"
+              >
+                @if (s.thumb) {
+                  <img [src]="s.thumb" alt="" loading="lazy" />
+                }
+                <span class="crypto-controls__name">{{ s.name }}</span>
+                <span class="crypto-controls__symbol text-secondary">{{ s.symbol }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else if (searching()) {
+        <p class="run-controls__hint mb-0">Buscando…</p>
+      }
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="crypto-vs">Divisa</label>
+      <select
+        id="crypto-vs"
+        class="form-select"
+        [ngModel]="vs()"
+        (ngModelChange)="onVsChange($event)"
+        name="vs"
+      >
+        @for (v of vsOptions; track v) {
+          <option [value]="v">{{ v.toUpperCase() }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+
+  <div class="crypto-controls__chips" role="group" aria-label="Monedas seleccionadas">
+    @for (c of chosen(); track c.id) {
+      <span class="crypto-controls__chip">
+        <span>{{ c.name }}</span>
+        @if (canRemove()) {
+          <button
+            type="button"
+            class="crypto-controls__chip-remove"
+            [attr.aria-label]="'Quitar ' + c.name"
+            (click)="remove(c.id)"
+          >×</button>
+        }
+      </span>
+    }
+  </div>
+</form>

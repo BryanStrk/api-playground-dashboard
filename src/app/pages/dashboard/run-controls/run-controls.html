@@ -50,6 +50,9 @@
   @case ('music') {
     <app-music-controls (search)="emit($event)" />
   }
+  @case ('crypto') {
+    <app-crypto-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"
