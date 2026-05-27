@@ -72,6 +72,9 @@
   @case ('holidays') {
     <app-holidays-controls (search)="emit($event)" />
   }
+  @case ('hn') {
+    <app-hn-controls (search)="emit($event)" />
+  }
   @case ('books') {
     <app-simple-search-controls
       inputId="books-title"

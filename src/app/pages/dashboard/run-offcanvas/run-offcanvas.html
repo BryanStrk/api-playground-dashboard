@@ -125,6 +125,9 @@
               @case ('HOLIDAYS') {
                 <app-holidays-result [data]="r.data" />
               }
+              @case ('HACKERNEWS') {
+                <app-hn-result [data]="r.data" />
+              }
               @case ('TEXT') {
                 <app-text-result [api]="a" [data]="r.data" />
               }
