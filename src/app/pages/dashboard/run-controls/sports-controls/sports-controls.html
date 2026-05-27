@@ -6,7 +6,7 @@
         id="sports-competition"
         class="form-select"
         [ngModel]="code()"
-        (ngModelChange)="onChange($event)"
+        (ngModelChange)="onCompetitionChange($event)"
         name="competition"
       >
         @for (c of competitions(); track c.code) {
@@ -15,5 +15,24 @@
       </select>
     </div>
     <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+
+  <div
+    class="btn-group btn-group-sm sports-controls__tabs"
+    role="tablist"
+    aria-label="Vista de la competición"
+  >
+    @for (t of tabs; track t.id) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        role="tab"
+        [class.active]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        (click)="selectTab(t.id)"
+      >
+        {{ t.label }}
+      </button>
+    }
   </div>
 </form>

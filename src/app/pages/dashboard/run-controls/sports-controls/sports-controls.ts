@@ -33,12 +33,26 @@ const FALLBACK_COMPETITIONS: CompetitionInfo[] = [
   { code: 'BSA', name: 'Brasileirão' },
 ];
 
+type Tab = 'standings' | 'matches' | 'teams';
+
+const ENDPOINTS: Record<Tab, string> = {
+  standings: '/api/v1/sports/standings',
+  matches: '/api/v1/sports/matches',
+  teams: '/api/v1/sports/teams',
+};
+
+const TAB_LABELS: { id: Tab; label: string }[] = [
+  { id: 'standings', label: 'Clasificación' },
+  { id: 'matches', label: 'Próximos partidos' },
+  { id: 'teams', label: 'Equipos' },
+];
+
 @Component({
   selector: 'app-sports-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule],
   templateUrl: './sports-controls.html',
-  styleUrl: '../run-controls.scss',
+  styleUrls: ['../run-controls.scss', './sports-controls.scss'],
 })
 export class SportsControls {
   private readonly http = inject(HttpClient);
@@ -46,8 +60,10 @@ export class SportsControls {
 
   readonly search = output<RunParams>();
 
+  protected readonly tabs = TAB_LABELS;
   protected readonly competitions = signal<CompetitionInfo[]>(FALLBACK_COMPETITIONS);
   protected readonly code = signal<string>('PD');
+  protected readonly tab = signal<Tab>('standings');
 
   constructor() {
     this.loadCompetitions();
@@ -56,11 +72,20 @@ export class SportsControls {
   protected submit(): void {
     const competition = this.code();
     if (!competition) return;
-    this.search.emit({ query: { competition } });
+    this.search.emit({
+      endpoint: ENDPOINTS[this.tab()],
+      query: { competition },
+    });
   }
 
-  protected onChange(value: string): void {
+  protected onCompetitionChange(value: string): void {
     this.code.set(value);
+    this.submit();
+  }
+
+  protected selectTab(tab: Tab): void {
+    if (tab === this.tab()) return;
+    this.tab.set(tab);
     this.submit();
   }
 

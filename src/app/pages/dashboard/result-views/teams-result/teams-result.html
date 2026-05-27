@@ -1,0 +1,32 @@
+@if (view(); as v) {
+  <section class="teams-result" aria-label="Equipos">
+    <h3 class="teams-result__title h6 mb-0">{{ v.competition }}</h3>
+    @if (v.teams.length === 0) {
+      <p class="text-secondary mb-0">No hay equipos que mostrar.</p>
+    } @else {
+      <div class="row row-cols-2 row-cols-md-3 g-2 teams-result__grid">
+        @for (t of v.teams; track t.id) {
+          <div class="col">
+            <article class="teams-result__card">
+              <img
+                class="teams-result__crest"
+                [src]="t.crest ?? placeholder"
+                [alt]="'Escudo de ' + t.name"
+                loading="lazy"
+                (error)="onImgError($event)"
+              />
+              <div class="teams-result__info">
+                <p class="teams-result__name mb-0">{{ t.name }}</p>
+                <p class="teams-result__meta mb-0">
+                  @if (t.venue) { <span>{{ t.venue }}</span> }
+                  @if (t.venue && t.founded !== null) { <span aria-hidden="true"> · </span> }
+                  @if (t.founded !== null) { <span>{{ t.founded }}</span> }
+                </p>
+              </div>
+            </article>
+          </div>
+        }
+      </div>
+    }
+  </section>
+}

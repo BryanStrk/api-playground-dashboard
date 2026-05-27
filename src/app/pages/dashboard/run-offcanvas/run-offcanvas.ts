@@ -9,7 +9,7 @@ import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { MealsResult } from '../result-views/meals-result/meals-result';
 import { MediaResult } from '../result-views/media-result/media-result';
 import { MoviesResult } from '../result-views/movies-result/movies-result';
-import { StandingsResult } from '../result-views/standings-result/standings-result';
+import { SportsResult } from '../result-views/sports-result/sports-result';
 import { StatResult } from '../result-views/stat-result/stat-result';
 import { TextResult } from '../result-views/text-result/text-result';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
@@ -27,7 +27,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     MediaResult,
     MoviesResult,
     RunControls,
-    StandingsResult,
+    SportsResult,
     StatResult,
     TextResult,
   ],

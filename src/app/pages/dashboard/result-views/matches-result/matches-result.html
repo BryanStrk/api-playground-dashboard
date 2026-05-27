@@ -1,0 +1,64 @@
+@if (view(); as v) {
+  <section class="matches-result" aria-label="Partidos">
+    <header class="matches-result__header">
+      <h3 class="matches-result__title h6 mb-0">{{ v.competition }}</h3>
+      @if (v.mode) {
+        <p class="matches-result__mode mb-0">
+          {{ v.mode === 'UPCOMING' ? 'Próximos partidos' : 'Últimos jugados' }}
+        </p>
+      }
+    </header>
+
+    @if (v.matches.length === 0) {
+      <p class="text-secondary mb-0">No hay partidos que mostrar.</p>
+    } @else {
+      <ul class="matches-result__list list-unstyled mb-0">
+        @for (m of v.matches; track m.id) {
+          <li class="matches-result__row">
+            <div class="matches-result__when">
+              @if (m.whenLabel) {
+                <p class="matches-result__date mb-0">{{ m.whenLabel }}</p>
+              }
+              <p class="matches-result__status mb-0">
+                @if (m.matchday !== null) {
+                  <span>J{{ m.matchday }}</span>
+                  <span aria-hidden="true"> · </span>
+                }
+                <span>{{ m.statusLabel }}</span>
+              </p>
+            </div>
+            <div class="matches-result__teams">
+              <div class="matches-result__team matches-result__team--home">
+                <span class="matches-result__team-name">{{ m.homeTeam }}</span>
+                <img
+                  class="matches-result__crest"
+                  [src]="m.homeCrest ?? placeholder"
+                  [alt]="'Escudo de ' + m.homeTeam"
+                  loading="lazy"
+                  (error)="onImgError($event)"
+                />
+              </div>
+              <div class="matches-result__score">
+                @if (m.finished && m.homeScore !== null && m.awayScore !== null) {
+                  <span>{{ m.homeScore }} — {{ m.awayScore }}</span>
+                } @else {
+                  <span class="text-secondary" aria-hidden="true">vs</span>
+                }
+              </div>
+              <div class="matches-result__team matches-result__team--away">
+                <img
+                  class="matches-result__crest"
+                  [src]="m.awayCrest ?? placeholder"
+                  [alt]="'Escudo de ' + m.awayTeam"
+                  loading="lazy"
+                  (error)="onImgError($event)"
+                />
+                <span class="matches-result__team-name">{{ m.awayTeam }}</span>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+}
