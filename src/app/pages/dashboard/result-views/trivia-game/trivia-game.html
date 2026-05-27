@@ -125,7 +125,19 @@
           </div>
         }
 
-        <h3 class="trivia-game__question" id="trivia-q">{{ decode(q.question) }}</h3>
+        <div class="d-flex align-items-start gap-2">
+          <h3 class="trivia-game__question flex-grow-1 mb-0" id="trivia-q">{{ decode(q.question) }}</h3>
+          @if (canUseFifty()) {
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary trivia-game__lifeline"
+              (click)="useFifty()"
+              aria-label="Comodín 50 50: ocultar dos respuestas incorrectas"
+            >
+              50/50
+            </button>
+          }
+        </div>
 
         <div
           class="trivia-game__answers"
@@ -139,11 +151,13 @@
               class="trivia-game__answer"
               [class.is-correct]="isCorrectOption(opt)"
               [class.is-wrong]="isWrongPick(opt)"
+              [class.is-hidden]="isHidden(opt)"
               [class.is-revealed]="revealed()"
               role="radio"
               [attr.aria-checked]="selectedAnswer() === opt"
-              [disabled]="revealed()"
-              [attr.tabindex]="revealed() ? -1 : (i === 0 ? 0 : -1)"
+              [attr.aria-hidden]="isHidden(opt) ? true : null"
+              [disabled]="revealed() || isHidden(opt)"
+              [attr.tabindex]="revealed() || isHidden(opt) ? -1 : (i === 0 ? 0 : -1)"
               (keydown)="onAnswerKeydown($event, i)"
               (click)="answer(opt)"
             >

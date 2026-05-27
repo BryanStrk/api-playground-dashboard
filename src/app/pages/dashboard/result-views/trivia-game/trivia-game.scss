@@ -168,6 +168,16 @@
   flex: 1 1 auto;
 }
 
+.trivia-game__answer.is-hidden {
+  visibility: hidden;
+}
+
+.trivia-game__lifeline {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
 .trivia-game__feedback {
   display: flex;
   align-items: center;

@@ -93,6 +93,9 @@ export class TriviaGame {
   protected readonly timerTotal = signal(0);
   private timerHandle: ReturnType<typeof setInterval> | null = null;
 
+  protected readonly fiftyAvailable = signal(true);
+  protected readonly hiddenAnswers = signal<Set<string>>(new Set());
+
   private gameStartedAt = 0;
   private elapsedMs = 0;
 
@@ -238,7 +241,28 @@ export class TriviaGame {
     this.selectedAnswer.set(null);
     this.revealed.set(false);
     this.feedbackMessage.set('');
+    this.hiddenAnswers.set(new Set());
     this.startTimerIfNeeded();
+  }
+
+  protected useFifty(): void {
+    if (!this.fiftyAvailable()) return;
+    const q = this.current();
+    if (!q || q.type !== 'multiple' || this.revealed()) return;
+    const incorrect = q.shuffled.filter((a) => a !== q.correctAnswer);
+    if (incorrect.length < 2) return;
+    const shuffled = shuffle(incorrect);
+    this.hiddenAnswers.set(new Set(shuffled.slice(0, 2)));
+    this.fiftyAvailable.set(false);
+  }
+
+  protected canUseFifty(): boolean {
+    const q = this.current();
+    return this.fiftyAvailable() && !this.revealed() && !!q && q.type === 'multiple';
+  }
+
+  protected isHidden(option: string): boolean {
+    return this.hiddenAnswers().has(option);
   }
 
   protected playAgain(): void {
@@ -304,6 +328,8 @@ export class TriviaGame {
     this.correctCount.set(0);
     this.breakdown.set(emptyBreakdown());
     this.feedbackMessage.set('');
+    this.fiftyAvailable.set(true);
+    this.hiddenAnswers.set(new Set());
     this.elapsedMs = 0;
   }
 
