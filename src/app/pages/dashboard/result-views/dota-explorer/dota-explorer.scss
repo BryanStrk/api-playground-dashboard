@@ -17,6 +17,15 @@
   gap: 0.5rem;
 }
 
+.dota__search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dota__search { flex: 1 1 200px; min-width: 0; }
+.dota__random { flex: 0 0 auto; font-weight: 600; }
+
 .dota__chip-group {
   display: flex;
   flex-wrap: wrap;

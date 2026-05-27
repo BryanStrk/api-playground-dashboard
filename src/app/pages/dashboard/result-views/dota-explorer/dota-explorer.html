@@ -31,6 +31,26 @@
         <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
       } @else {
         <div class="dota__filters" role="group" aria-label="Filtros de héroes">
+          <div class="dota__search-row">
+            <label class="visually-hidden" for="dota-search">Buscar héroe</label>
+            <input
+              id="dota-search"
+              type="search"
+              class="form-control form-control-sm dota__search"
+              placeholder="Buscar héroe…"
+              autocomplete="off"
+              [ngModel]="searchInput()"
+              (ngModelChange)="onSearchChange($event)"
+            />
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary dota__random"
+              [disabled]="filteredHeroes().length === 0"
+              (click)="randomHero()"
+            >
+              🎲 Héroe aleatorio
+            </button>
+          </div>
           <div class="dota__chip-group" aria-label="Atributo principal">
             @for (a of attrs; track a.id) {
               <button

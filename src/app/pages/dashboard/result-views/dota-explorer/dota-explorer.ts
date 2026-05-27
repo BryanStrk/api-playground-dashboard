@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Subject, debounceTime } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import { IMAGE_PLACEHOLDER, swapImageOnError } from '../image-fallback';
@@ -86,18 +87,27 @@ export class DotaExplorer {
   protected readonly activeAttrs = signal<Set<PrimaryAttr>>(new Set());
   protected readonly activeAttacks = signal<Set<AttackType>>(new Set());
 
+  protected readonly searchInput = signal('');
+  protected readonly searchTerm = signal('');
+  private readonly searchInput$ = new Subject<string>();
+
   protected readonly filteredHeroes = computed<DotaHero[]>(() => {
     const attrs = this.activeAttrs();
     const attacks = this.activeAttacks();
+    const term = this.searchTerm().trim().toLowerCase();
     return this.heroes().filter((h) => {
       if (attrs.size > 0 && !attrs.has(h.primaryAttr as PrimaryAttr)) return false;
       if (attacks.size > 0 && !attacks.has(h.attackType as AttackType)) return false;
+      if (term && !h.localizedName.toLowerCase().includes(term)) return false;
       return true;
     });
   });
 
   protected readonly hasFilters = computed(
-    () => this.activeAttrs().size > 0 || this.activeAttacks().size > 0,
+    () =>
+      this.activeAttrs().size > 0 ||
+      this.activeAttacks().size > 0 ||
+      this.searchTerm().trim().length > 0,
   );
 
   protected readonly matches = signal<ProMatch[]>([]);
@@ -107,6 +117,25 @@ export class DotaExplorer {
   constructor() {
     this.loadHeroes();
     this.loadMatches();
+    this.searchInput$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.searchTerm.set(value));
+  }
+
+  protected onSearchChange(value: string): void {
+    this.searchInput.set(value);
+    this.searchInput$.next(value);
+  }
+
+  protected randomHero(): void {
+    const list = this.filteredHeroes();
+    if (list.length === 0) return;
+    const pick = list[Math.floor(Math.random() * list.length)];
+    this.selectHero(pick);
+  }
+
+  protected selectHero(_hero: DotaHero): void {
+    // Wired by the modal commit.
   }
 
   protected selectTab(tab: Tab): void {
@@ -125,6 +154,8 @@ export class DotaExplorer {
   protected clearFilters(): void {
     this.activeAttrs.set(new Set());
     this.activeAttacks.set(new Set());
+    this.searchInput.set('');
+    this.searchTerm.set('');
   }
 
   protected isAttrActive(attr: PrimaryAttr): boolean {
