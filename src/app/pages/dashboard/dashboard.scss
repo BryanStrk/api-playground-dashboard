@@ -40,8 +40,19 @@ main:focus {
   border-radius: 0.35rem;
 }
 
+.theme-toggle {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
 .summary-strip {
-  background-color: var(--surface);
+  background-color: var(--bs-tertiary-bg);
 }
 
 .summary-strip .badge {

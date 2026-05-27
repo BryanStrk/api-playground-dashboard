@@ -15,7 +15,7 @@
     </header>
 
     <div class="d-flex flex-wrap gap-1">
-      <span class="badge rounded-pill text-bg-light border">{{ api().category }}</span>
+      <span class="badge rounded-pill text-bg-secondary-subtle text-secondary-emphasis border">{{ api().category }}</span>
       <app-status-badge variant="difficulty" [difficulty]="api().difficulty" />
     </div>
 
@@ -28,7 +28,7 @@
     </code>
   </div>
 
-  <footer class="card-footer bg-white border-top-0 pt-0 d-flex align-items-center justify-content-between gap-2">
+  <footer class="card-footer bg-transparent border-top-0 pt-0 d-flex align-items-center justify-content-between gap-2">
     <button
       type="button"
       class="btn btn-sm btn-outline-primary"

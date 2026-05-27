@@ -1,11 +1,20 @@
 <a class="skip-link" href="#catalog">Saltar al catálogo</a>
 
-<nav class="navbar navbar-expand sticky-top bg-white border-bottom shadow-sm" aria-label="Principal">
+<nav class="navbar navbar-expand sticky-top bg-body-tertiary border-bottom shadow-sm" aria-label="Principal">
   <div class="container-fluid gap-2">
     <span class="navbar-brand fw-semibold mb-0 d-flex align-items-center gap-2">
       <span class="brand-mark" aria-hidden="true">API</span>
       <span>Playground Dashboard</span>
     </span>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary theme-toggle"
+      [attr.aria-label]="isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+      [attr.aria-pressed]="isDark()"
+      (click)="toggleTheme()"
+    >
+      <span aria-hidden="true">{{ isDark() ? '☀︎' : '☾' }}</span>
+    </button>
     <div class="ms-auto d-flex align-items-center gap-3">
       <span class="text-secondary small d-none d-md-inline">
         {{ summary().up }} / {{ summary().total }} operativas
@@ -28,7 +37,7 @@
   </div>
 </nav>
 
-<header class="summary-strip border-bottom bg-white">
+<header class="summary-strip border-bottom bg-body-tertiary">
   <div class="container-fluid d-flex flex-wrap align-items-center gap-2 py-2">
     <span class="text-uppercase text-secondary fw-semibold small me-2">Estado</span>
     <span class="badge text-bg-success-subtle text-success-emphasis border border-success-subtle">

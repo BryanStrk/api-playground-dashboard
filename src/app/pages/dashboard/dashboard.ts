@@ -13,6 +13,7 @@ import { DatePipe } from '@angular/common';
 
 import { ApiService, RunParams } from '../../core/api.service';
 import { ApiHealth, ApiInfo, RunResult } from '../../core/models';
+import { ThemeService } from '../../core/theme.service';
 import { viewTypeFor } from './result-views/view-type';
 import {
   CategoryFilter,
@@ -40,6 +41,12 @@ declare const bootstrap: {
 export class Dashboard {
   private readonly api = inject(ApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly themeService = inject(ThemeService);
+
+  protected readonly isDark = computed(() => this.themeService.theme() === 'dark');
+  protected toggleTheme(): void {
+    this.themeService.toggle();
+  }
   private readonly offcanvasRef = viewChild<RunOffcanvas, ElementRef<HTMLElement>>(
     RunOffcanvas,
     { read: ElementRef },
