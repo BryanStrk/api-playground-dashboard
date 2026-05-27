@@ -1,30 +1,29 @@
 <form class="run-controls" (ngSubmit)="submit()">
   <div class="run-controls__row">
     <div class="run-controls__field flex-grow-1">
-      <label class="form-label" for="news-country">País</label>
-      <select
-        id="news-country"
-        class="form-select"
-        [ngModel]="country()"
-        (ngModelChange)="country.set($event); onChange()"
-        name="country"
-      >
-        @for (c of countries; track c.code) {
-          <option [value]="c.code">{{ c.label }} ({{ c.code }})</option>
-        }
-      </select>
+      <label class="form-label" for="news-query">Búsqueda</label>
+      <input
+        id="news-query"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        placeholder="mundo, tecnología, deportes…"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        name="q"
+      />
     </div>
-    <div class="run-controls__field flex-grow-1">
-      <label class="form-label" for="news-category">Categoría</label>
+    <div class="run-controls__field">
+      <label class="form-label" for="news-language">Idioma</label>
       <select
-        id="news-category"
+        id="news-language"
         class="form-select"
-        [ngModel]="category()"
-        (ngModelChange)="category.set($event); onChange()"
-        name="category"
+        [ngModel]="language()"
+        (ngModelChange)="language.set($event)"
+        name="language"
       >
-        @for (c of categories; track c.value) {
-          <option [value]="c.value">{{ c.label }}</option>
+        @for (l of languages; track l.code) {
+          <option [value]="l.code">{{ l.label }}</option>
         }
       </select>
     </div>

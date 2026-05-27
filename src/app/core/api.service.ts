@@ -123,6 +123,7 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
   posts: { path: { id: '1' } },
   meals: { query: 'name=arrabiata' },
   sports: { query: 'competition=PD' },
+  news: { query: 'q=mundo&language=es' },
   dictionary: { path: { word: 'hello' } },
   github: { path: { username: 'torvalds' } },
   books: { query: 'title=clean+code' },

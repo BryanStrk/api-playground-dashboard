@@ -3,28 +3,13 @@ import { FormsModule } from '@angular/forms';
 
 import { RunParams } from '../../../../core/api.service';
 
-const COUNTRIES = [
-  { code: 'us', label: 'Estados Unidos' },
-  { code: 'gb', label: 'Reino Unido' },
-  { code: 'es', label: 'España' },
-  { code: 'fr', label: 'Francia' },
-  { code: 'de', label: 'Alemania' },
-  { code: 'it', label: 'Italia' },
-  { code: 'mx', label: 'México' },
-  { code: 'ar', label: 'Argentina' },
-  { code: 'br', label: 'Brasil' },
-  { code: 'jp', label: 'Japón' },
-];
-
-const CATEGORIES = [
-  { value: '', label: 'Todas' },
-  { value: 'business', label: 'Negocios' },
-  { value: 'entertainment', label: 'Entretenimiento' },
-  { value: 'general', label: 'General' },
-  { value: 'health', label: 'Salud' },
-  { value: 'science', label: 'Ciencia' },
-  { value: 'sports', label: 'Deportes' },
-  { value: 'technology', label: 'Tecnología' },
+const LANGUAGES = [
+  { code: 'es', label: 'Español' },
+  { code: 'en', label: 'Inglés' },
+  { code: 'fr', label: 'Francés' },
+  { code: 'de', label: 'Alemán' },
+  { code: 'it', label: 'Italiano' },
+  { code: 'pt', label: 'Portugués' },
 ];
 
 @Component({
@@ -37,22 +22,17 @@ const CATEGORIES = [
 export class NewsControls {
   readonly search = output<RunParams>();
 
-  protected readonly countries = COUNTRIES;
-  protected readonly categories = CATEGORIES;
-
-  protected readonly country = signal('us');
-  protected readonly category = signal('');
+  protected readonly languages = LANGUAGES;
+  protected readonly query = signal('mundo');
+  protected readonly language = signal('es');
 
   protected submit(): void {
+    const q = this.query().trim();
     this.search.emit({
       query: {
-        country: this.country(),
-        category: this.category() || null,
+        q: q || null,
+        language: this.language(),
       },
     });
-  }
-
-  protected onChange(): void {
-    this.submit();
   }
 }
