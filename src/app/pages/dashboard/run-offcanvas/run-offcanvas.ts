@@ -79,6 +79,16 @@ export class RunOffcanvas {
     return `Límite de ${name} alcanzado, espera unos segundos antes de reintentar.`;
   });
 
+  protected readonly softError = computed<string | null>(() => {
+    const r = this.result();
+    const id = this.api()?.id;
+    if (!r || r.ok) return null;
+    if (id === 'dictionary' && r.httpStatus === 404) {
+      return 'Free Dictionary solo acepta una palabra en inglés (p. ej. hello, code, run).';
+    }
+    return null;
+  });
+
   protected readonly viewType = computed<ResultViewType>(() => viewTypeFor(this.api()?.id));
 
   protected readonly tab = signal<'view' | 'json'>('view');

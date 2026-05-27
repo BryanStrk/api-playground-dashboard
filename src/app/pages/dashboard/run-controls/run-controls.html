@@ -17,15 +17,7 @@
     <app-sports-controls (search)="emit($event)" />
   }
   @case ('dictionary') {
-    <app-simple-search-controls
-      inputId="dictionary-word"
-      label="Palabra (inglés)"
-      placeholder="hello, dictionary, code…"
-      initial="hello"
-      paramKind="path"
-      paramName="word"
-      (search)="emit($event)"
-    />
+    <app-dictionary-controls (search)="emit($event)" />
   }
   @case ('github') {
     <app-simple-search-controls

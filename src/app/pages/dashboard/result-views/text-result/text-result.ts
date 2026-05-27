@@ -39,7 +39,14 @@ export class TextResult {
   protected readonly view = computed<TextView>(() => {
     const data = this.data();
     if (!data || typeof data !== 'object') return { kind: 'empty' };
-    return mapText(this.api().id, data as Record<string, unknown>);
+    const id = this.api().id;
+    if (id === 'dictionary' && Array.isArray(data)) {
+      const first = data[0];
+      if (!first || typeof first !== 'object') return { kind: 'empty' };
+      return mapText(id, first as Record<string, unknown>);
+    }
+    if (Array.isArray(data)) return { kind: 'empty' };
+    return mapText(id, data as Record<string, unknown>);
   });
 }
 
