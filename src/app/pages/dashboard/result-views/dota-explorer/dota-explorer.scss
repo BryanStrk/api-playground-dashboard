@@ -1,0 +1,14 @@
+.dota {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.dota__tabs {
+  flex-wrap: wrap;
+  align-self: flex-start;
+
+  .btn {
+    font-weight: 500;
+  }
+}

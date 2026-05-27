@@ -15,6 +15,7 @@ export type ResultViewType =
   | 'HOLIDAYS'
   | 'HACKERNEWS'
   | 'TRIVIA'
+  | 'DOTA'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -42,6 +43,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   holidays: 'HOLIDAYS',
   hn: 'HACKERNEWS',
   trivia: 'TRIVIA',
+  dota: 'DOTA',
 };
 
 export function viewTypeFor(apiId: string | null | undefined): ResultViewType {

@@ -30,6 +30,8 @@
       <app-chat-result />
     } @else if (isTrivia()) {
       <app-trivia-game />
+    } @else if (isDota()) {
+      <app-dota-explorer />
     } @else {
       @if (api(); as a) {
         @if (hasControls()) {

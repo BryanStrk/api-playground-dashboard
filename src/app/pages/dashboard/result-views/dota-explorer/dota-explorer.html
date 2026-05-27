@@ -1,0 +1,49 @@
+<section class="dota" aria-label="Explorador de Dota 2">
+  <div
+    class="btn-group btn-group-sm dota__tabs"
+    role="tablist"
+    aria-label="Pestañas de OpenDota"
+  >
+    @for (t of tabs; track t.id; let i = $index) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        role="tab"
+        [class.active]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        [attr.tabindex]="tab() === t.id ? 0 : -1"
+        (click)="selectTab(t.id)"
+        (keydown)="onTabKeydown($event, i)"
+      >
+        <span aria-hidden="true">{{ t.icon }}</span> {{ t.label }}
+      </button>
+    }
+  </div>
+
+  @switch (tab()) {
+    @case ('heroes') {
+      @if (loadingHeroes()) {
+        <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span>Cargando héroes…</span>
+        </div>
+      } @else if (heroesError(); as err) {
+        <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+      } @else {
+        <p class="text-secondary small mb-0">{{ heroes().length }} héroes cargados.</p>
+      }
+    }
+    @case ('matches') {
+      @if (loadingMatches()) {
+        <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span>Cargando partidas…</span>
+        </div>
+      } @else if (matchesError(); as err) {
+        <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+      } @else {
+        <p class="text-secondary small mb-0">{{ matches().length }} partidas cargadas.</p>
+      }
+    }
+  }
+</section>
