@@ -1,0 +1,14 @@
+.characters-controls__tabs {
+  flex-wrap: wrap;
+  align-self: flex-start;
+}
+
+.characters-controls__tabs .btn {
+  font-weight: 500;
+}
+
+.characters-controls__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}

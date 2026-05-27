@@ -111,6 +111,110 @@
   }
 }
 
+.characters-result__episode-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.characters-result__ep-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.characters-result__ep-title {
+  font-weight: 700;
+}
+
+.characters-result__ep-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.characters-result__hint {
+  font-size: 0.8rem;
+  color: var(--ink-soft, #6b7280);
+  font-style: italic;
+}
+
+.characters-result__episodes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.characters-result__episode-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--accent-soft, #eef2ff);
+    border-color: var(--accent, #4f46e5);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent, #4f46e5);
+    outline-offset: 2px;
+  }
+}
+
+.characters-result__ep-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+}
+
+.characters-result__ep-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.characters-result__ep-date {
+  white-space: nowrap;
+}
+
+.characters-result__locations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.characters-result__location-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 0.5rem;
+}
+
+.characters-result__loc-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.characters-result__loc-meta {
+  font-size: 0.78rem;
+  color: var(--ink-soft, #6b7280);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .characters-result__card {
     transition: none;
