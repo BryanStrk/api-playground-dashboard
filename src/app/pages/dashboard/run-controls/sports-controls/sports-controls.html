@@ -1,0 +1,19 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="sports-competition">Competición</label>
+      <select
+        id="sports-competition"
+        class="form-select"
+        [ngModel]="code()"
+        (ngModelChange)="onChange($event)"
+        name="competition"
+      >
+        @for (c of competitions(); track c.code) {
+          <option [value]="c.code">{{ c.name }} ({{ c.code }})</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+</form>

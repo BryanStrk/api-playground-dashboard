@@ -5,6 +5,7 @@ import { RunParams } from '../../../core/api.service';
 import { CatsControls } from './cats-controls/cats-controls';
 import { PokemonControls } from './pokemon-controls/pokemon-controls';
 import { SimpleSearchControls } from './simple-search-controls/simple-search-controls';
+import { SportsControls } from './sports-controls/sports-controls';
 import { WeatherControls } from './weather-controls/weather-controls';
 
 export type ControlsKind =
@@ -55,7 +56,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
 @Component({
   selector: 'app-run-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CatsControls, PokemonControls, SimpleSearchControls, WeatherControls],
+  imports: [CatsControls, PokemonControls, SimpleSearchControls, SportsControls, WeatherControls],
   templateUrl: './run-controls.html',
 })
 export class RunControls {

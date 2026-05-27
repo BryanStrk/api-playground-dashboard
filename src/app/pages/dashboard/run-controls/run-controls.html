@@ -14,15 +14,7 @@
     />
   }
   @case ('sports') {
-    <app-simple-search-controls
-      inputId="sports-team"
-      label="Equipo"
-      placeholder="Arsenal, Real Madrid…"
-      initial="Arsenal"
-      paramKind="query"
-      paramName="name"
-      (search)="emit($event)"
-    />
+    <app-sports-controls (search)="emit($event)" />
   }
   @case ('dictionary') {
     <app-simple-search-controls
