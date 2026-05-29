@@ -34,46 +34,6 @@ export class StatResult {
 
 function mapStats(id: string, d: Record<string, unknown>): StatView {
   switch (id) {
-    case 'crypto': {
-      const prices = d['prices'];
-      if (!prices || typeof prices !== 'object') return { title: null, stats: [], caption: null };
-      const entries = Object.entries(prices as Record<string, unknown>);
-      const stats: Stat[] = [];
-      for (const [coin, value] of entries) {
-        if (!value || typeof value !== 'object') continue;
-        for (const [currency, amount] of Object.entries(value as Record<string, unknown>)) {
-          if (typeof amount !== 'number') continue;
-          stats.push({
-            id: `${coin}-${currency}`,
-            value: formatCurrency(amount, currency),
-            label: capitalize(coin),
-            hint: currency.toUpperCase(),
-          });
-        }
-      }
-      return { title: null, stats, caption: null };
-    }
-
-    case 'exchange': {
-      const base = (str(d['base']) ?? '').toUpperCase();
-      const amount = num(d['amount']);
-      const rates = d['rates'];
-      const date = str(d['date']);
-      const stats: Stat[] = [];
-      if (rates && typeof rates === 'object') {
-        for (const [currency, rate] of Object.entries(rates as Record<string, unknown>)) {
-          if (typeof rate !== 'number') continue;
-          stats.push({
-            id: currency,
-            value: formatNumber(rate, 4),
-            label: `${base || '?'} → ${currency.toUpperCase()}`,
-            hint: amount !== null && amount !== 1 ? `por ${formatNumber(amount, 2)} ${base}` : null,
-          });
-        }
-      }
-      return { title: null, stats, caption: date ? `Tipos del ${date}` : null };
-    }
-
     case 'weather': {
       const temp = num(d['temperature']);
       const tempUnit = str(d['temperatureUnit']) ?? '°C';
@@ -143,19 +103,3 @@ function formatNumber(value: number, decimals: number): string {
   }).format(value);
 }
 
-function formatCurrency(value: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: currency.toUpperCase(),
-      maximumFractionDigits: value < 1 ? 6 : 2,
-    }).format(value);
-  } catch {
-    return `${formatNumber(value, 6)} ${currency.toUpperCase()}`;
-  }
-}
-
-function capitalize(value: string): string {
-  if (!value) return value;
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}

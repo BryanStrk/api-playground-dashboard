@@ -11,11 +11,6 @@
   color: var(--ink, #111827);
 }
 
-.text-result__meta {
-  font-size: 0.75rem;
-  color: var(--ink-soft, #6b7280);
-}
-
 .text-result__title {
   font-weight: 700;
   line-height: 1.3;
@@ -24,57 +19,4 @@
 
 .text-result--post .text-result__body {
   white-space: pre-wrap;
-}
-
-.text-result__header {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.text-result__word {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.text-result__phonetic {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9rem;
-  color: var(--ink-soft, #4b5563);
-}
-
-.text-result__meaning {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding-top: 0.4rem;
-  border-top: 1px solid var(--line, #e5e7eb);
-
-  &:first-of-type {
-    border-top: none;
-    padding-top: 0;
-  }
-}
-
-.text-result__part-of-speech {
-  font-size: 0.85rem;
-  color: var(--ink-soft, #4b5563);
-}
-
-.text-result__definitions {
-  padding-left: 1.2rem;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-
-  li {
-    line-height: 1.5;
-  }
-}
-
-.text-result__example {
-  color: var(--ink-soft, #6b7280);
-  font-style: italic;
 }

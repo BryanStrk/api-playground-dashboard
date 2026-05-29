@@ -16,9 +16,6 @@
   @case ('sports') {
     <app-sports-controls (search)="emit($event)" />
   }
-  @case ('dictionary') {
-    <app-dictionary-controls (search)="emit($event)" />
-  }
   @case ('github') {
     <app-simple-search-controls
       inputId="github-user"
@@ -30,20 +27,11 @@
       (search)="emit($event)"
     />
   }
-  @case ('pokemon') {
-    <app-pokemon-controls (search)="emit($event)" />
-  }
-  @case ('cats') {
-    <app-cats-controls (search)="emit($event)" />
-  }
   @case ('movies') {
     <app-movies-controls (search)="emit($event)" />
   }
   @case ('music') {
     <app-music-controls (search)="emit($event)" />
-  }
-  @case ('crypto') {
-    <app-crypto-controls (search)="emit($event)" />
   }
   @case ('news') {
     <app-news-controls (search)="emit($event)" />
@@ -59,9 +47,6 @@
   }
   @case ('users') {
     <app-users-controls (search)="emit($event)" />
-  }
-  @case ('exchange') {
-    <app-exchange-controls (search)="emit($event)" />
   }
   @case ('meals') {
     <app-meals-controls (search)="emit($event)" />

@@ -149,7 +149,7 @@ export class Dashboard {
     this.selectedApi.set(api);
     this.openOffcanvas();
     const view = viewTypeFor(api.id);
-    if (view === 'CHAT' || view === 'TRIVIA' || view === 'DOTA') {
+    if (view === 'TRIVIA' || view === 'DOTA') {
       this.runResult.set(null);
       this.running.set(false);
       return;

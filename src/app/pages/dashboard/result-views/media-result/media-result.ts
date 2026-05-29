@@ -44,25 +44,6 @@ export class MediaResult {
 
 function mapMedia(id: string, d: Record<string, unknown>): MediaView {
   switch (id) {
-    case 'pokemon':
-      return view({
-        imageUrl: str(d['spriteUrl']),
-        alt: `Imagen de ${str(d['name']) ?? 'pokémon'}`,
-        caption: capitalize(str(d['name'])),
-        fields: [
-          field('Tipos', joinList(d['types'])),
-          field('Altura', formatDecimetres(d['height'])),
-          field('Peso', formatHectograms(d['weight'])),
-        ],
-      });
-
-    case 'cats':
-      return view({
-        imageUrl: str(d['imageUrl']) ?? str(d['url']),
-        alt: 'Gato aleatorio',
-        fields: [field('Dimensiones', dimensions(d['width'], d['height']))],
-      });
-
     case 'photos':
       return view({
         imageUrl: str(d['regularUrl']) ?? str(d['thumbUrl']),
@@ -175,16 +156,6 @@ function dimensions(w: unknown, h: unknown): string | null {
   return `${wn} × ${hn}`;
 }
 
-function formatDecimetres(value: unknown): string | null {
-  if (typeof value !== 'number') return null;
-  return `${(value / 10).toFixed(1)} m`;
-}
-
-function formatHectograms(value: unknown): string | null {
-  if (typeof value !== 'number') return null;
-  return `${(value / 10).toFixed(1)} kg`;
-}
-
 function areaStr(value: unknown): string | null {
   if (typeof value !== 'number' || Number.isNaN(value)) return null;
   return `${new Intl.NumberFormat('es-ES').format(value)} km²`;
@@ -192,11 +163,6 @@ function areaStr(value: unknown): string | null {
 
 function prefix(p: string, value: string | null): string | null {
   return value ? `${p}${value}` : null;
-}
-
-function capitalize(value: string | null): string | null {
-  if (!value) return null;
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function linkOrNull(value: unknown, label: string): { href: string; label: string } | null {

@@ -1,37 +1,4 @@
 @switch (view().kind) {
-  @case ('dictionary') {
-    @if (view(); as v) {
-      @if (v.kind === 'dictionary') {
-        <article class="text-result text-result--dictionary">
-          <header class="text-result__header">
-            <h3 class="text-result__word mb-0">{{ v.word }}</h3>
-            @if (v.phonetic) {
-              <code class="text-result__phonetic">{{ v.phonetic }}</code>
-            }
-          </header>
-          @if (v.meanings.length === 0) {
-            <p class="text-secondary mb-0">No hay definiciones disponibles.</p>
-          } @else {
-            @for (m of v.meanings; track $index) {
-              <section class="text-result__meaning">
-                <em class="text-result__part-of-speech">{{ m.partOfSpeech }}</em>
-                <ul class="text-result__definitions mb-0">
-                  @for (def of m.definitions; track $index) {
-                    <li>
-                      <span>{{ def.definition }}</span>
-                      @if (def.example) {
-                        <span class="text-result__example"> — “{{ def.example }}”</span>
-                      }
-                    </li>
-                  }
-                </ul>
-              </section>
-            }
-          }
-        </article>
-      }
-    }
-  }
   @case ('post') {
     @if (view(); as v) {
       @if (v.kind === 'post') {

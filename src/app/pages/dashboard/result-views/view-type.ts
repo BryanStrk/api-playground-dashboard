@@ -6,7 +6,6 @@ export type ResultViewType =
   | 'TEXT'
   | 'STAT'
   | 'SPORTS'
-  | 'CHAT'
   | 'MEALS'
   | 'CHARACTERS'
   | 'SPACE'
@@ -19,8 +18,6 @@ export type ResultViewType =
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
-  pokemon: 'MEDIA',
-  cats: 'MEDIA',
   photos: 'MEDIA',
   space: 'SPACE',
   users: 'MEDIA',
@@ -32,12 +29,8 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   movies: 'MOVIES',
   news: 'GALLERY',
   books: 'BOOKS',
-  ai: 'CHAT',
-  dictionary: 'TEXT',
   posts: 'TEXT',
-  crypto: 'STAT',
   meals: 'MEALS',
-  exchange: 'STAT',
   weather: 'STAT',
   qrcode: 'QR',
   holidays: 'HOLIDAYS',

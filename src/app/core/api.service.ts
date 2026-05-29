@@ -17,7 +17,9 @@ export class ApiService {
   private readonly base = environment.apiBaseUrl;
 
   getCatalog(): Observable<ApiInfo[]> {
-    return this.http.get<ApiInfo[]>(`${this.base}/catalog`);
+    return this.http
+      .get<ApiInfo[]>(`${this.base}/catalog`)
+      .pipe(map((catalog) => catalog.filter((api) => !DISABLED_API_IDS.has(api.id))));
   }
 
   getHealth(): Observable<HealthReport> {
@@ -117,20 +119,18 @@ interface SampleInput {
 const SAMPLE_INPUTS: Record<string, SampleInput> = {
   weather: { query: 'city=Madrid' },
   music: { query: 'term=daft+punk&limit=5' },
-  crypto: { query: 'ids=bitcoin,ethereum&vs=usd' },
-  pokemon: { path: { name: 'pikachu' } },
   countries: { path: { name: 'spain' } },
   posts: { path: { id: '1' } },
   meals: {},
   sports: { query: 'competition=PD' },
   news: { query: 'q=mundo&language=es' },
   photos: { query: 'query=mountains' },
-  exchange: { query: 'from=EUR&to=USD,GBP,JPY' },
   qrcode: { query: 'data=https%3A%2F%2Fgithub.com&size=300x300' },
   holidays: { query: 'country=ES' },
   hn: { query: 'type=top&limit=20' },
-  dictionary: { path: { word: 'hello' } },
   github: { path: { username: 'torvalds' } },
   books: { query: 'title=clean+code' },
   characters: { path: { id: '1' } },
 };
+
+const DISABLED_API_IDS = new Set(['crypto', 'pokemon', 'ai', 'cats', 'dictionary', 'exchange']);

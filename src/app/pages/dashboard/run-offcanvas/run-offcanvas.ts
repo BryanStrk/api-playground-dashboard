@@ -5,7 +5,6 @@ import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { BooksResult } from '../result-views/books-result/books-result';
 import { CharactersResult } from '../result-views/characters-result/characters-result';
-import { ChatResult } from '../result-views/chat-result/chat-result';
 import { DotaExplorer } from '../result-views/dota-explorer/dota-explorer';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { HnResult } from '../result-views/hn-result/hn-result';
@@ -29,7 +28,6 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     AudioResult,
     BooksResult,
     CharactersResult,
-    ChatResult,
     DotaExplorer,
     GalleryResult,
     HnResult,
@@ -57,11 +55,10 @@ export class RunOffcanvas {
   protected readonly hasControls = computed(() => {
     const api = this.api();
     if (!api) return false;
-    if (this.isChat() || this.isTrivia() || this.isDota()) return false;
+    if (this.isTrivia() || this.isDota()) return false;
     return controlsKindFor(api.id) !== 'none';
   });
 
-  protected readonly isChat = computed(() => this.viewType() === 'CHAT');
   protected readonly isTrivia = computed(() => this.viewType() === 'TRIVIA');
   protected readonly isDota = computed(() => this.viewType() === 'DOTA');
 
@@ -91,22 +88,8 @@ export class RunOffcanvas {
   protected readonly isRateLimited = computed(() => this.result()?.httpStatus === 429);
 
   protected readonly rateLimitMessage = computed(() => {
-    const id = this.api()?.id;
-    if (id === 'crypto') {
-      return 'Límite de CoinGecko alcanzado, espera unos segundos antes de reintentar.';
-    }
     const name = this.api()?.name ?? 'la API';
     return `Límite de ${name} alcanzado, espera unos segundos antes de reintentar.`;
-  });
-
-  protected readonly softError = computed<string | null>(() => {
-    const r = this.result();
-    const id = this.api()?.id;
-    if (!r || r.ok) return null;
-    if (id === 'dictionary' && r.httpStatus === 404) {
-      return 'Free Dictionary solo acepta una palabra en inglés (p. ej. hello, code, run).';
-    }
-    return null;
   });
 
   protected readonly viewType = computed<ResultViewType>(() => viewTypeFor(this.api()?.id));
