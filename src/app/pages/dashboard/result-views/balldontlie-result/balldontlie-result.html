@@ -272,6 +272,31 @@
                       {{ state.errorMessage }}
                     </div>
                   }
+                  @case ('locked') {
+                    @if (state.paywall; as pw) {
+                      <div class="bdl__lock" role="status">
+                        <div class="bdl__lock-head">
+                          <span class="bdl__lock-icon" aria-hidden="true">🔒</span>
+                          <p class="bdl__lock-msg mb-0">{{ pw.message }}</p>
+                        </div>
+                        <div class="bdl__lock-actions">
+                          @if (pw.requiredPlan) {
+                            <span class="bdl__lock-badge">
+                              Requiere plan {{ pw.requiredPlan }}
+                            </span>
+                          }
+                          <a
+                            class="btn btn-sm btn-primary"
+                            [href]="upgradeUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Actualizar plan
+                          </a>
+                        </div>
+                      </div>
+                    }
+                  }
                   @case ('data') {
                     @switch (p.id) {
                       @case ('standings') {

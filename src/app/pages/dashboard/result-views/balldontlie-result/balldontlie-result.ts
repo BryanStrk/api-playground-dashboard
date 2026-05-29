@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { environment } from '../../../../../environments/environment';
 
@@ -59,11 +59,20 @@ export interface ProbeMeta {
   hint: string;
 }
 
+export interface PaywallInfo {
+  requiredPlan: string | null;
+  feature: string | null;
+  message: string;
+}
+
 export interface ProbeState {
-  status: 'idle' | 'loading' | 'data' | 'error';
+  status: 'idle' | 'loading' | 'data' | 'locked' | 'error';
   data: unknown;
+  paywall: PaywallInfo | null;
   errorMessage: string | null;
 }
+
+export const BALLDONTLIE_UPGRADE_URL = 'https://app.balldontlie.io';
 
 export interface PremiumStanding {
   team: string;
@@ -122,6 +131,7 @@ const PROBES: ProbeMeta[] = [
 const INITIAL_PROBE: ProbeState = {
   status: 'idle',
   data: null,
+  paywall: null,
   errorMessage: null,
 };
 
@@ -259,10 +269,17 @@ export class BalldontlieResult implements AfterViewInit {
     return this.probeStates()[kind];
   }
 
+  protected readonly upgradeUrl = BALLDONTLIE_UPGRADE_URL;
+
   protected runProbe(kind: PremiumKind): void {
     const current = this.probeState(kind);
     if (current.status === 'loading') return;
-    this.updateProbe(kind, { status: 'loading', data: null, errorMessage: null });
+    this.updateProbe(kind, {
+      status: 'loading',
+      data: null,
+      paywall: null,
+      errorMessage: null,
+    });
     const meta = PROBES.find((p) => p.id === kind);
     if (!meta) return;
     this.http
@@ -273,13 +290,24 @@ export class BalldontlieResult implements AfterViewInit {
           this.updateProbe(kind, {
             status: 'data',
             data: shapeProbeData(kind, raw),
+            paywall: null,
             errorMessage: null,
           });
         },
-        error: () => {
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 402) {
+            this.updateProbe(kind, {
+              status: 'locked',
+              data: null,
+              paywall: extractPaywall(err, meta.label),
+              errorMessage: null,
+            });
+            return;
+          }
           this.updateProbe(kind, {
             status: 'error',
             data: null,
+            paywall: null,
             errorMessage: 'No se pudo completar la llamada al endpoint.',
           });
         },
@@ -483,6 +511,18 @@ function extractStrings(value: unknown): string[] {
   return value
     .map((v) => (typeof v === 'string' ? v.trim() : ''))
     .filter((v) => v.length > 0);
+}
+
+function extractPaywall(err: HttpErrorResponse, fallbackFeature: string): PaywallInfo {
+  const body = err.error;
+  const record = body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+  return {
+    requiredPlan: str(record['requiredPlan']) ?? str(record['plan']),
+    feature: str(record['feature']) ?? fallbackFeature,
+    message:
+      str(record['message']) ??
+      'Este endpoint requiere un plan de pago de BALLDONTLIE.',
+  };
 }
 
 function shapeProbeData(kind: PremiumKind, raw: unknown): unknown {
