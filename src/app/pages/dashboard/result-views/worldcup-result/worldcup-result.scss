@@ -54,3 +54,231 @@
   gap: 0.75rem;
   min-width: 0;
 }
+
+.worldcup__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.worldcup__filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 0.5rem;
+
+  @media (max-width: 420px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.worldcup__chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.worldcup__chip {
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover:not(.is-active) {
+    background: var(--bs-tertiary-bg);
+  }
+
+  &.is-active {
+    background: var(--bs-primary);
+    color: var(--bs-light);
+    border-color: var(--bs-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+  }
+}
+
+.worldcup__filters-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.worldcup__count {
+  font-size: 0.8rem;
+  color: var(--bs-secondary-color);
+}
+
+.worldcup__matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.worldcup__round {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.worldcup__round-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  margin: 0;
+}
+
+.worldcup__match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.worldcup__match {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.55rem;
+  background: var(--bs-body-bg);
+
+  &.is-played {
+    border-color: color-mix(in srgb, var(--bs-success) 25%, var(--bs-border-color));
+  }
+}
+
+.worldcup__match-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.74rem;
+  color: var(--bs-secondary-color);
+}
+
+.worldcup__match-date {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--bs-emphasis-color);
+}
+
+.worldcup__chip-mini {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: var(--bs-tertiary-bg);
+}
+
+.worldcup__match-venue {
+  font-size: 0.74rem;
+}
+
+.worldcup__match-body {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.worldcup__team {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+
+  &--home {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  &--away {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+.worldcup__flag {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex: 0 0 auto;
+
+  &.is-placeholder {
+    opacity: 0.65;
+  }
+}
+
+.worldcup__team-name {
+  font-size: 0.86rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.worldcup__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0 0.45rem;
+  min-width: 4.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.worldcup__score-value {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--bs-emphasis-color);
+}
+
+.worldcup__score-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bs-emphasis-color);
+}
+
+.worldcup__score-rel {
+  font-size: 0.7rem;
+  color: var(--bs-secondary-color);
+  text-transform: capitalize;
+}
+
+.worldcup__goals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.9rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--bs-border-color);
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+}
+
+.worldcup__goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  &--home {
+    text-align: right;
+  }
+
+  &--away {
+    text-align: left;
+  }
+}

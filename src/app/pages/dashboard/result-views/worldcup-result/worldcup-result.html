@@ -53,7 +53,165 @@
   >
     @switch (tab()) {
       @case ('matches') {
-        <p class="text-secondary mb-0">Próximamente: calendario de partidos.</p>
+        <div class="worldcup__filters" role="group" aria-label="Filtros de partidos">
+          <div class="worldcup__filter-row">
+            <label class="visually-hidden" for="worldcup-team">Buscar equipo</label>
+            <input
+              id="worldcup-team"
+              type="search"
+              class="form-control form-control-sm worldcup__search"
+              placeholder="Buscar equipo (España, Argentina…)"
+              autocomplete="off"
+              [ngModel]="teamInput()"
+              (ngModelChange)="onTeamInput($event)"
+            />
+            <label class="visually-hidden" for="worldcup-group">Filtrar por grupo</label>
+            <select
+              id="worldcup-group"
+              class="form-select form-select-sm worldcup__group"
+              [ngModel]="groupFilter()"
+              (ngModelChange)="setGroup($event)"
+            >
+              <option value="">Todos los grupos</option>
+              @for (g of groupOptions; track g.value) {
+                <option [value]="g.value">{{ g.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div
+            class="worldcup__chip-group"
+            role="radiogroup"
+            aria-label="Filtrar por estado del partido"
+          >
+            @for (chip of statusChips; track chip.id) {
+              <button
+                type="button"
+                class="worldcup__chip"
+                role="radio"
+                [class.is-active]="statusFilter() === chip.id"
+                [attr.aria-checked]="statusFilter() === chip.id"
+                (click)="setStatus(chip.id)"
+              >
+                {{ chip.label }}
+              </button>
+            }
+          </div>
+
+          <div class="worldcup__filters-footer">
+            <p class="worldcup__count mb-0" aria-live="polite">
+              @if (totalMatches() !== null) {
+                Mostrando {{ matches().length }} de {{ totalMatches() }}
+              } @else {
+                Mostrando {{ matches().length }}
+              }
+            </p>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              [disabled]="!hasFilters()"
+              (click)="clearFilters()"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="worldcup__matches"
+          aria-live="polite"
+          aria-busy="{{ loadingMatches() }}"
+        >
+          @if (loadingMatches()) {
+            <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span>Cargando partidos…</span>
+            </div>
+          } @else if (matchesError(); as err) {
+            <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+          } @else if (matches().length === 0) {
+            <p class="text-secondary mb-0">
+              No hay partidos que coincidan con los filtros seleccionados.
+            </p>
+          } @else {
+            @for (round of groupedMatches(); track round.round) {
+              <section class="worldcup__round" aria-label="Jornada {{ round.round }}">
+                <h4 class="worldcup__round-title">{{ round.round }}</h4>
+                <ul class="worldcup__match-list list-unstyled mb-0">
+                  @for (m of round.matches; track m.id) {
+                    <li class="worldcup__match" [class.is-played]="m.played">
+                      <div class="worldcup__match-meta">
+                        @if (m.whenLabel) {
+                          <span class="worldcup__match-date">{{ m.whenLabel }}</span>
+                        }
+                        @if (m.group) {
+                          <span class="worldcup__chip-mini">{{ m.group }}</span>
+                        }
+                        @if (m.venue) {
+                          <span class="worldcup__match-venue">📍 {{ m.venue }}</span>
+                        }
+                      </div>
+
+                      <div class="worldcup__match-body">
+                        <div class="worldcup__team worldcup__team--home">
+                          <span
+                            class="worldcup__flag"
+                            [class.is-placeholder]="m.home.isPlaceholder"
+                            [attr.aria-label]="m.home.ariaLabel"
+                            role="img"
+                          >{{ m.home.flag }}</span>
+                          <span class="worldcup__team-name">{{ m.home.name }}</span>
+                        </div>
+
+                        <div class="worldcup__score">
+                          @if (m.played && m.homeScore !== null && m.awayScore !== null) {
+                            <span class="worldcup__score-value">
+                              {{ m.homeScore }} <span aria-hidden="true">—</span> {{ m.awayScore }}
+                            </span>
+                          } @else if (m.timeLabel) {
+                            <span class="worldcup__score-time">
+                              <span aria-hidden="true">🕒</span> {{ m.timeLabel }}
+                            </span>
+                            @if (relativeWhen(m.utcDate); as rel) {
+                              <span class="worldcup__score-rel">{{ rel }}</span>
+                            }
+                          } @else {
+                            <span class="text-secondary" aria-hidden="true">vs</span>
+                          }
+                        </div>
+
+                        <div class="worldcup__team worldcup__team--away">
+                          <span
+                            class="worldcup__flag"
+                            [class.is-placeholder]="m.away.isPlaceholder"
+                            [attr.aria-label]="m.away.ariaLabel"
+                            role="img"
+                          >{{ m.away.flag }}</span>
+                          <span class="worldcup__team-name">{{ m.away.name }}</span>
+                        </div>
+                      </div>
+
+                      @if (m.played && (m.homeGoals.length > 0 || m.awayGoals.length > 0)) {
+                        <div class="worldcup__goals">
+                          <ul class="worldcup__goal-list worldcup__goal-list--home list-unstyled mb-0">
+                            @for (g of m.homeGoals; track g.player + g.minute) {
+                              <li>{{ goalLine(g) }}</li>
+                            }
+                          </ul>
+                          <ul class="worldcup__goal-list worldcup__goal-list--away list-unstyled mb-0">
+                            @for (g of m.awayGoals; track g.player + g.minute) {
+                              <li>{{ goalLine(g) }}</li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          }
+        </div>
       }
       @case ('groups') {
         <p class="text-secondary mb-0">Próximamente: clasificación por grupos.</p>
