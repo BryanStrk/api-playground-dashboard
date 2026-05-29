@@ -77,7 +77,85 @@
         }
       }
       @case ('teams') {
-        <p class="text-secondary mb-0">Próximamente: equipos por confederación.</p>
+        @if (loadingTeams()) {
+          <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span>Cargando equipos…</span>
+          </div>
+        } @else if (teamsError(); as err) {
+          <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+        } @else if (teams().length === 0) {
+          <p class="text-secondary mb-0">No hay equipos que mostrar.</p>
+        } @else {
+          <div
+            class="bdl__chip-group"
+            role="radiogroup"
+            aria-label="Filtrar por confederación"
+          >
+            <button
+              type="button"
+              class="bdl__chip"
+              role="radio"
+              [class.is-active]="confederationFilter() === ''"
+              [attr.aria-checked]="confederationFilter() === ''"
+              (click)="setConfederation('')"
+            >
+              Todas
+            </button>
+            @for (c of availableConfederations(); track c) {
+              <button
+                type="button"
+                class="bdl__chip"
+                role="radio"
+                [class.is-active]="confederationFilter() === c"
+                [attr.aria-checked]="confederationFilter() === c"
+                (click)="setConfederation(c)"
+              >
+                {{ c }}
+              </button>
+            }
+          </div>
+
+          @if (visibleGroups().length === 0) {
+            <p class="text-secondary mb-0">
+              No hay equipos en la confederación seleccionada.
+            </p>
+          } @else {
+            @for (group of visibleGroups(); track group.id) {
+              <section
+                class="bdl__conf"
+                [attr.aria-labelledby]="'bdl-conf-' + group.id"
+              >
+                <header class="bdl__conf-header">
+                  <h4 class="bdl__conf-title mb-0" [id]="'bdl-conf-' + group.id">
+                    {{ group.label }}
+                  </h4>
+                  <span class="bdl__conf-count" aria-label="Número de equipos">
+                    {{ group.teams.length }}
+                  </span>
+                </header>
+                <ul class="bdl__team-grid list-unstyled mb-0">
+                  @for (t of group.teams; track t.id) {
+                    <li class="bdl__team">
+                      <span
+                        class="bdl__team-flag"
+                        [class.is-placeholder]="t.flag === '⚽'"
+                        role="img"
+                        [attr.aria-label]="t.countryCode
+                          ? 'Bandera de ' + t.name
+                          : 'Sin bandera'"
+                      >{{ t.flag }}</span>
+                      <span class="bdl__team-name">{{ t.name }}</span>
+                      @if (t.abbreviation) {
+                        <span class="bdl__team-abbr">{{ t.abbreviation }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          }
+        }
       }
       @case ('live') {
         <p class="text-secondary mb-0">Próximamente: planes y datos premium.</p>

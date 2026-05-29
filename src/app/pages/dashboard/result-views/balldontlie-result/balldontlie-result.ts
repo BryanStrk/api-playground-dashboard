@@ -25,6 +25,32 @@ export interface Stadium {
   longitude: number | null;
 }
 
+export interface Team {
+  id: number | string;
+  name: string;
+  abbreviation: string | null;
+  countryCode: string | null;
+  confederation: string;
+  flag: string;
+}
+
+export interface ConfederationGroup {
+  id: string;
+  label: string;
+  teams: Team[];
+}
+
+const CONFEDERATION_ORDER: { id: string; label: string }[] = [
+  { id: 'UEFA', label: 'UEFA' },
+  { id: 'CONMEBOL', label: 'CONMEBOL' },
+  { id: 'CONCACAF', label: 'CONCACAF' },
+  { id: 'CAF', label: 'CAF' },
+  { id: 'AFC', label: 'AFC' },
+  { id: 'OFC', label: 'OFC' },
+];
+
+const PLACEHOLDER_FLAG = '⚽';
+
 type Tab = 'stadiums' | 'teams' | 'live';
 
 const TAB_LABELS: { id: Tab; label: string; icon: string }[] = [
@@ -52,12 +78,33 @@ export class BalldontlieResult implements AfterViewInit {
   protected readonly loadingStadiums = signal(false);
   protected readonly stadiumsError = signal<string | null>(null);
 
+  protected readonly teams = signal<Team[]>([]);
+  protected readonly loadingTeams = signal(false);
+  protected readonly teamsError = signal<string | null>(null);
+  protected readonly confederationFilter = signal<string>('');
+
+  protected readonly confederationGroups = computed<ConfederationGroup[]>(() =>
+    buildConfederationGroups(this.teams()),
+  );
+
+  protected readonly availableConfederations = computed<string[]>(() =>
+    this.confederationGroups().map((g) => g.id),
+  );
+
+  protected readonly visibleGroups = computed<ConfederationGroup[]>(() => {
+    const filter = this.confederationFilter();
+    const groups = this.confederationGroups();
+    if (!filter) return groups;
+    return groups.filter((g) => g.id === filter);
+  });
+
   private readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
   private mapInstance: unknown = null;
   private mapMarkers: unknown[] = [];
 
   constructor() {
     this.loadStadiums();
+    this.loadTeams();
     effect(() => {
       const list = this.stadiums();
       const onTab = this.tab() === 'stadiums';
@@ -105,6 +152,11 @@ export class BalldontlieResult implements AfterViewInit {
     return `https://www.google.com/maps?q=${s.latitude},${s.longitude}`;
   }
 
+  protected setConfederation(value: string): void {
+    if (this.confederationFilter() === value) return;
+    this.confederationFilter.set(value);
+  }
+
   private loadStadiums(): void {
     this.loadingStadiums.set(true);
     this.stadiumsError.set(null);
@@ -120,6 +172,25 @@ export class BalldontlieResult implements AfterViewInit {
           this.stadiums.set([]);
           this.loadingStadiums.set(false);
           this.stadiumsError.set('No se pudieron cargar las sedes.');
+        },
+      });
+  }
+
+  private loadTeams(): void {
+    this.loadingTeams.set(true);
+    this.teamsError.set(null);
+    this.http
+      .get<unknown>(`${environment.apiBaseUrl}/balldontlie/teams`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (raw) => {
+          this.teams.set(mapTeams(raw));
+          this.loadingTeams.set(false);
+        },
+        error: () => {
+          this.teams.set([]);
+          this.loadingTeams.set(false);
+          this.teamsError.set('No se pudieron cargar los equipos.');
         },
       });
   }
@@ -200,6 +271,60 @@ function escape(value: string | null): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function mapTeams(raw: unknown): Team[] {
+  const list = arrayFrom(raw, ['teams', 'data']);
+  return list
+    .filter((t): t is Record<string, unknown> => !!t && typeof t === 'object')
+    .map((t, i) => mapTeam(t, i));
+}
+
+function mapTeam(t: Record<string, unknown>, index: number): Team {
+  const countryCode = str(t['country_code']) ?? str(t['countryCode']);
+  const confederation =
+    str(t['confederation']) ?? str(t['conf']) ?? 'Otros';
+  return {
+    id: (str(t['id']) ?? index) as string | number,
+    name: str(t['name']) ?? 'Equipo',
+    abbreviation: str(t['abbreviation']) ?? str(t['abbr']),
+    countryCode,
+    confederation: confederation.toUpperCase(),
+    flag: countryCode ? isoToFlagEmoji(countryCode) : PLACEHOLDER_FLAG,
+  };
+}
+
+function buildConfederationGroups(teams: Team[]): ConfederationGroup[] {
+  const buckets = new Map<string, Team[]>();
+  for (const team of teams) {
+    if (!buckets.has(team.confederation)) buckets.set(team.confederation, []);
+    buckets.get(team.confederation)!.push(team);
+  }
+  for (const list of buckets.values()) {
+    list.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  }
+  const ordered: ConfederationGroup[] = [];
+  for (const { id, label } of CONFEDERATION_ORDER) {
+    const list = buckets.get(id);
+    if (list && list.length > 0) {
+      ordered.push({ id, label, teams: list });
+      buckets.delete(id);
+    }
+  }
+  for (const [id, list] of buckets.entries()) {
+    ordered.push({ id, label: id, teams: list });
+  }
+  return ordered;
+}
+
+function isoToFlagEmoji(code: string): string {
+  const iso = code.trim().toUpperCase();
+  if (iso.length !== 2) return PLACEHOLDER_FLAG;
+  const A = 0x1f1e6;
+  const a = 'A'.charCodeAt(0);
+  const first = iso.charCodeAt(0) - a + A;
+  const second = iso.charCodeAt(1) - a + A;
+  return String.fromCodePoint(first, second);
 }
 
 function mapStadiums(raw: unknown): Stadium[] {
