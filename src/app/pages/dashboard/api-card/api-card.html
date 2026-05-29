@@ -26,6 +26,19 @@
     <code class="api-card__endpoint text-truncate" [title]="api().localEndpoint">
       {{ api().localEndpoint }}
     </code>
+
+    @if (api().officialUrl) {
+      <a
+        class="api-card__official-link"
+        [href]="api().officialUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="'Abrir documentación oficial de ' + api().name"
+      >
+        <span aria-hidden="true">🌐</span>
+        <span>Web oficial</span>
+      </a>
+    }
   </div>
 
   <footer class="card-footer bg-transparent border-top-0 pt-0 d-flex align-items-center justify-content-between gap-2">

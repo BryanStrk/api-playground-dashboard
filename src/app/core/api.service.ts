@@ -17,9 +17,13 @@ export class ApiService {
   private readonly base = environment.apiBaseUrl;
 
   getCatalog(): Observable<ApiInfo[]> {
-    return this.http
-      .get<ApiInfo[]>(`${this.base}/catalog`)
-      .pipe(map((catalog) => catalog.filter((api) => !DISABLED_API_IDS.has(api.id))));
+    return this.http.get<ApiInfo[]>(`${this.base}/catalog`).pipe(
+      map((catalog) =>
+        catalog
+          .filter((api) => !DISABLED_API_IDS.has(api.id))
+          .map((api) => ({ ...api, officialUrl: OFFICIAL_URL_BY_ID[api.id] ?? api.externalUrl })),
+      ),
+    );
   }
 
   getHealth(): Observable<HealthReport> {
@@ -134,3 +138,25 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
 };
 
 const DISABLED_API_IDS = new Set(['crypto', 'pokemon', 'ai', 'cats', 'dictionary', 'exchange']);
+
+const OFFICIAL_URL_BY_ID: Record<string, string> = {
+  weather: 'https://open-meteo.com/',
+  movies: 'https://developer.themoviedb.org/docs',
+  music:
+    'https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/',
+  countries: 'https://restcountries.com/',
+  meals: 'https://www.themealdb.com/api.php',
+  photos: 'https://unsplash.com/developers',
+  sports: 'https://www.football-data.org/',
+  space: 'https://api.nasa.gov/',
+  users: 'https://randomuser.me/',
+  github: 'https://docs.github.com/en/rest',
+  books: 'https://openlibrary.org/developers/api',
+  news: 'https://newsapi.org/docs',
+  characters: 'https://rickandmortyapi.com/',
+  qrcode: 'https://goqr.me/api/',
+  holidays: 'https://date.nager.at/',
+  trivia: 'https://opentdb.com/',
+  hn: 'https://github.com/HackerNews/API',
+  dota: 'https://docs.opendota.com/',
+};

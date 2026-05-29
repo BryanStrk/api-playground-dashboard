@@ -11,6 +11,7 @@ export interface ApiInfo {
   localEndpoint: string;
   externalUrl: string;
   description: string;
+  officialUrl: string;
 }
 
 export interface ApiHealth {

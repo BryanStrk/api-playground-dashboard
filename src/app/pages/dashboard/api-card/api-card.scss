@@ -52,6 +52,22 @@ header {
   max-width: 100%;
 }
 
+.api-card__official-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+  width: fit-content;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--bs-secondary-color);
+    text-decoration: underline;
+  }
+}
+
 .card-title {
   font-weight: 600;
   color: var(--ink);
