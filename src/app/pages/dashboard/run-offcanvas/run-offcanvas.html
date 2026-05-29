@@ -32,6 +32,8 @@
       <app-dota-explorer />
     } @else if (isWorldCup()) {
       <app-worldcup-result />
+    } @else if (isBalldontlie()) {
+      <app-balldontlie-result />
     } @else {
       @if (api(); as a) {
         @if (hasControls()) {

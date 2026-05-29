@@ -1,0 +1,93 @@
+.bdl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.bdl__tabs {
+  width: 100%;
+  flex-wrap: wrap;
+
+  > .btn {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  @media (max-width: 420px) {
+    > .btn > span:last-child { font-size: 0.85rem; }
+  }
+}
+
+.bdl__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.bdl__map {
+  width: 100%;
+  height: 260px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.65rem;
+  overflow: hidden;
+
+  :global(.leaflet-container) {
+    background: var(--bs-tertiary-bg);
+  }
+}
+
+.bdl__stadium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.55rem;
+
+  @media (max-width: 380px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bdl__stadium-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.55rem;
+  background: var(--bs-body-bg);
+}
+
+.bdl__stadium-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--bs-emphasis-color);
+  margin: 0;
+}
+
+.bdl__stadium-place {
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+}
+
+.bdl__stadium-capacity {
+  font-size: 0.78rem;
+  color: var(--bs-body-color);
+}
+
+.bdl__stadium-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible { text-decoration: underline; }
+}

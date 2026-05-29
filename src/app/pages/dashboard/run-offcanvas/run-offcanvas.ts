@@ -19,6 +19,7 @@ import { StatResult } from '../result-views/stat-result/stat-result';
 import { TextResult } from '../result-views/text-result/text-result';
 import { TriviaGame } from '../result-views/trivia-game/trivia-game';
 import { WorldCupResult } from '../result-views/worldcup-result/worldcup-result';
+import { BalldontlieResult } from '../result-views/balldontlie-result/balldontlie-result';
 import { ResultViewType, viewTypeFor } from '../result-views/view-type';
 import { RunControls, controlsKindFor } from '../run-controls/run-controls';
 
@@ -44,6 +45,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     TextResult,
     TriviaGame,
     WorldCupResult,
+    BalldontlieResult,
   ],
   templateUrl: './run-offcanvas.html',
   styleUrl: './run-offcanvas.scss',
@@ -57,13 +59,15 @@ export class RunOffcanvas {
   protected readonly hasControls = computed(() => {
     const api = this.api();
     if (!api) return false;
-    if (this.isTrivia() || this.isDota() || this.isWorldCup()) return false;
+    if (this.isTrivia() || this.isDota() || this.isWorldCup() || this.isBalldontlie())
+      return false;
     return controlsKindFor(api.id) !== 'none';
   });
 
   protected readonly isTrivia = computed(() => this.viewType() === 'TRIVIA');
   protected readonly isDota = computed(() => this.viewType() === 'DOTA');
   protected readonly isWorldCup = computed(() => this.viewType() === 'WORLDCUP');
+  protected readonly isBalldontlie = computed(() => this.viewType() === 'BALLDONTLIE');
 
   protected onSearch(params: RunParams): void {
     this.search.emit(params);

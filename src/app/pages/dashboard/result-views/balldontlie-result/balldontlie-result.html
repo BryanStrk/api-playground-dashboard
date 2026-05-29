@@ -1,0 +1,87 @@
+<section class="bdl" aria-label="Mundial (BALLDONTLIE)">
+  <div
+    class="btn-group btn-group-sm bdl__tabs"
+    role="tablist"
+    aria-label="Pestañas de BALLDONTLIE"
+  >
+    @for (t of tabs; track t.id; let i = $index) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        role="tab"
+        [id]="'bdl-tab-' + t.id"
+        [class.active]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        [attr.aria-controls]="'bdl-panel-' + t.id"
+        [attr.tabindex]="tab() === t.id ? 0 : -1"
+        (click)="selectTab(t.id)"
+        (keydown)="onTabKeydown($event, i)"
+      >
+        <span aria-hidden="true">{{ t.icon }}</span>
+        <span>{{ t.label }}</span>
+      </button>
+    }
+  </div>
+
+  <div
+    class="bdl__panel"
+    role="tabpanel"
+    [id]="'bdl-panel-' + tab()"
+    [attr.aria-labelledby]="'bdl-tab-' + tab()"
+  >
+    @switch (tab()) {
+      @case ('stadiums') {
+        @if (loadingStadiums()) {
+          <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span>Cargando sedes…</span>
+          </div>
+        } @else if (stadiumsError(); as err) {
+          <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+        } @else if (stadiums().length === 0) {
+          <p class="text-secondary mb-0">No hay sedes que mostrar.</p>
+        } @else {
+          <div
+            #mapHost
+            class="bdl__map"
+            role="application"
+            aria-label="Mapa de las sedes del Mundial"
+          ></div>
+
+          <ul class="bdl__stadium-grid list-unstyled mb-0">
+            @for (s of stadiums(); track s.id) {
+              <li class="bdl__stadium-card">
+                <h4 class="bdl__stadium-name">{{ s.name }}</h4>
+                <p class="bdl__stadium-place mb-0">
+                  @if (s.city) { {{ s.city }} }
+                  @if (s.city && s.country) { <span aria-hidden="true">·</span> }
+                  @if (s.country) { {{ s.country }} }
+                </p>
+                <p class="bdl__stadium-capacity mb-0">
+                  Capacidad: <strong>{{ formatCapacity(s.capacity) }}</strong>
+                </p>
+                @if (mapLink(s); as href) {
+                  <a
+                    class="bdl__stadium-link"
+                    [href]="href"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [attr.aria-label]="'Ver ' + s.name + ' en Google Maps'"
+                  >
+                    <span aria-hidden="true">🗺️</span> Ver en mapa
+                  </a>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+      @case ('teams') {
+        <p class="text-secondary mb-0">Próximamente: equipos por confederación.</p>
+      }
+      @case ('live') {
+        <p class="text-secondary mb-0">Próximamente: planes y datos premium.</p>
+      }
+    }
+  </div>
+</section>
