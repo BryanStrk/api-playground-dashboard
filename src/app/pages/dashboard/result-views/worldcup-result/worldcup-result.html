@@ -214,7 +214,74 @@
         </div>
       }
       @case ('groups') {
-        <p class="text-secondary mb-0">Próximamente: clasificación por grupos.</p>
+        @if (loadingGroups()) {
+          <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span>Cargando clasificación…</span>
+          </div>
+        } @else if (groupsError(); as err) {
+          <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+        } @else if (groups().length === 0) {
+          <p class="text-secondary mb-0">No hay grupos que mostrar.</p>
+        } @else {
+          @if (preTournament()) {
+            <div class="alert alert-info py-2 mb-0 small" role="status">
+              El torneo arranca el 11 de junio — la clasificación se irá actualizando.
+            </div>
+          }
+          <div class="worldcup__groups">
+            @for (g of groups(); track g.name) {
+              <section class="worldcup__group" aria-labelledby="worldcup-group-{{ g.name }}">
+                <h4 class="worldcup__group-title" id="worldcup-group-{{ g.name }}">
+                  {{ g.name }}
+                </h4>
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle worldcup__group-table mb-0">
+                    <caption class="visually-hidden">Clasificación del {{ g.name }}</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" class="worldcup__col-pos">#</th>
+                        <th scope="col">Equipo</th>
+                        <th scope="col" class="text-end" title="Partidos jugados">PJ</th>
+                        <th scope="col" class="text-end" title="Ganados">G</th>
+                        <th scope="col" class="text-end" title="Empatados">E</th>
+                        <th scope="col" class="text-end" title="Perdidos">P</th>
+                        <th scope="col" class="text-end" title="Goles a favor">GF</th>
+                        <th scope="col" class="text-end" title="Goles en contra">GC</th>
+                        <th scope="col" class="text-end" title="Diferencia de goles">DG</th>
+                        <th scope="col" class="text-end" title="Puntos">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of g.rows; track row.position) {
+                        <tr [class.worldcup__row--qualifies]="row.qualifies">
+                          <th scope="row" class="worldcup__col-pos">{{ row.position }}</th>
+                          <td class="worldcup__col-team">
+                            <span
+                              class="worldcup__flag"
+                              [class.is-placeholder]="row.team.isPlaceholder"
+                              [attr.aria-label]="row.team.ariaLabel"
+                              role="img"
+                            >{{ row.team.flag }}</span>
+                            <span>{{ row.team.name }}</span>
+                          </td>
+                          <td class="text-end">{{ row.played }}</td>
+                          <td class="text-end">{{ row.won }}</td>
+                          <td class="text-end">{{ row.drawn }}</td>
+                          <td class="text-end">{{ row.lost }}</td>
+                          <td class="text-end">{{ row.goalsFor }}</td>
+                          <td class="text-end">{{ row.goalsAgainst }}</td>
+                          <td class="text-end">{{ row.goalDiff > 0 ? '+' + row.goalDiff : row.goalDiff }}</td>
+                          <td class="text-end fw-bold">{{ row.points }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            }
+          </div>
+        }
       }
       @case ('info') {
         <p class="text-secondary mb-0">Próximamente: información y sedes.</p>

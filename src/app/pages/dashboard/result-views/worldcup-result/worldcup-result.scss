@@ -282,3 +282,69 @@
     text-align: left;
   }
 }
+
+.worldcup__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.worldcup__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.worldcup__group-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bs-emphasis-color);
+  margin: 0;
+}
+
+.worldcup__group-table {
+  font-size: 0.82rem;
+  min-width: 360px;
+
+  th {
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.7rem;
+    color: var(--bs-secondary-color);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    white-space: nowrap;
+  }
+}
+
+.worldcup__col-pos {
+  width: 2.25rem;
+  text-align: center;
+  color: var(--bs-secondary-color);
+}
+
+.worldcup__col-team {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 7rem;
+}
+
+.worldcup__row--qualifies {
+  background: color-mix(in srgb, var(--bs-success) 8%, transparent);
+
+  > th,
+  > td {
+    --bs-table-bg: transparent;
+    box-shadow: inset 3px 0 0 var(--bs-success);
+  }
+
+  > th:first-child {
+    box-shadow: inset 3px 0 0 var(--bs-success);
+  }
+}

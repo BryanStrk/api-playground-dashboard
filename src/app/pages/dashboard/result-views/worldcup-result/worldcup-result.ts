@@ -52,6 +52,25 @@ export interface MatchGroup {
   matches: WorldCupMatch[];
 }
 
+export interface StandingRow {
+  position: number;
+  team: TeamLabel;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDiff: number;
+  points: number;
+  qualifies: boolean;
+}
+
+export interface GroupTable {
+  name: string;
+  rows: StandingRow[];
+}
+
 type Tab = 'matches' | 'groups' | 'info';
 type StatusFilter = '' | 'upcoming' | 'played';
 
@@ -114,6 +133,16 @@ export class WorldCupResult {
   protected readonly loadingMatches = signal(false);
   protected readonly matchesError = signal<string | null>(null);
 
+  protected readonly groups = signal<GroupTable[]>([]);
+  protected readonly loadingGroups = signal(false);
+  protected readonly groupsError = signal<string | null>(null);
+
+  protected readonly preTournament = computed(() => {
+    const list = this.groups();
+    if (list.length === 0) return false;
+    return list.every((g) => g.rows.every((r) => r.played === 0));
+  });
+
   protected readonly teamInput = signal('');
   protected readonly teamTerm = signal('');
   protected readonly groupFilter = signal<string>('');
@@ -140,6 +169,7 @@ export class WorldCupResult {
   constructor() {
     this.loadInfo();
     this.loadMatches();
+    this.loadGroups();
     this.teamInput$
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => {
@@ -228,6 +258,25 @@ export class WorldCupResult {
         error: () => {
           this.loadingInfo.set(false);
           this.infoError.set('No se pudo cargar la información del Mundial.');
+        },
+      });
+  }
+
+  private loadGroups(): void {
+    this.loadingGroups.set(true);
+    this.groupsError.set(null);
+    this.http
+      .get<unknown>(`${environment.apiBaseUrl}/worldcup/groups`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (raw) => {
+          this.groups.set(mapGroups(raw));
+          this.loadingGroups.set(false);
+        },
+        error: () => {
+          this.groups.set([]);
+          this.loadingGroups.set(false);
+          this.groupsError.set('No se pudo cargar la clasificación.');
         },
       });
   }
@@ -388,6 +437,52 @@ function extractGoals(value: unknown): Goal[] {
         ownGoal,
       };
     });
+}
+
+function mapGroups(raw: unknown): GroupTable[] {
+  const list = Array.isArray(raw)
+    ? raw
+    : raw && typeof raw === 'object' && Array.isArray((raw as Record<string, unknown>)['groups'])
+      ? ((raw as Record<string, unknown>)['groups'] as unknown[])
+      : [];
+  return list
+    .filter((g): g is Record<string, unknown> => !!g && typeof g === 'object')
+    .map((g, i) => mapGroupTable(g, i))
+    .filter((g) => g.rows.length > 0);
+}
+
+function mapGroupTable(g: Record<string, unknown>, index: number): GroupTable {
+  const rawName = str(g['name']) ?? str(g['groupName']) ?? str(g['group']);
+  const name = rawName ?? `Grupo ${String.fromCharCode(65 + index)}`;
+  const rows = mapRows(g['table'] ?? g['standings'] ?? g['rows']);
+  return { name, rows };
+}
+
+function mapRows(value: unknown): StandingRow[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((r): r is Record<string, unknown> => !!r && typeof r === 'object')
+    .map((r, i) => mapRow(r, i));
+}
+
+function mapRow(r: Record<string, unknown>, index: number): StandingRow {
+  const teamName = str(r['team']) ?? str(r['teamName']) ?? str(r['name']);
+  const goalsFor = num(r['goalsFor']) ?? num(r['gf']) ?? 0;
+  const goalsAgainst = num(r['goalsAgainst']) ?? num(r['ga']) ?? 0;
+  const position = num(r['position']) ?? num(r['rank']) ?? index + 1;
+  return {
+    position,
+    team: teamLabel(teamName),
+    played: num(r['played']) ?? num(r['pj']) ?? 0,
+    won: num(r['won']) ?? num(r['wins']) ?? num(r['w']) ?? 0,
+    drawn: num(r['drawn']) ?? num(r['draws']) ?? num(r['draw']) ?? num(r['d']) ?? 0,
+    lost: num(r['lost']) ?? num(r['losses']) ?? num(r['l']) ?? 0,
+    goalsFor,
+    goalsAgainst,
+    goalDiff: num(r['goalDiff']) ?? num(r['gd']) ?? goalsFor - goalsAgainst,
+    points: num(r['points']) ?? num(r['pts']) ?? 0,
+    qualifies: position <= 2,
+  };
 }
 
 function groupByRound(matches: WorldCupMatch[]): MatchGroup[] {
