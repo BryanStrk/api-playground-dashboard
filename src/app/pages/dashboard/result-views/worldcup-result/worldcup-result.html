@@ -1,0 +1,66 @@
+<section class="worldcup" aria-label="Mundial 2026">
+  <header
+    class="worldcup__countdown"
+    role="status"
+    aria-live="polite"
+  >
+    @if (loadingInfo()) {
+      <div class="d-flex align-items-center gap-2 text-secondary">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span>Cargando datos del torneo…</span>
+      </div>
+    } @else if (infoError(); as err) {
+      <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+    } @else if (countdown(); as cd) {
+      <span class="worldcup__countdown-icon" aria-hidden="true">
+        {{ cd.state === 'live' ? '🟢' : '⏱️' }}
+      </span>
+      <span class="worldcup__countdown-label">{{ cd.label }}</span>
+    } @else {
+      <span class="text-secondary small">Sin fecha de inicio disponible.</span>
+    }
+  </header>
+
+  <div
+    class="btn-group btn-group-sm worldcup__tabs"
+    role="tablist"
+    aria-label="Pestañas del Mundial 2026"
+  >
+    @for (t of tabs; track t.id; let i = $index) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        role="tab"
+        [id]="'worldcup-tab-' + t.id"
+        [class.active]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        [attr.aria-controls]="'worldcup-panel-' + t.id"
+        [attr.tabindex]="tab() === t.id ? 0 : -1"
+        (click)="selectTab(t.id)"
+        (keydown)="onTabKeydown($event, i)"
+      >
+        <span aria-hidden="true">{{ t.icon }}</span>
+        <span>{{ t.label }}</span>
+      </button>
+    }
+  </div>
+
+  <div
+    class="worldcup__panel"
+    role="tabpanel"
+    [id]="'worldcup-panel-' + tab()"
+    [attr.aria-labelledby]="'worldcup-tab-' + tab()"
+  >
+    @switch (tab()) {
+      @case ('matches') {
+        <p class="text-secondary mb-0">Próximamente: calendario de partidos.</p>
+      }
+      @case ('groups') {
+        <p class="text-secondary mb-0">Próximamente: clasificación por grupos.</p>
+      }
+      @case ('info') {
+        <p class="text-secondary mb-0">Próximamente: información y sedes.</p>
+      }
+    }
+  </div>
+</section>

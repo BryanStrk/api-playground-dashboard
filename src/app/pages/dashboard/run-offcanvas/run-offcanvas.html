@@ -30,6 +30,8 @@
       <app-trivia-game />
     } @else if (isDota()) {
       <app-dota-explorer />
+    } @else if (isWorldCup()) {
+      <app-worldcup-result />
     } @else {
       @if (api(); as a) {
         @if (hasControls()) {

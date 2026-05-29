@@ -15,6 +15,7 @@ export type ResultViewType =
   | 'HACKERNEWS'
   | 'TRIVIA'
   | 'DOTA'
+  | 'WORLDCUP'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -37,6 +38,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   hn: 'HACKERNEWS',
   trivia: 'TRIVIA',
   dota: 'DOTA',
+  worldcup: 'WORLDCUP',
 };
 
 export function viewTypeFor(apiId: string | null | undefined): ResultViewType {
