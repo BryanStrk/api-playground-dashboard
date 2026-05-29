@@ -71,6 +71,11 @@ export interface GroupTable {
   rows: StandingRow[];
 }
 
+export interface TopScorer {
+  player: string;
+  goals: number;
+}
+
 type Tab = 'matches' | 'groups' | 'info';
 type StatusFilter = '' | 'upcoming' | 'played';
 
@@ -104,6 +109,12 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', {
 const TIME_FORMAT = new Intl.DateTimeFormat('es-ES', {
   hour: '2-digit',
   minute: '2-digit',
+});
+
+const LONG_DATE_FORMAT = new Intl.DateTimeFormat('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
 });
 
 const RELATIVE_FORMAT = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
@@ -143,6 +154,11 @@ export class WorldCupResult {
     return list.every((g) => g.rows.every((r) => r.played === 0));
   });
 
+  protected readonly playedMatches = signal<WorldCupMatch[]>([]);
+  protected readonly loadingScorers = signal(false);
+
+  protected readonly topScorers = computed<TopScorer[]>(() => buildTopScorers(this.playedMatches()));
+
   protected readonly teamInput = signal('');
   protected readonly teamTerm = signal('');
   protected readonly groupFilter = signal<string>('');
@@ -170,6 +186,7 @@ export class WorldCupResult {
     this.loadInfo();
     this.loadMatches();
     this.loadGroups();
+    this.loadPlayedMatches();
     this.teamInput$
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => {
@@ -232,6 +249,13 @@ export class WorldCupResult {
     return `${goal.player} (${minute})${marker}`;
   }
 
+  protected formatLongDate(iso: string | null): string | null {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    return LONG_DATE_FORMAT.format(d);
+  }
+
   protected relativeWhen(iso: string | null): string | null {
     if (!iso) return null;
     const target = new Date(iso);
@@ -258,6 +282,25 @@ export class WorldCupResult {
         error: () => {
           this.loadingInfo.set(false);
           this.infoError.set('No se pudo cargar la información del Mundial.');
+        },
+      });
+  }
+
+  private loadPlayedMatches(): void {
+    this.loadingScorers.set(true);
+    this.http
+      .get<unknown>(`${environment.apiBaseUrl}/worldcup/matches`, {
+        params: new HttpParams().set('status', 'played'),
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (raw) => {
+          this.playedMatches.set(mapMatches(raw));
+          this.loadingScorers.set(false);
+        },
+        error: () => {
+          this.playedMatches.set([]);
+          this.loadingScorers.set(false);
         },
       });
   }
@@ -437,6 +480,29 @@ function extractGoals(value: unknown): Goal[] {
         ownGoal,
       };
     });
+}
+
+function buildTopScorers(matches: WorldCupMatch[]): TopScorer[] {
+  const counts = new Map<string, number>();
+  for (const match of matches) {
+    accumulate(counts, match.homeGoals);
+    accumulate(counts, match.awayGoals);
+  }
+  const list: TopScorer[] = [];
+  for (const [player, goals] of counts.entries()) {
+    list.push({ player, goals });
+  }
+  list.sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player, 'es'));
+  return list;
+}
+
+function accumulate(map: Map<string, number>, goals: Goal[]): void {
+  for (const g of goals) {
+    if (g.ownGoal) continue;
+    const key = g.player.trim();
+    if (!key) continue;
+    map.set(key, (map.get(key) ?? 0) + 1);
+  }
 }
 
 function mapGroups(raw: unknown): GroupTable[] {

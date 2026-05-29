@@ -68,7 +68,7 @@
             <label class="visually-hidden" for="worldcup-group">Filtrar por grupo</label>
             <select
               id="worldcup-group"
-              class="form-select form-select-sm worldcup__group"
+              class="form-select form-select-sm"
               [ngModel]="groupFilter()"
               (ngModelChange)="setGroup($event)"
             >
@@ -284,7 +284,90 @@
         }
       }
       @case ('info') {
-        <p class="text-secondary mb-0">Próximamente: información y sedes.</p>
+        @if (loadingInfo()) {
+          <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span>Cargando información del torneo…</span>
+          </div>
+        } @else if (infoError(); as err) {
+          <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+        } @else if (info(); as i) {
+          <article class="worldcup__summary" aria-label="Resumen del torneo">
+            <h4 class="worldcup__summary-title">{{ i.name ?? 'Mundial 2026' }}</h4>
+            <dl class="worldcup__summary-grid">
+              <div>
+                <dt>Partidos</dt>
+                <dd>{{ i.totalMatches ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>Sedes</dt>
+                <dd>{{ i.venues.length || '—' }}</dd>
+              </div>
+              <div>
+                <dt>Primer partido</dt>
+                <dd>{{ formatLongDate(i.firstMatchDate) ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>Último partido</dt>
+                <dd>{{ formatLongDate(i.lastMatchDate) ?? '—' }}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <section aria-labelledby="worldcup-venues-title">
+            <h4 class="worldcup__section-title" id="worldcup-venues-title">Sedes</h4>
+            @if (i.venues.length === 0) {
+              <p class="text-secondary mb-0">No hay sedes que mostrar.</p>
+            } @else {
+              <ul class="worldcup__venues list-unstyled mb-0">
+                @for (v of i.venues; track v) {
+                  <li class="worldcup__venue-chip">📍 {{ v }}</li>
+                }
+              </ul>
+            }
+          </section>
+
+          <section aria-labelledby="worldcup-scorers-title">
+            <header class="worldcup__scorers-header">
+              <h4 class="worldcup__section-title mb-0" id="worldcup-scorers-title">
+                Máximos goleadores
+              </h4>
+              <span class="text-secondary small">Pichichi</span>
+            </header>
+            @if (loadingScorers()) {
+              <div class="d-flex align-items-center gap-2 text-secondary small" role="status">
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span>Calculando…</span>
+              </div>
+            } @else if (topScorers().length === 0) {
+              <p class="text-secondary mb-0">Sin goles todavía.</p>
+            } @else {
+              <div class="table-responsive">
+                <table class="table table-sm align-middle worldcup__scorers-table mb-0">
+                  <caption class="visually-hidden">
+                    Máximos goleadores del Mundial 2026
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col" class="worldcup__col-pos">#</th>
+                      <th scope="col">Jugador</th>
+                      <th scope="col" class="text-end">Goles</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (s of topScorers(); track s.player; let i = $index) {
+                      <tr>
+                        <th scope="row" class="worldcup__col-pos">{{ i + 1 }}</th>
+                        <td>{{ s.player }}</td>
+                        <td class="text-end fw-bold">{{ s.goals }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </section>
+        }
       }
     }
   </div>
