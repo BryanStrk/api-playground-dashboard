@@ -158,7 +158,214 @@
         }
       }
       @case ('live') {
-        <p class="text-secondary mb-0">Próximamente: planes y datos premium.</p>
+        <section aria-labelledby="bdl-tiers-title">
+          <h4 class="bdl__section-title" id="bdl-tiers-title">Planes</h4>
+          @if (loadingTiers()) {
+            <div class="d-flex align-items-center gap-2 text-secondary small" role="status">
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span>Cargando planes…</span>
+            </div>
+          } @else if (tiersError(); as err) {
+            <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+          } @else if (tiers().length === 0) {
+            <p class="text-secondary mb-0">No hay planes que mostrar.</p>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-sm align-middle bdl__tier-table mb-0">
+                <caption class="visually-hidden">Planes de BALLDONTLIE</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Rate limit</th>
+                    <th scope="col">Incluye</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tier of tiers(); track tier.id) {
+                    <tr [class.is-highlight]="tier.highlight">
+                      <th scope="row">{{ tier.name }}</th>
+                      <td>{{ tier.price }}</td>
+                      <td>{{ tier.rateLimit }}</td>
+                      <td>
+                        @if (tier.features.length === 0) {
+                          <span class="text-secondary">—</span>
+                        } @else {
+                          <ul class="bdl__feature-list mb-0">
+                            @for (f of tier.features; track f) {
+                              <li>{{ f }}</li>
+                            }
+                          </ul>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+
+        <section aria-labelledby="bdl-probes-title">
+          <h4 class="bdl__section-title" id="bdl-probes-title">
+            Endpoints premium
+          </h4>
+          <p class="bdl__hint">
+            Cada llamada gasta una request del límite gratis (5/min).
+            Pulsa solo cuando quieras probar.
+          </p>
+
+          @for (p of probes; track p.id) {
+            <article class="bdl__probe" aria-labelledby="bdl-probe-{{ p.id }}">
+              <header class="bdl__probe-header">
+                <div class="bdl__probe-title">
+                  <span aria-hidden="true">{{ p.icon }}</span>
+                  <h5 class="mb-0 h6" id="bdl-probe-{{ p.id }}">{{ p.label }}</h5>
+                </div>
+                <code class="bdl__probe-path">{{ p.path }}</code>
+              </header>
+              <p class="bdl__probe-hint mb-0">{{ p.hint }}</p>
+
+              @let state = probeState(p.id);
+              <div class="bdl__probe-actions">
+                @if (state.status === 'idle' || state.status === 'error') {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="runProbe(p.id)"
+                  >
+                    Probar endpoint
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    [disabled]="state.status === 'loading'"
+                    (click)="runProbe(p.id)"
+                  >
+                    Reintentar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link bdl__probe-reset"
+                    (click)="resetProbe(p.id)"
+                  >
+                    Limpiar
+                  </button>
+                }
+              </div>
+
+              <div
+                class="bdl__probe-body"
+                aria-live="polite"
+                [attr.aria-busy]="state.status === 'loading'"
+              >
+                @switch (state.status) {
+                  @case ('loading') {
+                    <div class="d-flex align-items-center gap-2 text-secondary small" role="status">
+                      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                      <span>Llamando a {{ p.path }}…</span>
+                    </div>
+                  }
+                  @case ('error') {
+                    <div class="alert alert-danger py-2 mb-0 small" role="alert">
+                      {{ state.errorMessage }}
+                    </div>
+                  }
+                  @case ('data') {
+                    @switch (p.id) {
+                      @case ('standings') {
+                        @let rows = standingsRows(state);
+                        @if (rows.length === 0) {
+                          <p class="text-secondary mb-0 small">Sin filas.</p>
+                        } @else {
+                          <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Equipo</th>
+                                  <th scope="col" class="text-end">PJ</th>
+                                  <th scope="col" class="text-end">G</th>
+                                  <th scope="col" class="text-end">E</th>
+                                  <th scope="col" class="text-end">P</th>
+                                  <th scope="col" class="text-end">GF</th>
+                                  <th scope="col" class="text-end">GC</th>
+                                  <th scope="col" class="text-end">Pts</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @for (row of rows; track row.team) {
+                                  <tr>
+                                    <th scope="row">{{ row.team }}</th>
+                                    <td class="text-end">{{ row.played }}</td>
+                                    <td class="text-end">{{ row.won }}</td>
+                                    <td class="text-end">{{ row.drawn }}</td>
+                                    <td class="text-end">{{ row.lost }}</td>
+                                    <td class="text-end">{{ row.goalsFor }}</td>
+                                    <td class="text-end">{{ row.goalsAgainst }}</td>
+                                    <td class="text-end fw-bold">{{ row.points }}</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                        }
+                      }
+                      @case ('matches') {
+                        @let list = matchesList(state);
+                        @if (list.length === 0) {
+                          <p class="text-secondary mb-0 small">Sin partidos.</p>
+                        } @else {
+                          <ul class="bdl__premium-matches list-unstyled mb-0">
+                            @for (m of list; track m.id) {
+                              <li class="bdl__premium-match">
+                                <span class="bdl__premium-match-team">{{ m.home }}</span>
+                                <span class="bdl__premium-match-score">
+                                  @if (m.homeScore !== null && m.awayScore !== null) {
+                                    {{ m.homeScore }} — {{ m.awayScore }}
+                                  } @else {
+                                    vs
+                                  }
+                                </span>
+                                <span class="bdl__premium-match-team text-end">{{ m.away }}</span>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      }
+                      @case ('players') {
+                        @let list = playersList(state);
+                        @if (list.length === 0) {
+                          <p class="text-secondary mb-0 small">Sin jugadores.</p>
+                        } @else {
+                          <ul class="bdl__premium-players list-unstyled mb-0">
+                            @for (pl of list; track pl.id) {
+                              <li class="bdl__premium-player">
+                                <span
+                                  class="bdl__team-flag"
+                                  [class.is-placeholder]="pl.flag === '⚽'"
+                                  role="img"
+                                  [attr.aria-label]="pl.countryCode
+                                    ? 'Bandera de ' + pl.countryCode
+                                    : 'Sin bandera'"
+                                >{{ pl.flag }}</span>
+                                <span class="bdl__premium-player-name">{{ pl.name }}</span>
+                                @if (pl.position) {
+                                  <span class="bdl__team-abbr">{{ pl.position }}</span>
+                                }
+                              </li>
+                            }
+                          </ul>
+                        }
+                      }
+                    }
+                  }
+                  @default {}
+                }
+              </div>
+            </article>
+          }
+        </section>
       }
     }
   </div>

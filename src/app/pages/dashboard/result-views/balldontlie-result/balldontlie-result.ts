@@ -40,6 +40,91 @@ export interface ConfederationGroup {
   teams: Team[];
 }
 
+export interface Tier {
+  id: string;
+  name: string;
+  price: string;
+  rateLimit: string;
+  features: string[];
+  highlight: boolean;
+}
+
+export type PremiumKind = 'standings' | 'matches' | 'players';
+
+export interface ProbeMeta {
+  id: PremiumKind;
+  label: string;
+  icon: string;
+  path: string;
+  hint: string;
+}
+
+export interface ProbeState {
+  status: 'idle' | 'loading' | 'data' | 'error';
+  data: unknown;
+  errorMessage: string | null;
+}
+
+export interface PremiumStanding {
+  team: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  points: number;
+}
+
+export interface PremiumMatch {
+  id: string;
+  date: string | null;
+  home: string;
+  away: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  status: string | null;
+}
+
+export interface PremiumPlayer {
+  id: string;
+  name: string;
+  position: string | null;
+  countryCode: string | null;
+  flag: string;
+  age: number | null;
+}
+
+const PROBES: ProbeMeta[] = [
+  {
+    id: 'standings',
+    label: 'Clasificación',
+    icon: '📊',
+    path: '/balldontlie/standings',
+    hint: 'Tabla de la fase de grupos',
+  },
+  {
+    id: 'matches',
+    label: 'Partidos',
+    icon: '🎯',
+    path: '/balldontlie/matches',
+    hint: 'Calendario completo en vivo',
+  },
+  {
+    id: 'players',
+    label: 'Jugadores',
+    icon: '🧑‍🦱',
+    path: '/balldontlie/players',
+    hint: 'Plantillas con perfil deportivo',
+  },
+];
+
+const INITIAL_PROBE: ProbeState = {
+  status: 'idle',
+  data: null,
+  errorMessage: null,
+};
+
 const CONFEDERATION_ORDER: { id: string; label: string }[] = [
   { id: 'UEFA', label: 'UEFA' },
   { id: 'CONMEBOL', label: 'CONMEBOL' },
@@ -98,6 +183,18 @@ export class BalldontlieResult implements AfterViewInit {
     return groups.filter((g) => g.id === filter);
   });
 
+  protected readonly probes = PROBES;
+
+  protected readonly tiers = signal<Tier[]>([]);
+  protected readonly loadingTiers = signal(false);
+  protected readonly tiersError = signal<string | null>(null);
+
+  protected readonly probeStates = signal<Record<PremiumKind, ProbeState>>({
+    standings: { ...INITIAL_PROBE },
+    matches: { ...INITIAL_PROBE },
+    players: { ...INITIAL_PROBE },
+  });
+
   private readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
   private mapInstance: unknown = null;
   private mapMarkers: unknown[] = [];
@@ -105,6 +202,7 @@ export class BalldontlieResult implements AfterViewInit {
   constructor() {
     this.loadStadiums();
     this.loadTeams();
+    this.loadTiers();
     effect(() => {
       const list = this.stadiums();
       const onTab = this.tab() === 'stadiums';
@@ -157,6 +255,57 @@ export class BalldontlieResult implements AfterViewInit {
     this.confederationFilter.set(value);
   }
 
+  protected probeState(kind: PremiumKind): ProbeState {
+    return this.probeStates()[kind];
+  }
+
+  protected runProbe(kind: PremiumKind): void {
+    const current = this.probeState(kind);
+    if (current.status === 'loading') return;
+    this.updateProbe(kind, { status: 'loading', data: null, errorMessage: null });
+    const meta = PROBES.find((p) => p.id === kind);
+    if (!meta) return;
+    this.http
+      .get<unknown>(`${environment.apiBaseUrl}${meta.path}`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (raw) => {
+          this.updateProbe(kind, {
+            status: 'data',
+            data: shapeProbeData(kind, raw),
+            errorMessage: null,
+          });
+        },
+        error: () => {
+          this.updateProbe(kind, {
+            status: 'error',
+            data: null,
+            errorMessage: 'No se pudo completar la llamada al endpoint.',
+          });
+        },
+      });
+  }
+
+  protected resetProbe(kind: PremiumKind): void {
+    this.updateProbe(kind, { ...INITIAL_PROBE });
+  }
+
+  protected standingsRows(state: ProbeState): PremiumStanding[] {
+    return state.status === 'data' ? (state.data as PremiumStanding[]) : [];
+  }
+
+  protected matchesList(state: ProbeState): PremiumMatch[] {
+    return state.status === 'data' ? (state.data as PremiumMatch[]) : [];
+  }
+
+  protected playersList(state: ProbeState): PremiumPlayer[] {
+    return state.status === 'data' ? (state.data as PremiumPlayer[]) : [];
+  }
+
+  private updateProbe(kind: PremiumKind, state: ProbeState): void {
+    this.probeStates.update((all) => ({ ...all, [kind]: state }));
+  }
+
   private loadStadiums(): void {
     this.loadingStadiums.set(true);
     this.stadiumsError.set(null);
@@ -172,6 +321,25 @@ export class BalldontlieResult implements AfterViewInit {
           this.stadiums.set([]);
           this.loadingStadiums.set(false);
           this.stadiumsError.set('No se pudieron cargar las sedes.');
+        },
+      });
+  }
+
+  private loadTiers(): void {
+    this.loadingTiers.set(true);
+    this.tiersError.set(null);
+    this.http
+      .get<unknown>(`${environment.apiBaseUrl}/balldontlie/tiers`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (raw) => {
+          this.tiers.set(mapTiers(raw));
+          this.loadingTiers.set(false);
+        },
+        error: () => {
+          this.tiers.set([]);
+          this.loadingTiers.set(false);
+          this.tiersError.set('No se pudo cargar la tabla de planes.');
         },
       });
   }
@@ -271,6 +439,101 @@ function escape(value: string | null): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function mapTiers(raw: unknown): Tier[] {
+  const list = arrayFrom(raw, ['tiers', 'plans', 'data']);
+  return list
+    .filter((t): t is Record<string, unknown> => !!t && typeof t === 'object')
+    .map((t, i) => mapTier(t, i))
+    .sort((a, b) => priceWeight(a.price) - priceWeight(b.price));
+}
+
+function mapTier(t: Record<string, unknown>, index: number): Tier {
+  const name = str(t['name']) ?? str(t['plan']) ?? `Plan ${index + 1}`;
+  const priceRaw = num(t['price']) ?? num(t['monthlyPrice']);
+  const price =
+    priceRaw === null
+      ? str(t['priceLabel']) ?? '—'
+      : priceRaw === 0
+        ? 'Gratis'
+        : `$${priceRaw}/mes`;
+  const rate =
+    num(t['rateLimit']) ?? num(t['requestsPerMinute']) ?? num(t['rpm']);
+  const rateLimit = rate === null ? str(t['rateLimitLabel']) ?? '—' : `${rate} req/min`;
+  const features = extractStrings(t['features']);
+  return {
+    id: (str(t['id']) ?? name) as string,
+    name,
+    price,
+    rateLimit,
+    features,
+    highlight: /all.?star/i.test(name),
+  };
+}
+
+function priceWeight(price: string): number {
+  if (price === 'Gratis') return 0;
+  const m = price.match(/[\d.]+/);
+  return m ? Number(m[0]) : 999;
+}
+
+function extractStrings(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((v) => (typeof v === 'string' ? v.trim() : ''))
+    .filter((v) => v.length > 0);
+}
+
+function shapeProbeData(kind: PremiumKind, raw: unknown): unknown {
+  const list = arrayFrom(raw, [kind, 'data', 'items']);
+  if (kind === 'standings') return list.map(mapPremiumStanding);
+  if (kind === 'matches') return list.map(mapPremiumMatch);
+  return list.map(mapPremiumPlayer);
+}
+
+function mapPremiumStanding(value: unknown): PremiumStanding {
+  const r = (value as Record<string, unknown>) ?? {};
+  return {
+    team:
+      str(r['team']) ??
+      str((r['team'] as Record<string, unknown>)?.['name']) ??
+      str(r['teamName']) ??
+      '—',
+    played: num(r['played']) ?? 0,
+    won: num(r['won']) ?? num(r['wins']) ?? 0,
+    drawn: num(r['drawn']) ?? num(r['draws']) ?? 0,
+    lost: num(r['lost']) ?? num(r['losses']) ?? 0,
+    goalsFor: num(r['goalsFor']) ?? num(r['gf']) ?? 0,
+    goalsAgainst: num(r['goalsAgainst']) ?? num(r['ga']) ?? 0,
+    points: num(r['points']) ?? num(r['pts']) ?? 0,
+  };
+}
+
+function mapPremiumMatch(value: unknown): PremiumMatch {
+  const m = (value as Record<string, unknown>) ?? {};
+  return {
+    id: (str(m['id']) ?? Math.random().toString(36).slice(2)) as string,
+    date: str(m['date']) ?? str(m['datetime']) ?? str(m['utcDate']),
+    home: str(m['homeTeam']) ?? str(m['home']) ?? '—',
+    away: str(m['awayTeam']) ?? str(m['away']) ?? '—',
+    homeScore: num(m['homeScore']) ?? num(m['home_score']),
+    awayScore: num(m['awayScore']) ?? num(m['away_score']),
+    status: str(m['status']),
+  };
+}
+
+function mapPremiumPlayer(value: unknown): PremiumPlayer {
+  const p = (value as Record<string, unknown>) ?? {};
+  const code = str(p['country_code']) ?? str(p['countryCode']);
+  return {
+    id: (str(p['id']) ?? str(p['name']) ?? Math.random().toString(36).slice(2)) as string,
+    name: str(p['name']) ?? '—',
+    position: str(p['position']),
+    countryCode: code,
+    flag: code ? isoToFlagEmoji(code) : PLACEHOLDER_FLAG,
+    age: num(p['age']),
+  };
 }
 
 function mapTeams(raw: unknown): Team[] {
