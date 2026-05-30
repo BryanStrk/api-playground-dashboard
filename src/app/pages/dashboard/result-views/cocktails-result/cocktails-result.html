@@ -45,19 +45,6 @@
       }
     </div>
   }
-} @else if (mode() === 'cocktails') {
-  @if (cocktails().length === 0) {
-    <p class="text-secondary mb-0">No se encontraron cócteles con ese nombre.</p>
-  } @else {
-    <div class="cocktails-result">
-      <p class="cocktails-result__lang text-secondary small mb-0">
-        Cócteles en inglés.
-      </p>
-      @for (c of cocktails(); track c.id) {
-        <ng-container *ngTemplateOutlet="drinkTpl; context: { $implicit: c }" />
-      }
-    </div>
-  }
 } @else {
   <p class="text-secondary mb-0">No hay cócteles que mostrar.</p>
 }

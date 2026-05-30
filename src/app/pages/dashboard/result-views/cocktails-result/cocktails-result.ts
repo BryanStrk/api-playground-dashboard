@@ -56,40 +56,19 @@ export class CocktailsResult {
   protected readonly loadingDetail = signal(false);
   protected readonly detailError = signal<string | null>(null);
 
-  protected readonly mode = computed<'cocktails' | 'gallery' | 'empty'>(() => {
-    const data = this.data();
-    if (Array.isArray(data) && data.length > 0 && isLightSummary(data[0])) return 'gallery';
-    if (
-      data &&
-      typeof data === 'object' &&
-      Array.isArray((data as { cocktails?: unknown }).cocktails)
-    ) {
-      return 'cocktails';
-    }
-    return 'empty';
-  });
-
-  protected readonly cocktails = computed<Cocktail[]>(() => {
-    const data = this.data();
-    if (!data || typeof data !== 'object') return [];
-    const list = (data as { cocktails?: unknown }).cocktails;
-    if (!Array.isArray(list)) return [];
-    return list
-      .filter((c): c is Record<string, unknown> => !!c && typeof c === 'object')
-      .map((c, i) => mapCocktail(c, i));
-  });
-
-  protected readonly gallery = computed<CocktailSummary[]>(() => {
-    const data = this.data();
-    if (!Array.isArray(data)) return [];
-    return data
+  protected readonly gallery = computed<CocktailSummary[]>(() =>
+    toSummaryList(this.data())
       .filter((c): c is Record<string, unknown> => !!c && typeof c === 'object')
       .map((c, i) => ({
         id: idFor(c['id'], i),
         name: str(c['name']) ?? 'Sin nombre',
-        thumbUrl: str(c['thumbUrl']),
-      }));
-  });
+        thumbUrl: str(c['thumb']) ?? str(c['thumbUrl']),
+      })),
+  );
+
+  protected readonly mode = computed<'gallery' | 'empty'>(() =>
+    this.gallery().length > 0 ? 'gallery' : 'empty',
+  );
 
   constructor() {
     effect(() => {
@@ -141,7 +120,7 @@ function mapCocktail(c: Record<string, unknown>, index: number): Cocktail {
     category: str(c['category']),
     glass: str(c['glass']),
     alcoholic: str(c['alcoholic']),
-    thumbUrl: str(c['thumbUrl']),
+    thumbUrl: str(c['thumbUrl']) ?? str(c['thumb']),
     instructions: str(c['instructions']),
     ingredients: extractIngredients(c),
   };
@@ -156,6 +135,15 @@ function pickCocktail(res: unknown): Record<string, unknown> | null {
   return res as Record<string, unknown>;
 }
 
+function toSummaryList(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') {
+    const list = (data as { cocktails?: unknown }).cocktails;
+    if (Array.isArray(list)) return list;
+  }
+  return [];
+}
+
 function extractIngredients(c: Record<string, unknown>): Ingredient[] {
   const fromArray = c['ingredients'];
   if (Array.isArray(fromArray)) {
@@ -168,12 +156,6 @@ function extractIngredients(c: Record<string, unknown>): Ingredient[] {
       .filter((i) => i.name.length > 0);
   }
   return [];
-}
-
-function isLightSummary(value: unknown): boolean {
-  if (!value || typeof value !== 'object') return false;
-  const v = value as Record<string, unknown>;
-  return 'name' in v && 'thumbUrl' in v && !('instructions' in v);
 }
 
 function str(value: unknown): string | null {
