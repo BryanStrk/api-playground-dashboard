@@ -146,6 +146,7 @@ const OFFICIAL_URL_BY_ID: Record<string, string> = {
     'https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/',
   countries: 'https://restcountries.com/',
   meals: 'https://www.themealdb.com/api.php',
+  cocktails: 'https://www.thecocktaildb.com/',
   photos: 'https://unsplash.com/developers',
   sports: 'https://www.football-data.org/',
   space: 'https://api.nasa.gov/',
