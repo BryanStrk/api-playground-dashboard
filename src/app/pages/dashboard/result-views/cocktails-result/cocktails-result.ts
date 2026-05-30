@@ -99,24 +99,19 @@ export class CocktailsResult {
     });
   }
 
-  protected select(name: string): void {
+  protected select(id: string): void {
     this.loadingDetail.set(true);
     this.selectedDetail.set(null);
     this.detailError.set(null);
 
     this.http
-      .get<{ cocktails?: unknown }>(`${environment.apiBaseUrl}/cocktails/search`, {
-        params: { q: name },
-      })
+      .get<unknown>(`${environment.apiBaseUrl}/cocktails/${encodeURIComponent(id)}`)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          const list = Array.isArray(res?.cocktails) ? res.cocktails : [];
-          const first = list.find(
-            (c): c is Record<string, unknown> => !!c && typeof c === 'object',
-          );
-          if (first) {
-            this.selectedDetail.set(mapCocktail(first, 0));
+          const detail = pickCocktail(res);
+          if (detail) {
+            this.selectedDetail.set(mapCocktail(detail, 0));
           } else {
             this.detailError.set('No se encontró el detalle de este cóctel.');
           }
@@ -150,6 +145,15 @@ function mapCocktail(c: Record<string, unknown>, index: number): Cocktail {
     instructions: str(c['instructions']),
     ingredients: extractIngredients(c),
   };
+}
+
+function pickCocktail(res: unknown): Record<string, unknown> | null {
+  if (!res || typeof res !== 'object') return null;
+  const list = (res as { cocktails?: unknown }).cocktails;
+  if (Array.isArray(list)) {
+    return list.find((c): c is Record<string, unknown> => !!c && typeof c === 'object') ?? null;
+  }
+  return res as Record<string, unknown>;
 }
 
 function extractIngredients(c: Record<string, unknown>): Ingredient[] {

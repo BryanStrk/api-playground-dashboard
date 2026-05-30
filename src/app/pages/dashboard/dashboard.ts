@@ -153,8 +153,11 @@ export class Dashboard {
       view === 'TRIVIA' ||
       view === 'DOTA' ||
       view === 'WORLDCUP' ||
-      view === 'BALLDONTLIE'
+      view === 'BALLDONTLIE' ||
+      view === 'COCKTAILS'
     ) {
+      // COCKTAILS drives its own initial fetch from the controls (default
+      // category grid), so skip the generic endpoint to avoid a double fetch.
       this.runResult.set(null);
       this.running.set(false);
       return;

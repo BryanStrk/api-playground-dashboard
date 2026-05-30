@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  OnInit,
   inject,
   output,
   signal,
@@ -18,6 +19,24 @@ interface CocktailCategory {
   name: string;
 }
 
+/** Default category loaded on open so a clickable grid shows without typing. */
+const DEFAULT_CATEGORY = 'Cocktail';
+
+/** Spanish labels for the categories returned (in English) by the API. */
+const CATEGORY_LABELS_ES: Record<string, string> = {
+  Cocktail: 'Cóctel',
+  'Ordinary Drink': 'Bebida común',
+  Shot: 'Chupito',
+  Beer: 'Cerveza',
+  'Soft Drink': 'Refresco',
+  'Coffee / Tea': 'Café / Té',
+  Shake: 'Batido',
+  'Punch / Party Drink': 'Ponche / fiesta',
+  Cocoa: 'Cacao',
+  'Homemade Liqueur': 'Licor casero',
+  'Other / Unknown': 'Otros',
+};
+
 @Component({
   selector: 'app-cocktails-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +44,7 @@ interface CocktailCategory {
   templateUrl: './cocktails-controls.html',
   styleUrl: '../run-controls.scss',
 })
-export class CocktailsControls {
+export class CocktailsControls implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -33,11 +52,23 @@ export class CocktailsControls {
 
   protected readonly categories = signal<CocktailCategory[]>([]);
   protected readonly name = signal('');
-  protected readonly category = signal('');
+  protected readonly category = signal(DEFAULT_CATEGORY);
   protected readonly alcoholic = signal('');
 
   constructor() {
     this.loadCategories();
+  }
+
+  ngOnInit(): void {
+    // Selection-first: open straight into a popular category grid, no typing.
+    this.search.emit({
+      endpoint: '/api/v1/cocktails/filter/category',
+      query: { c: DEFAULT_CATEGORY },
+    });
+  }
+
+  protected categoryLabel(name: string): string {
+    return CATEGORY_LABELS_ES[name] ?? name;
   }
 
   protected submit(): void {
@@ -46,19 +77,22 @@ export class CocktailsControls {
     const alcoholic = this.alcoholic();
     if (category) {
       this.search.emit({
-        endpoint: '/api/v1/cocktails/filter',
-        query: { category },
+        endpoint: '/api/v1/cocktails/filter/category',
+        query: { c: category },
       });
       return;
     }
     if (alcoholic) {
       this.search.emit({
-        endpoint: '/api/v1/cocktails/filter',
-        query: { alcoholic },
+        endpoint: '/api/v1/cocktails/filter/alcoholic',
+        query: { a: alcoholic },
       });
       return;
     }
-    this.search.emit({ query: { q: name || null } });
+    this.search.emit({
+      endpoint: '/api/v1/cocktails/search',
+      query: { name: name || null },
+    });
   }
 
   private loadCategories(): void {
@@ -70,7 +104,7 @@ export class CocktailsControls {
           this.categories.set(
             (list ?? [])
               .filter((c) => !!c?.name)
-              .sort((a, b) => a.name.localeCompare(b.name)),
+              .sort((a, b) => this.categoryLabel(a.name).localeCompare(this.categoryLabel(b.name))),
           );
         },
       });
