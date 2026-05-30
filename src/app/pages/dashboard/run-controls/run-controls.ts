@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
 import { CharactersControls } from './characters-controls/characters-controls';
+import { CocktailsControls } from './cocktails-controls/cocktails-controls';
 import { HnControls } from './hn-controls/hn-controls';
 import { HolidaysControls } from './holidays-controls/holidays-controls';
 import { MealsControls } from './meals-controls/meals-controls';
@@ -35,6 +36,7 @@ export type ControlsKind =
   | 'holidays'
   | 'hn'
   | 'posts'
+  | 'cocktails'
   | 'none';
 
 const KIND_BY_ID: Record<string, ControlsKind> = {
@@ -55,6 +57,7 @@ const KIND_BY_ID: Record<string, ControlsKind> = {
   holidays: 'holidays',
   hn: 'hn',
   posts: 'posts',
+  cocktails: 'cocktails',
 };
 
 export function controlsKindFor(id: string | null | undefined): ControlsKind {
@@ -67,6 +70,7 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CharactersControls,
+    CocktailsControls,
     HnControls,
     HolidaysControls,
     MealsControls,

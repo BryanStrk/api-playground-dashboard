@@ -1,0 +1,111 @@
+@if (selectedDetail(); as c) {
+  <article class="cocktails-result__detail">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary align-self-start"
+      (click)="back()"
+    >
+      ← Volver
+    </button>
+    <ng-container *ngTemplateOutlet="drinkTpl; context: { $implicit: c }" />
+  </article>
+} @else if (loadingDetail()) {
+  <div class="d-flex align-items-center gap-2 text-secondary" role="status">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    <span>Cargando cóctel…</span>
+  </div>
+} @else if (detailError(); as err) {
+  <div class="alert alert-warning py-2 mb-0 small" role="alert">{{ err }}</div>
+} @else if (mode() === 'gallery') {
+  @if (gallery().length === 0) {
+    <p class="text-secondary mb-0">No hay cócteles en este filtro.</p>
+  } @else {
+    <p class="cocktails-result__lang text-secondary small mb-2">
+      Pulsa un cóctel para ver instrucciones e ingredientes. Los cócteles están en inglés.
+    </p>
+    <div class="row row-cols-2 row-cols-md-3 g-3 cocktails-result__grid">
+      @for (c of gallery(); track c.id) {
+        <div class="col">
+          <button
+            type="button"
+            class="cocktails-result__card-btn"
+            (click)="select(c.name)"
+            [attr.aria-label]="'Ver cóctel de ' + c.name"
+          >
+            <img
+              class="cocktails-result__card-thumb rounded"
+              [src]="c.thumbUrl ?? placeholder"
+              [alt]="'Foto de ' + c.name"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+            <p class="cocktails-result__card-name mb-0">{{ c.name }}</p>
+          </button>
+        </div>
+      }
+    </div>
+  }
+} @else if (mode() === 'cocktails') {
+  @if (cocktails().length === 0) {
+    <p class="text-secondary mb-0">No se encontraron cócteles con ese nombre.</p>
+  } @else {
+    <div class="cocktails-result">
+      <p class="cocktails-result__lang text-secondary small mb-0">
+        Cócteles en inglés.
+      </p>
+      @for (c of cocktails(); track c.id) {
+        <ng-container *ngTemplateOutlet="drinkTpl; context: { $implicit: c }" />
+      }
+    </div>
+  }
+} @else {
+  <p class="text-secondary mb-0">No hay cócteles que mostrar.</p>
+}
+
+<ng-template #drinkTpl let-c>
+  <article class="cocktails-result__card">
+    @if (c.thumbUrl) {
+      <img
+        class="cocktails-result__thumb rounded"
+        [src]="c.thumbUrl"
+        [alt]="'Foto de ' + c.name"
+        loading="lazy"
+        (error)="onImgError($event)"
+      />
+    }
+
+    <header class="cocktails-result__head">
+      <h3 class="cocktails-result__name h6 mb-0">{{ c.name }}</h3>
+      <p class="cocktails-result__meta mb-0">
+        @if (c.category) { <span>{{ c.category }}</span> }
+        @if (c.category && c.glass) { <span aria-hidden="true"> · </span> }
+        @if (c.glass) { <span>{{ c.glass }}</span> }
+        @if ((c.category || c.glass) && c.alcoholic) { <span aria-hidden="true"> · </span> }
+        @if (c.alcoholic) { <span>{{ c.alcoholic }}</span> }
+      </p>
+    </header>
+
+    @if (c.ingredients.length > 0) {
+      <section aria-label="Ingredientes" class="cocktails-result__section">
+        <h4 class="cocktails-result__section-title">Ingredientes</h4>
+        <ul class="cocktails-result__ingredients mb-0">
+          @for (ing of c.ingredients; track $index) {
+            <li>
+              <span class="cocktails-result__ing-name">{{ ing.name }}</span>
+              @if (ing.measure) {
+                <span class="cocktails-result__ing-measure text-secondary"> — {{ ing.measure }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (c.instructions) {
+      <section aria-label="Instrucciones" class="cocktails-result__section">
+        <h4 class="cocktails-result__section-title">Instrucciones</h4>
+        <p class="cocktails-result__instructions mb-0">{{ c.instructions }}</p>
+      </section>
+    }
+  </article>
+</ng-template>

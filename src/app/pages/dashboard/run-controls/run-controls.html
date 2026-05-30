@@ -51,6 +51,9 @@
   @case ('meals') {
     <app-meals-controls (search)="emit($event)" />
   }
+  @case ('cocktails') {
+    <app-cocktails-controls (search)="emit($event)" />
+  }
   @case ('qrcode') {
     <app-qr-controls (search)="emit($event)" />
   }

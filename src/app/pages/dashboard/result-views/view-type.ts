@@ -17,6 +17,7 @@ export type ResultViewType =
   | 'DOTA'
   | 'WORLDCUP'
   | 'BALLDONTLIE'
+  | 'COCKTAILS'
   | 'RAW';
 
 const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
@@ -41,6 +42,7 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   dota: 'DOTA',
   worldcup: 'WORLDCUP',
   balldontlie: 'BALLDONTLIE',
+  cocktails: 'COCKTAILS',
 };
 
 export function viewTypeFor(apiId: string | null | undefined): ResultViewType {

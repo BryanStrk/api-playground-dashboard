@@ -5,6 +5,7 @@ import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { BooksResult } from '../result-views/books-result/books-result';
 import { CharactersResult } from '../result-views/characters-result/characters-result';
+import { CocktailsResult } from '../result-views/cocktails-result/cocktails-result';
 import { DotaExplorer } from '../result-views/dota-explorer/dota-explorer';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { HnResult } from '../result-views/hn-result/hn-result';
@@ -30,6 +31,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
     AudioResult,
     BooksResult,
     CharactersResult,
+    CocktailsResult,
     DotaExplorer,
     GalleryResult,
     HnResult,

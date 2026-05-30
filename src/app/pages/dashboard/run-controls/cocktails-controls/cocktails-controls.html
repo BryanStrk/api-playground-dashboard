@@ -1,0 +1,50 @@
+<form class="run-controls" (ngSubmit)="submit()">
+  <div class="run-controls__row">
+    <div class="run-controls__field flex-grow-1">
+      <label class="form-label" for="cocktails-name">Nombre (inglés)</label>
+      <input
+        id="cocktails-name"
+        type="text"
+        class="form-control"
+        autocomplete="off"
+        placeholder="margarita, mojito, negroni…"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+      />
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="cocktails-category">Categoría</label>
+      <select
+        id="cocktails-category"
+        class="form-select"
+        [ngModel]="category()"
+        (ngModelChange)="category.set($event)"
+        name="category"
+      >
+        <option value="">— Cualquiera —</option>
+        @for (c of categories(); track c.id) {
+          <option [value]="c.name">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="run-controls__field">
+      <label class="form-label" for="cocktails-alcoholic">Alcohol</label>
+      <select
+        id="cocktails-alcoholic"
+        class="form-select"
+        [ngModel]="alcoholic()"
+        (ngModelChange)="alcoholic.set($event)"
+        name="alcoholic"
+      >
+        <option value="">— Cualquiera —</option>
+        <option value="Alcoholic">Alcoholic</option>
+        <option value="Non_Alcoholic">Non Alcoholic</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary run-controls__submit">Buscar</button>
+  </div>
+  <p class="run-controls__hint mb-0">
+    Cócteles en inglés. Sin texto ni filtros, trae un cóctel aleatorio.
+  </p>
+</form>
