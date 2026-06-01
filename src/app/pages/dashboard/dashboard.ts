@@ -151,7 +151,6 @@ export class Dashboard {
     const view = viewTypeFor(api.id);
     if (
       view === 'TRIVIA' ||
-      view === 'DOTA' ||
       view === 'WORLDCUP' ||
       view === 'BALLDONTLIE' ||
       view === 'COCKTAILS'

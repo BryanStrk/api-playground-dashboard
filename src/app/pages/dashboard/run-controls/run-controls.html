@@ -16,17 +16,6 @@
   @case ('sports') {
     <app-sports-controls (search)="emit($event)" />
   }
-  @case ('github') {
-    <app-simple-search-controls
-      inputId="github-user"
-      label="Usuario de GitHub"
-      placeholder="torvalds, gaearon…"
-      initial="torvalds"
-      paramKind="path"
-      paramName="username"
-      (search)="emit($event)"
-    />
-  }
   @case ('movies') {
     <app-movies-controls (search)="emit($event)" />
   }
@@ -35,9 +24,6 @@
   }
   @case ('news') {
     <app-news-controls (search)="emit($event)" />
-  }
-  @case ('characters') {
-    <app-characters-controls (search)="emit($event)" />
   }
   @case ('photos') {
     <app-photos-controls (search)="emit($event)" />

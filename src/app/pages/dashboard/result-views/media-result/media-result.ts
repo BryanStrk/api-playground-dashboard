@@ -70,22 +70,6 @@ function mapMedia(id: string, d: Record<string, unknown>): MediaView {
         ],
       });
 
-    case 'github':
-      return view({
-        imageUrl: str(d['avatarUrl']),
-        alt: `Avatar de ${str(d['name']) ?? str(d['login']) ?? 'usuario'}`,
-        caption: str(d['name']) ?? str(d['login']),
-        description: str(d['bio']),
-        fields: [
-          field('Usuario', prefix('@', str(d['login']))),
-          field('Repos públicos', numberStr(d['publicRepos'])),
-          field('Seguidores', numberStr(d['followers'])),
-          field('Siguiendo', numberStr(d['following'])),
-          field('Compañía', str(d['company'])),
-        ],
-        link: linkOrNull(d['htmlUrl'], 'Ver perfil en GitHub'),
-      });
-
     case 'countries':
       return view({
         imageUrl: str(d['flagUrl']),

@@ -4,9 +4,7 @@ import { RunParams } from '../../../core/api.service';
 import { ApiInfo, RunResult } from '../../../core/models';
 import { AudioResult } from '../result-views/audio-result/audio-result';
 import { BooksResult } from '../result-views/books-result/books-result';
-import { CharactersResult } from '../result-views/characters-result/characters-result';
 import { CocktailsResult } from '../result-views/cocktails-result/cocktails-result';
-import { DotaExplorer } from '../result-views/dota-explorer/dota-explorer';
 import { GalleryResult } from '../result-views/gallery-result/gallery-result';
 import { HnResult } from '../result-views/hn-result/hn-result';
 import { HolidaysResult } from '../result-views/holidays-result/holidays-result';
@@ -30,9 +28,7 @@ import { RunControls, controlsKindFor } from '../run-controls/run-controls';
   imports: [
     AudioResult,
     BooksResult,
-    CharactersResult,
     CocktailsResult,
-    DotaExplorer,
     GalleryResult,
     HnResult,
     HolidaysResult,
@@ -61,13 +57,12 @@ export class RunOffcanvas {
   protected readonly hasControls = computed(() => {
     const api = this.api();
     if (!api) return false;
-    if (this.isTrivia() || this.isDota() || this.isWorldCup() || this.isBalldontlie())
+    if (this.isTrivia() || this.isWorldCup() || this.isBalldontlie())
       return false;
     return controlsKindFor(api.id) !== 'none';
   });
 
   protected readonly isTrivia = computed(() => this.viewType() === 'TRIVIA');
-  protected readonly isDota = computed(() => this.viewType() === 'DOTA');
   protected readonly isWorldCup = computed(() => this.viewType() === 'WORLDCUP');
   protected readonly isBalldontlie = computed(() => this.viewType() === 'BALLDONTLIE');
 

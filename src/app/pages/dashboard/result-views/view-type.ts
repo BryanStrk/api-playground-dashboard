@@ -7,14 +7,12 @@ export type ResultViewType =
   | 'STAT'
   | 'SPORTS'
   | 'MEALS'
-  | 'CHARACTERS'
   | 'SPACE'
   | 'BOOKS'
   | 'QR'
   | 'HOLIDAYS'
   | 'HACKERNEWS'
   | 'TRIVIA'
-  | 'DOTA'
   | 'WORLDCUP'
   | 'BALLDONTLIE'
   | 'COCKTAILS'
@@ -24,10 +22,8 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   photos: 'MEDIA',
   space: 'SPACE',
   users: 'MEDIA',
-  github: 'MEDIA',
   countries: 'MEDIA',
   sports: 'SPORTS',
-  characters: 'CHARACTERS',
   music: 'AUDIO',
   movies: 'MOVIES',
   news: 'GALLERY',
@@ -39,7 +35,6 @@ const VIEW_TYPE_BY_ID: Record<string, ResultViewType> = {
   holidays: 'HOLIDAYS',
   hn: 'HACKERNEWS',
   trivia: 'TRIVIA',
-  dota: 'DOTA',
   worldcup: 'WORLDCUP',
   balldontlie: 'BALLDONTLIE',
   cocktails: 'COCKTAILS',

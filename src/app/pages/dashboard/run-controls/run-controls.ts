@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 
 import { ApiInfo } from '../../../core/models';
 import { RunParams } from '../../../core/api.service';
-import { CharactersControls } from './characters-controls/characters-controls';
 import { CocktailsControls } from './cocktails-controls/cocktails-controls';
 import { HnControls } from './hn-controls/hn-controls';
 import { HolidaysControls } from './holidays-controls/holidays-controls';
@@ -22,13 +21,11 @@ export type ControlsKind =
   | 'weather'
   | 'countries'
   | 'sports'
-  | 'github'
   | 'books'
   | 'movies'
   | 'music'
   | 'news'
   | 'users'
-  | 'characters'
   | 'photos'
   | 'space'
   | 'meals'
@@ -43,13 +40,11 @@ const KIND_BY_ID: Record<string, ControlsKind> = {
   weather: 'weather',
   countries: 'countries',
   sports: 'sports',
-  github: 'github',
   books: 'books',
   movies: 'movies',
   music: 'music',
   news: 'news',
   users: 'users',
-  characters: 'characters',
   photos: 'photos',
   space: 'space',
   meals: 'meals',
@@ -69,7 +64,6 @@ export function controlsKindFor(id: string | null | undefined): ControlsKind {
   selector: 'app-run-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CharactersControls,
     CocktailsControls,
     HnControls,
     HolidaysControls,

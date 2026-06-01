@@ -28,8 +28,6 @@
   <div class="offcanvas-body d-flex flex-column gap-3">
     @if (isTrivia()) {
       <app-trivia-game />
-    } @else if (isDota()) {
-      <app-dota-explorer />
     } @else if (isWorldCup()) {
       <app-worldcup-result />
     } @else if (isBalldontlie()) {
@@ -146,9 +144,6 @@
               }
               @case ('MEALS') {
                 <app-meals-result [data]="r.data" />
-              }
-              @case ('CHARACTERS') {
-                <app-characters-result [data]="r.data" />
               }
               @case ('COCKTAILS') {
                 <app-cocktails-result [data]="r.data" />

@@ -132,12 +132,20 @@ const SAMPLE_INPUTS: Record<string, SampleInput> = {
   qrcode: { query: 'data=https%3A%2F%2Fgithub.com&size=300x300' },
   holidays: { query: 'country=ES' },
   hn: { query: 'type=top&limit=20' },
-  github: { path: { username: 'torvalds' } },
   books: { query: 'title=clean+code' },
-  characters: { path: { id: '1' } },
 };
 
-const DISABLED_API_IDS = new Set(['crypto', 'pokemon', 'ai', 'cats', 'dictionary', 'exchange']);
+const DISABLED_API_IDS = new Set([
+  'crypto',
+  'pokemon',
+  'ai',
+  'cats',
+  'dictionary',
+  'exchange',
+  'github',
+  'characters',
+  'dota',
+]);
 
 const OFFICIAL_URL_BY_ID: Record<string, string> = {
   weather: 'https://open-meteo.com/',
@@ -151,13 +159,10 @@ const OFFICIAL_URL_BY_ID: Record<string, string> = {
   sports: 'https://www.football-data.org/',
   space: 'https://api.nasa.gov/',
   users: 'https://randomuser.me/',
-  github: 'https://docs.github.com/en/rest',
   books: 'https://openlibrary.org/developers/api',
   news: 'https://newsapi.org/docs',
-  characters: 'https://rickandmortyapi.com/',
   qrcode: 'https://goqr.me/api/',
   holidays: 'https://date.nager.at/',
   trivia: 'https://opentdb.com/',
   hn: 'https://github.com/HackerNews/API',
-  dota: 'https://docs.opendota.com/',
 };
